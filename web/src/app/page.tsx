@@ -2,6 +2,8 @@ import Link from 'next/link'
 import {VideoHero} from '@/components/VideoHero'
 import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 
+export const revalidate = 60
+
 export default async function Home() {
   const settings = await getSiteSettings()
 

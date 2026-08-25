@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   description: 'Director / cinematographer — selected work, bio, and contact.',
 }
 
+// Re-check Sanity roughly once a minute so Studio edits (name, logos, socials)
+// show up without a redeploy.
+export const revalidate = 60
+
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const settings = await getSiteSettings()
 

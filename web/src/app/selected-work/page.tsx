@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Selected Work — Spencer Heaphy',
 }
 
-export const revalidate = 3600
+export const revalidate = 60
 
 async function getProjects(): Promise<Project[]> {
   try {
