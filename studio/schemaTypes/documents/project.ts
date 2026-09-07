@@ -76,6 +76,36 @@ export const project = defineType({
       type: 'number',
     }),
     defineField({
+      name: 'featured',
+      title: 'Featured on home',
+      description: 'Show this project in the hero carousel.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'featuredOrder',
+      title: 'Featured order',
+      description: 'Lower numbers appear first in the hero carousel.',
+      type: 'number',
+      hidden: ({document}) => !document?.featured,
+    }),
+    defineField({
+      name: 'heroMedia',
+      title: 'Hero media',
+      description:
+        'Optional override for the hero carousel. Falls back to cover media. A cover still is often not the right hero clip — use a landscape loop here.',
+      type: 'mediaItem',
+      hidden: ({document}) => !document?.featured,
+    }),
+    defineField({
+      name: 'heroMediaMobile',
+      title: 'Hero media — mobile (vertical)',
+      description:
+        'Optional vertical cut shown in place of hero media on narrow screens. Falls back to hero media (or cover media), object-cover cropped, if not supplied.',
+      type: 'mediaItem',
+      hidden: ({document}) => !document?.featured,
+    }),
+    defineField({
       name: 'hidden',
       title: 'Hidden',
       description: 'Hide this project from the public site without deleting it.',

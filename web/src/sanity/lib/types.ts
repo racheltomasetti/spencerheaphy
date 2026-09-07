@@ -36,7 +36,11 @@ export interface Project {
   year?: number
   status: ProjectStatus
   description?: string
+  featured?: boolean
+  featuredOrder?: number
   coverMedia?: MediaItem
+  heroMedia?: MediaItem
+  heroMediaMobile?: MediaItem
   gallery?: MediaItem[]
 }
 
@@ -49,8 +53,6 @@ export interface SiteSettings {
   name?: string
   tagline?: string
   contactEmail?: string
-  heroVideoDesktop?: SanityFileValue
-  heroVideoMobile?: SanityFileValue
   socialLinks?: SocialLink[]
   clientLogos?: SanityImageValue[]
 }

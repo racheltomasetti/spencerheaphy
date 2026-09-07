@@ -19,22 +19,6 @@ export const siteSettings = defineType({
       type: 'string',
     }),
     defineField({
-      name: 'heroVideoDesktop',
-      title: 'Hero video — desktop (horizontal)',
-      description:
-        'Short, tightly compressed looping clip (H.264 .mp4). Shown on larger screens; scrubs with scroll.',
-      type: 'file',
-      options: {accept: 'video/*'},
-    }),
-    defineField({
-      name: 'heroVideoMobile',
-      title: 'Hero video — mobile (vertical)',
-      description:
-        'Short, tightly compressed looping clip (H.264 .mp4). Shown in place of the desktop video on narrow screens.',
-      type: 'file',
-      options: {accept: 'video/*'},
-    }),
-    defineField({
       name: 'contactEmail',
       title: 'Contact email',
       type: 'string',

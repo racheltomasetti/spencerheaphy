@@ -28,7 +28,11 @@ export const PROJECTS_QUERY = defineQuery(`
     year,
     status,
     description,
+    featured,
+    featuredOrder,
     coverMedia ${MEDIA_ITEM_PROJECTION},
+    heroMedia ${MEDIA_ITEM_PROJECTION},
+    heroMediaMobile ${MEDIA_ITEM_PROJECTION},
     gallery[] ${MEDIA_ITEM_PROJECTION}
   }
 `)
@@ -38,8 +42,6 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     name,
     tagline,
     contactEmail,
-    heroVideoDesktop { asset -> { _id, url } },
-    heroVideoMobile { asset -> { _id, url } },
     socialLinks[] { platform, url },
     clientLogos[] {
       asset -> { _id, url },

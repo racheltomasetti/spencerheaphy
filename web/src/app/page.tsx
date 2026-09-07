@@ -8,12 +8,15 @@ import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 export default async function Home() {
   const [settings, projects] = await Promise.all([getSiteSettings(), getProjects()])
 
+  const featuredProjects = projects
+    .filter((project) => project.featured)
+    .sort((a, b) => (a.featuredOrder ?? Infinity) - (b.featuredOrder ?? Infinity))
+
   return (
     <>
-      <VideoHero
-        desktopSrc={settings?.heroVideoDesktop?.asset?.url}
-        mobileSrc={settings?.heroVideoMobile?.asset?.url}
-      />
+      <Suspense fallback={null}>
+        <VideoHero projects={featuredProjects} />
+      </Suspense>
 
       <section id="work" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16 sm:px-10">
         <h2 className="mb-12 font-serif text-3xl uppercase tracking-[0.08em]">Selected Work</h2>
