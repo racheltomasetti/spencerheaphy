@@ -14,6 +14,14 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'slug',
+      title: 'Slug',
+      description: 'Used in the project link (e.g. spencerheaphy.com/?project=kiehls). Generate from the title.',
+      type: 'slug',
+      options: {source: 'title', maxLength: 96},
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'client',
       title: 'Client',
       type: 'string',
