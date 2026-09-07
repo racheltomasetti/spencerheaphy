@@ -11,9 +11,8 @@ export default function CreatorPage() {
   return (
     <div className="mx-auto max-w-xl px-6 py-24 text-center sm:px-10">
       <p className="mb-10 border border-foreground/15 bg-foreground/[0.03] px-5 py-4 text-left text-xs leading-relaxed tracking-wide text-foreground/70">
-        This page is only here while we build and test the site. When Spencer Heaphy
-        goes live, Creator will be hidden or gated so it is not part of the public
-        navigation.
+        This page is intentionally not in the site navigation or search results.
+        The way in is the copyright line in the footer.
       </p>
       <h1 className="mb-4 font-serif text-2xl uppercase tracking-[0.08em]">Creator</h1>
       <p className="mb-8 text-sm text-foreground/60">

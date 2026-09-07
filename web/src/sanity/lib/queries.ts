@@ -1,29 +1,35 @@
 import {defineQuery} from 'next-sanity'
 
+const MEDIA_ITEM_PROJECTION = `{
+  _key,
+  mediaType,
+  image {
+    asset -> {
+      _id,
+      url,
+      metadata { lqip, dimensions { width, height } }
+    },
+    alt,
+    hotspot,
+    crop
+  },
+  video {
+    asset -> { _id, url }
+  }
+}`
+
 export const PROJECTS_QUERY = defineQuery(`
   *[_type == "project" && hidden != true] | order(order asc, year desc) {
     _id,
+    "slug": slug.current,
     title,
     client,
     category,
     year,
     status,
-    coverMedia {
-      mediaType,
-      image {
-        asset -> {
-          _id,
-          url,
-          metadata { lqip, dimensions { width, height } }
-        },
-        alt,
-        hotspot,
-        crop
-      },
-      video {
-        asset -> { _id, url }
-      }
-    }
+    description,
+    coverMedia ${MEDIA_ITEM_PROJECTION},
+    gallery[] ${MEDIA_ITEM_PROJECTION}
   }
 `)
 

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type {SiteSettings} from '@/sanity/lib/types'
 
 export function SiteFooter({settings}: {settings: SiteSettings | null}) {
@@ -7,7 +8,9 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
     <footer className="border-t border-black/10">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 text-xs uppercase tracking-[0.1em] text-foreground/60 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <p>
-          &copy; {year} {settings?.name || 'Spencer Heaphy'}
+          <Link href="/creator" className="text-inherit no-underline">
+            &copy; {year} {settings?.name || 'Spencer Heaphy'}
+          </Link>
         </p>
         <div className="flex flex-wrap items-center gap-6">
           {settings?.contactEmail && (

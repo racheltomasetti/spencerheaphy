@@ -17,6 +17,7 @@ export interface SanityImageValue {
 }
 
 export interface MediaItem {
+  _key?: string
   mediaType: 'image' | 'video'
   image?: SanityImageValue
   video?: {
@@ -26,12 +27,15 @@ export interface MediaItem {
 
 export interface Project {
   _id: string
+  slug: string
   title: string
   client?: string
   category?: string
   year?: number
   status: ProjectStatus
+  description?: string
   coverMedia?: MediaItem
+  gallery?: MediaItem[]
 }
 
 export interface SocialLink {

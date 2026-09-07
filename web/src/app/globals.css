@@ -12,6 +12,10 @@
   --font-sans: var(--font-sans-body), ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-sans);
 }
