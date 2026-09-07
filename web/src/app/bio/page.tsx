@@ -5,8 +5,6 @@ export const metadata: Metadata = {
   title: 'Bio — Spencer Heaphy',
 }
 
-export const revalidate = 60
-
 export default async function BioPage() {
   const settings = await getSiteSettings()
 

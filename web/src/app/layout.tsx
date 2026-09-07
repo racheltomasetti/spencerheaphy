@@ -3,6 +3,7 @@ import {Fraunces, Inter} from 'next/font/google'
 import {Nav} from '@/components/Nav'
 import {SiteFooter} from '@/components/SiteFooter'
 import {getSiteSettings} from '@/sanity/lib/get-site-settings'
+import {SanityLive} from '@/sanity/lib/live'
 import './globals.css'
 
 const serif = Fraunces({
@@ -21,10 +22,6 @@ export const metadata: Metadata = {
   description: 'Director / cinematographer — selected work, bio, and contact.',
 }
 
-// Re-check Sanity roughly once a minute so Studio edits (name, logos, socials)
-// show up without a redeploy.
-export const revalidate = 60
-
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const settings = await getSiteSettings()
 
@@ -34,6 +31,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <Nav />
         <main className="flex-1">{children}</main>
         <SiteFooter settings={settings} />
+        <SanityLive />
       </body>
     </html>
   )

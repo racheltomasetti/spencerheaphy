@@ -1,6 +1,6 @@
 import type {Metadata} from 'next'
 import {ProjectCard} from '@/components/ProjectCard'
-import {client} from '@/sanity/lib/client'
+import {sanityFetch} from '@/sanity/lib/live'
 import {PROJECTS_QUERY} from '@/sanity/lib/queries'
 import type {Project} from '@/sanity/lib/types'
 
@@ -8,11 +8,10 @@ export const metadata: Metadata = {
   title: 'Selected Work — Spencer Heaphy',
 }
 
-export const revalidate = 60
-
 async function getProjects(): Promise<Project[]> {
   try {
-    return await client.fetch(PROJECTS_QUERY)
+    const {data} = await sanityFetch({query: PROJECTS_QUERY})
+    return data as Project[]
   } catch {
     return []
   }
