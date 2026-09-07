@@ -13,7 +13,6 @@ export default async function Home() {
       <VideoHero
         desktopSrc={settings?.heroVideoDesktop?.asset?.url}
         mobileSrc={settings?.heroVideoMobile?.asset?.url}
-        caption={settings?.tagline}
       />
 
       <section id="work" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16 sm:px-10">
