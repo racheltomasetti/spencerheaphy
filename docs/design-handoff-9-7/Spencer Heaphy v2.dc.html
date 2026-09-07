@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; background: #faf9f6; color: #141310; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: #9c4a24; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  @keyframes drift { from { background-position: 0 0; } to { background-position: 160px 0; } }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</helmet>
+
+<div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#faf9f6">
+
+  <div style="position:fixed;top:0;left:0;right:0;z-index:80;transition:background 500ms ease,border-color 500ms ease;background:{{ navBg }};border-bottom:1px solid {{ navBorder }};backdrop-filter:{{ navBlur }}">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 32px;transition:color 500ms ease;color:{{ navInk }}">
+      <a href="#top" style="font:500 13px/1 'IBM Plex Mono',monospace;letter-spacing:0.22em;text-transform:uppercase">Spencer Heaphy</a>
+
+      <div style="display:none;gap:30px;font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase">
+        <a href="#work">Selected Work</a>
+        <a href="#bio">Bio</a>
+      </div>
+
+      <button onClick="{{ toggleMenu }}" aria-label="Menu" style="display:flex;flex-direction:column;gap:5px;padding:6px 0 6px 20px">
+        <span style="display:block;width:26px;height:1px;background:currentColor;transition:transform 300ms ease;transform:{{ barTop }}"></span>
+        <span style="display:block;width:26px;height:1px;background:currentColor;transition:opacity 200ms ease;opacity:{{ barMid }}"></span>
+        <span style="display:block;width:26px;height:1px;background:currentColor;transition:transform 300ms ease;transform:{{ barBot }}"></span>
+      </button>
+    </div>
+  </div>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:70;background:#141310;color:#faf9f6;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:0 32px;animation:fadein 320ms ease both">
+      <a href="#work" onClick="{{ closeMenu }}" style="font-size:clamp(38px,7vw,86px);line-height:1.12;letter-spacing:-0.03em" style-hover="color:#c8a27a">Selected Work</a>
+      <a href="#bio" onClick="{{ closeMenu }}" style="font-size:clamp(38px,7vw,86px);line-height:1.12;letter-spacing:-0.03em" style-hover="color:#c8a27a">Bio</a>
+      <a href="mailto:hello@spencerheaphy.com" style="font-size:clamp(38px,7vw,86px);line-height:1.12;letter-spacing:-0.03em" style-hover="color:#c8a27a">Contact</a>
+      <div style="margin-top:44px;display:flex;gap:26px;font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#8a877d">
+        <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+        <a href="https://vimeo.com" target="_blank" rel="noreferrer">Vimeo</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <div id="top" ref="{{ heroRef }}" data-screen-label="Hero" style="position:relative;height:100vh;min-height:540px;overflow:hidden;background:#141310">
+    <sc-for list="{{ slides }}" as="s" hint-placeholder-count="1">
+      <div style="position:absolute;inset:0;transition:opacity 1100ms cubic-bezier(.4,0,.2,1);opacity:{{ s.op }}">
+        <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);animation:drift 14s linear infinite"></div>
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:400 10px/1.8 'IBM Plex Mono',monospace;letter-spacing:0.22em;text-transform:uppercase;color:rgba(250,249,246,.68);text-align:center">
+          <div>{{ s.slot }}</div>
+          <div>coverMedia · silent loop · mp4</div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(20,19,16,.5) 0,rgba(20,19,16,0) 26%,rgba(20,19,16,0) 55%,rgba(20,19,16,.62) 100%);pointer-events:none"></div>
+
+    <div style="position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:32px;color:#faf9f6">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.2em;text-transform:uppercase;color:rgba(250,249,246,.55)">{{ counter }}</div>
+        <div style="font-size:clamp(28px,3.6vw,50px);line-height:1;letter-spacing:-0.025em">{{ activeTitle }}</div>
+        <div style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:rgba(250,249,246,.62)">{{ activeMeta }}</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:22px">
+        <button onClick="{{ openActive }}" style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#faf9f6;border-bottom:1px solid rgba(250,249,246,.66);padding-bottom:4px;white-space:nowrap" style-hover="border-color:#faf9f6">View project</button>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ prevSlide }}" aria-label="Previous" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(250,249,246,.68);color:#faf9f6;font-size:15px" style-hover="background:rgba(250,249,246,.14)">←</button>
+          <button onClick="{{ nextSlide }}" aria-label="Next" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(250,249,246,.68);color:#faf9f6;font-size:15px" style-hover="background:rgba(250,249,246,.14)">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="work" data-screen-label="Selected Work" style="scroll-margin-top:70px;padding:0 0 40px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:78px 32px 16px;border-bottom:1px solid rgba(20,19,16,.14)">
+      <h2 style="margin:0;font-size:clamp(26px,3.4vw,46px);line-height:1;letter-spacing:-0.025em;font-weight:400">Selected Work</h2>
+      <div style="display:flex;align-items:baseline;gap:20px;font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase">
+        <span style="color:rgba(20,19,16,.58)">{{ count }} projects</span>
+        <button onClick="{{ setGrid }}" style="border-bottom:1px solid {{ gridRule }};padding-bottom:4px;color:{{ gridInk }}">Grid</button>
+        <button onClick="{{ setIndex }}" style="border-bottom:1px solid {{ indexRule }};padding-bottom:4px;color:{{ indexInk }}">Index</button>
+      </div>
+    </div>
+
+    <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:18px;padding:24px 32px 60px">
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="8">
+        <button onClick="{{ p.open }}" style="grid-column:span {{ p.span }};text-align:left;display:flex;flex-direction:column;gap:10px">
+          <div style="position:relative;width:100%;aspect-ratio:{{ p.ratio }};overflow:hidden;background-image:repeating-linear-gradient(135deg,#eceae4 0 9px,#f4f2ec 9px 18px);animation:{{ p.anim }}">
+            <div style="position:absolute;left:12px;bottom:11px;font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(20,19,16,.4)">{{ p.slot }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(20,19,16,.8)">{{ p.client }}</span>
+            <span style="display:flex;justify-content:space-between;gap:12px;font-size:15px;letter-spacing:-0.01em;color:rgba(20,19,16,.6)"><span>{{ p.title }}</span><span style="color:rgba(20,19,16,.62);font:400 11px/1.5 'IBM Plex Mono',monospace">{{ p.year }}</span></span>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isIndex }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:0 32px 60px">
+      <div style="display:grid;grid-template-columns:52px 1.6fr 1.1fr 1fr 64px;gap:16px;padding:14px 0;border-bottom:1px solid rgba(20,19,16,.14);font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.18em;text-transform:uppercase;color:rgba(20,19,16,.58)">
+        <span>No.</span><span>Project</span><span>Client</span><span>Category</span><span style="text-align:right">Year</span>
+      </div>
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="8">
+        <button onClick="{{ p.open }}" onMouseEnter="{{ p.enter }}" onMouseLeave="{{ leave }}" style="width:100%;display:grid;grid-template-columns:52px 1.6fr 1.1fr 1fr 64px;gap:16px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(20,19,16,.08);text-align:left" style-hover="background:rgba(20,19,16,.04)">
+          <span style="font:400 11px/1 'IBM Plex Mono',monospace;color:rgba(20,19,16,.6)">{{ p.num }}</span>
+          <span style="font-size:19px;letter-spacing:-0.015em">{{ p.title }}</span>
+          <span style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:rgba(20,19,16,.72)">{{ p.client }}</span>
+          <span style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:rgba(20,19,16,.72)">{{ p.category }}</span>
+          <span style="font:400 11px/1 'IBM Plex Mono',monospace;color:rgba(20,19,16,.72);text-align:right">{{ p.year }}</span>
+        </button>
+      </sc-for>
+      <sc-if value="{{ hoverSlot }}" hint-placeholder-val="{{ false }}">
+        <div style="position:fixed;right:32px;bottom:32px;width:290px;aspect-ratio:4/3;background-image:repeating-linear-gradient(135deg,#eceae4 0 9px,#f4f2ec 9px 18px);pointer-events:none;z-index:40;display:flex;align-items:flex-end;padding:12px">
+          <span style="font:400 10px/1.4 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(20,19,16,.4)">{{ hoverSlot }}</span>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  <div id="bio" data-screen-label="Bio" style="scroll-margin-top:70px;border-top:1px solid rgba(20,19,16,.14)">
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:28px;padding:78px 32px 90px">
+      <div style="grid-column:span 4">
+        <div style="aspect-ratio:4/5;background-image:repeating-linear-gradient(135deg,#eceae4 0 9px,#f4f2ec 9px 18px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(20,19,16,.4)">Portrait — 4:5</span></div>
+      </div>
+      <div style="grid-column:6/span 6;display:flex;flex-direction:column;gap:34px">
+        <h2 style="margin:0;font-size:clamp(22px,2.7vw,34px);line-height:1.24;letter-spacing:-0.022em;font-weight:400;text-wrap:pretty">Spencer Heaphy is a director and creator working across commercial film, music video and stills.</h2>
+        <p style="margin:0;font-size:16px;line-height:1.65;color:rgba(20,19,16,.7);max-width:56ch;text-wrap:pretty">Bio copy to come — two or three short paragraphs on how he works, what he shoots, and who he shoots it for. Keep it under 150 words so it reads in one breath.</p>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;font:400 11px/2 'IBM Plex Mono',monospace;letter-spacing:0.13em;text-transform:uppercase">
+          <div>
+            <div style="color:rgba(20,19,16,.6);margin-bottom:8px">Selected clients</div>
+            <div style="color:rgba(20,19,16,.7)">Client list<br />to come<br />—<br />six to ten names</div>
+          </div>
+          <div>
+            <div style="color:rgba(20,19,16,.6);margin-bottom:8px">Connect</div>
+            <div style="display:flex;flex-direction:column">
+              <a href="mailto:hello@spencerheaphy.com">hello@spencerheaphy.com</a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+              <a href="https://vimeo.com" target="_blank" rel="noreferrer">Vimeo</a>
+              <span style="color:rgba(20,19,16,.62)">Los Angeles · worldwide</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:20px 32px;border-top:1px solid rgba(20,19,16,.14);font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(20,19,16,.6)">
+    <span>Spencer Heaphy © 2026</span>
+    <a href="mailto:hello@spencerheaphy.com">Available for commissions</a>
+  </div>
+
+  <sc-if value="{{ lightbox }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:90;background:rgba(20,19,16,.97);color:#faf9f6;overflow-y:auto;animation:fadein 260ms ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 32px;position:sticky;top:0;background:rgba(20,19,16,.97);z-index:2">
+        <span style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.66)">{{ cur.num }} / {{ count }}</span>
+        <button onClick="{{ closeLightbox }}" style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase">Close ✕</button>
+      </div>
+
+      <div style="padding:0 32px 40px;display:flex;flex-direction:column;gap:34px">
+        <div style="position:relative;aspect-ratio:16/9;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);animation:drift 16s linear infinite">
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:400 10px/1.8 'IBM Plex Mono',monospace;letter-spacing:0.2em;text-transform:uppercase;color:rgba(250,249,246,.68);text-align:center">{{ cur.slot }} — full film<br />vimeo / mux embed</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:28px">
+          <div style="grid-column:span 5;display:flex;flex-direction:column;gap:14px">
+            <h3 style="margin:0;font-size:clamp(26px,3.4vw,44px);line-height:1.02;letter-spacing:-0.028em;font-weight:400">{{ cur.title }}</h3>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(250,249,246,.72);text-wrap:pretty">{{ cur.description }}</p>
+          </div>
+          <div style="grid-column:7/span 6;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;font:400 11px/1.7 'IBM Plex Mono',monospace;letter-spacing:0.13em;text-transform:uppercase">
+            <div><div style="color:rgba(250,249,246,.68)">Client</div><div>{{ cur.client }}</div></div>
+            <div><div style="color:rgba(250,249,246,.68)">Year</div><div>{{ cur.year }}</div></div>
+            <div><div style="color:rgba(250,249,246,.68)">Category</div><div>{{ cur.category }}</div></div>
+            <div><div style="color:rgba(250,249,246,.68)">Status</div><div>{{ cur.status }}</div></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:14px">
+          <div style="grid-column:span 8;aspect-ratio:16/10;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.68)">gallery[0] — landscape</span></div>
+          <div style="grid-column:span 4;aspect-ratio:4/5;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.68)">gallery[1] — portrait</span></div>
+          <div style="grid-column:span 4;aspect-ratio:1/1;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);display:flex;align-items:flex-end;padding:12px;animation:drift 11s linear infinite"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.68)">gallery[2] — loop</span></div>
+          <div style="grid-column:span 4;aspect-ratio:1/1;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.68)">gallery[3]</span></div>
+          <div style="grid-column:span 4;aspect-ratio:1/1;background-image:repeating-linear-gradient(135deg,#22201b 0 9px,#2b2822 9px 18px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.68)">gallery[4]</span></div>
+        </div>
+
+        <button onClick="{{ openNext }}" style="width:100%;display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:30px 0 44px;border-top:1px solid rgba(250,249,246,.16);text-align:left">
+          <span style="font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:rgba(250,249,246,.66)">Next project</span>
+          <span style="font-size:clamp(20px,2.6vw,34px);line-height:1;letter-spacing:-0.022em">{{ nextTitle }} →</span>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motionMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;autoplay&quot;,&quot;hover&quot;],&quot;default&quot;:&quot;autoplay&quot;,&quot;tsType&quot;:&quot;'autoplay' | 'hover'&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;defaultWorkLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;grid&quot;,&quot;index&quot;],&quot;default&quot;:&quot;grid&quot;,&quot;tsType&quot;:&quot;'grid' | 'index'&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+const DATA = [
+  { num: "01", title: "Long Way Down", client: "Halcyon Athletic", year: 2025, category: "Commercial", status: "published", ratio: "16/9", span: 8, featured: true, description: "A one-take runner's film shot at dawn on a closed coastal road. Placeholder description — two to four sentences on the idea, the constraint, and what made it work." },
+  { num: "02", title: "Static Bloom", client: "Nocturne Records", year: 2025, category: "Music Video", status: "published", ratio: "4/5", span: 4, featured: true, description: "Placeholder description. Single-location performance video built around practical light and a slow push-in." },
+  { num: "03", title: "Cold Open", client: "Fjell Outerwear", year: 2025, category: "Campaign", status: "published", ratio: "4/3", span: 4, featured: true, description: "Placeholder description. Winter campaign film plus a stills package shot the same day." },
+  { num: "04", title: "The Quiet Part", client: "Marrow Studio", year: 2024, category: "Short Film", status: "published", ratio: "16/9", span: 8, featured: true, description: "Placeholder description. Twelve-minute short, festival cut available on request." },
+  { num: "05", title: "Verso No. 3", client: "Verso Beauty", year: 2024, category: "Product", status: "published", ratio: "1/1", span: 4, description: "Placeholder description. Macro product loops built for paid social in 1:1 and 9:16." },
+  { num: "06", title: "Public Land", client: "Public Land", year: 2024, category: "Documentary", status: "published", ratio: "16/9", span: 8, description: "Placeholder description. Two-day documentary shoot cut into a three-minute brand film." },
+  { num: "07", title: "Night Shift", client: "Sable Motors", year: 2023, category: "Commercial", status: "published", ratio: "4/5", span: 4, description: "Placeholder description. Nocturnal car spot, all in-camera lighting." },
+  { num: "08", title: "Fieldnotes", client: "Self-released", year: 2023, category: "Stills", status: "published", ratio: "4/3", span: 4, description: "Placeholder description. Ongoing personal stills archive, updated as he shoots." },
+  { num: "09", title: "Second Sun", client: "Halcyon Athletic", year: 2023, category: "Commercial", status: "published", ratio: "16/9", span: 8, description: "Placeholder description. Track-and-field spot shot across two days of golden hour." },
+  { num: "10", title: "Undertow", client: "Nocturne Records", year: 2023, category: "Music Video", status: "published", ratio: "4/5", span: 4, description: "Placeholder description. Water-tank performance video, all practical." },
+  { num: "11", title: "Untitled", client: "Undisclosed", year: 2026, category: "Commercial", status: "in production", ratio: "1/1", span: 4, description: "In production — details to come." },
+  { num: "12", title: "First Light", client: "Public Land", year: 2022, category: "Documentary", status: "published", ratio: "4/3", span: 4, description: "Placeholder description. Earliest commissioned film, kept for the record." }
+];
+
+class Component extends DCLogic {
+  state = { slide: 0, cur: null, layout: null, hover: null, menu: false, scrolled: false };
+
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if (!this.state.cur && !this.state.menu) this.setState(s => ({ slide: (s.slide + 1) % 4 }));
+    }, 6500);
+  }
+
+  attachHero = node => {
+    if (this.obs) { this.obs.disconnect(); this.obs = null; }
+    if (!node) return;
+    this.obs = new IntersectionObserver(
+      entries => {
+        const e = entries[0];
+        if (e) this.setState({ scrolled: !e.isIntersecting });
+      },
+      { rootMargin: "-70px 0px 0px 0px", threshold: 0 }
+    );
+    this.obs.observe(node);
+  };
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    if (this.obs) this.obs.disconnect();
+  }
+
+  renderVals() {
+    const motion = this.props.motionMode ?? "autoplay";
+    const anim = motion === "autoplay" ? "drift 12s linear infinite" : "none";
+    const layout = this.state.layout ?? (this.props.defaultWorkLayout ?? "grid");
+    const dark = !this.state.scrolled || this.state.menu;
+
+    const projects = DATA.map(p => Object.assign({}, p, {
+      anim,
+      slot: p.status === "published" ? "Loop " + p.num : "Undisclosed",
+      open: () => { this.setState({ cur: DATA.indexOf(p), menu: false }); },
+      enter: () => this.setState({ hover: p.num })
+    }));
+
+    const featured = projects.filter(p => p.featured);
+    const cur = this.state.cur === null ? null : projects[this.state.cur];
+    const nextIdx = this.state.cur === null ? 0 : (this.state.cur + 1) % DATA.length;
+    const hov = projects.find(p => p.num === this.state.hover);
+    const heroSlide = featured[this.state.slide] || featured[0];
+
+    return {
+      heroRef: this.attachHero,
+      projects,
+      slides: featured.map((p, i) => ({ op: i === this.state.slide ? 1 : 0, slot: "Reel " + p.num + " — " + p.title })),
+      counter: String(this.state.slide + 1).padStart(2, "0") + " / " + String(featured.length).padStart(2, "0"),
+      activeTitle: heroSlide.title,
+      activeMeta: heroSlide.client + " · " + heroSlide.category + " · " + heroSlide.year,
+      count: String(DATA.length).padStart(2, "0"),
+      cur: cur || projects[0],
+      lightbox: cur !== null,
+      nextTitle: DATA[nextIdx].title,
+      hoverSlot: hov ? hov.title + " — " + hov.client : null,
+      menuOpen: this.state.menu,
+      navBg: dark ? "rgba(20,19,16,0)" : "rgba(250,249,246,.92)",
+      navBorder: dark ? "rgba(250,249,246,0)" : "rgba(20,19,16,.12)",
+      navBlur: dark ? "none" : "saturate(140%) blur(10px)",
+      navInk: dark ? "#faf9f6" : "#141310",
+      barTop: this.state.menu ? "translateY(6px) rotate(45deg)" : "none",
+      barMid: this.state.menu ? 0 : 1,
+      barBot: this.state.menu ? "translateY(-6px) rotate(-45deg)" : "none",
+      isGrid: layout === "grid",
+      isIndex: layout === "index",
+      gridRule: layout === "grid" ? "#141310" : "transparent",
+      indexRule: layout === "index" ? "#141310" : "transparent",
+      gridInk: layout === "grid" ? "#141310" : "rgba(20,19,16,.6)",
+      indexInk: layout === "index" ? "#141310" : "rgba(20,19,16,.6)",
+      toggleMenu: () => this.setState(s => ({ menu: !s.menu })),
+      closeMenu: () => this.setState({ menu: false }),
+      setGrid: () => this.setState({ layout: "grid" }),
+      setIndex: () => this.setState({ layout: "index" }),
+      leave: () => this.setState({ hover: null }),
+      prevSlide: () => this.setState(s => ({ slide: (s.slide + featured.length - 1) % featured.length })),
+      nextSlide: () => this.setState(s => ({ slide: (s.slide + 1) % featured.length })),
+      openActive: () => this.setState({ cur: DATA.indexOf(featured[this.state.slide]) }),
+      closeLightbox: () => this.setState({ cur: null }),
+      openNext: () => this.setState({ cur: nextIdx })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
