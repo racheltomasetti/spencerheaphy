@@ -10,7 +10,11 @@ export default async function Home() {
 
   return (
     <>
-      <VideoHero caption={settings?.tagline} />
+      <VideoHero
+        desktopSrc={settings?.heroVideoDesktop?.asset?.url}
+        mobileSrc={settings?.heroVideoMobile?.asset?.url}
+        caption={settings?.tagline}
+      />
 
       <section id="work" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16 sm:px-10">
         <h2 className="mb-12 font-serif text-3xl uppercase tracking-[0.08em]">Selected Work</h2>

@@ -16,13 +16,15 @@ export interface SanityImageValue {
   crop?: {top: number; bottom: number; left: number; right: number}
 }
 
+export interface SanityFileValue {
+  asset?: {_id: string; url: string}
+}
+
 export interface MediaItem {
   _key?: string
   mediaType: 'image' | 'video'
   image?: SanityImageValue
-  video?: {
-    asset?: {_id: string; url: string}
-  }
+  video?: SanityFileValue
 }
 
 export interface Project {
@@ -47,6 +49,8 @@ export interface SiteSettings {
   name?: string
   tagline?: string
   contactEmail?: string
+  heroVideoDesktop?: SanityFileValue
+  heroVideoMobile?: SanityFileValue
   socialLinks?: SocialLink[]
   clientLogos?: SanityImageValue[]
 }

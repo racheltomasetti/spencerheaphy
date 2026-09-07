@@ -38,6 +38,8 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     name,
     tagline,
     contactEmail,
+    heroVideoDesktop { asset -> { _id, url } },
+    heroVideoMobile { asset -> { _id, url } },
     socialLinks[] { platform, url },
     clientLogos[] {
       asset -> { _id, url },
