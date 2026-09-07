@@ -55,6 +55,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
             className="h-full w-full object-cover"
             width={1600}
             height={900}
+            placeholderLabel="Cover media pending"
           />
         </div>
 
@@ -79,7 +80,12 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {project.gallery.map((item, index) => (
               <div key={item._key ?? index} className="relative aspect-[4/3] w-full overflow-hidden bg-foreground/5">
-                <MediaItemView media={item} alt={`${project.title} — image ${index + 1}`} className="h-full w-full object-cover" />
+                <MediaItemView
+                  media={item}
+                  alt={`${project.title} — image ${index + 1}`}
+                  className="h-full w-full object-cover"
+                  placeholderLabel={`Gallery ${index + 1}`}
+                />
               </div>
             ))}
           </div>

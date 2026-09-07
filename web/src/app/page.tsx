@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
-import {ProjectGrid} from '@/components/ProjectGrid'
 import {ProjectLightbox} from '@/components/ProjectLightbox'
+import {SelectedWork} from '@/components/SelectedWork'
 import {VideoHero} from '@/components/VideoHero'
 import {getProjects} from '@/sanity/lib/get-projects'
 import {getSiteSettings} from '@/sanity/lib/get-site-settings'
@@ -18,12 +18,11 @@ export default async function Home() {
         <VideoHero projects={featuredProjects} />
       </Suspense>
 
-      <section id="work" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16 sm:px-10">
-        <h2 className="mb-12 font-serif text-3xl uppercase tracking-[0.08em]">Selected Work</h2>
-        <ProjectGrid projects={projects} />
+      <section id="work" className="scroll-mt-[70px]">
+        <SelectedWork projects={projects} />
       </section>
 
-      <section id="bio" className="mx-auto max-w-3xl scroll-mt-24 px-6 py-16 sm:px-10">
+      <section id="bio" className="mx-auto max-w-3xl scroll-mt-[70px] px-6 py-16 sm:px-10">
         <h2 className="mb-8 font-serif text-3xl uppercase tracking-[0.08em]">Bio</h2>
         {settings?.tagline && (
           <p className="mb-8 text-sm uppercase tracking-[0.15em] text-foreground/50">

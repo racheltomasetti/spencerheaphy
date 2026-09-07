@@ -1,4 +1,5 @@
 export type ProjectStatus = 'published' | 'in production' | 'undisclosed'
+export type ProjectOrientation = 'landscape' | 'portrait' | 'square'
 
 interface SanityImageAsset {
   _id: string
@@ -38,6 +39,7 @@ export interface Project {
   description?: string
   featured?: boolean
   featuredOrder?: number
+  orientation?: ProjectOrientation
   coverMedia?: MediaItem
   heroMedia?: MediaItem
   heroMediaMobile?: MediaItem

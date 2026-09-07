@@ -44,6 +44,22 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'orientation',
+      title: 'Orientation',
+      description: 'Drives the aspect ratio used for this project’s tile in the Selected Work grid.',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Landscape', value: 'landscape'},
+          {title: 'Portrait', value: 'portrait'},
+          {title: 'Square', value: 'square'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      initialValue: 'landscape',
+    }),
+    defineField({
       name: 'gallery',
       title: 'Gallery',
       type: 'array',

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import {useEffect, useState, useSyncExternalStore} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
+import {useNavVisibility} from '@/components/NavVisibilityProvider'
 import type {Project} from '@/sanity/lib/types'
 
 const AUTO_ADVANCE_MS = 6500
@@ -43,18 +44,23 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const [slide, setSlide] = useState(0)
   const isDesktop = useIsDesktop()
   const searchParams = useSearchParams()
-  const lightboxOpen = searchParams.get('project') !== null
+  const {heroRef, menuOpen} = useNavVisibility()
+  const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
 
   useEffect(() => {
-    if (count <= 1 || lightboxOpen) return
+    if (count <= 1 || paused) return
     const id = setInterval(() => setSlide((s) => (s + 1) % count), AUTO_ADVANCE_MS)
     return () => clearInterval(id)
-  }, [count, lightboxOpen])
+  }, [count, paused])
 
   if (count === 0) {
     return (
-      <div id="top" className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground">
+      <div
+        id="top"
+        ref={heroRef}
+        className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      >
         <PlaceholderHero />
       </div>
     )
@@ -65,7 +71,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const meta = [active.client, active.category, active.year].filter(Boolean).join(' · ')
 
   return (
-    <div id="top" className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground">
+    <div
+      id="top"
+      ref={heroRef}
+      className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+    >
       {projects.map((project, index) => {
         if (index !== slide && index !== nextIndex) return null
         return (
@@ -78,6 +88,8 @@ export function VideoHero({projects}: {projects: Project[]}) {
               media={heroMediaFor(project, isDesktop)}
               alt={project.title}
               className="h-full w-full object-cover"
+              placeholderLabel={`Reel — ${project.title}`}
+              placeholderVariant="dark"
             />
           </div>
         )

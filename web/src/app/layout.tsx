@@ -1,6 +1,7 @@
 import type {Metadata} from 'next'
 import {Fraunces, Inter} from 'next/font/google'
 import {Nav} from '@/components/Nav'
+import {NavVisibilityProvider} from '@/components/NavVisibilityProvider'
 import {SiteFooter} from '@/components/SiteFooter'
 import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 import {SanityLive} from '@/sanity/lib/live'
@@ -28,9 +29,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <SiteFooter settings={settings} />
+        <NavVisibilityProvider>
+          <Nav settings={settings} />
+          <main className="flex-1">{children}</main>
+          <SiteFooter settings={settings} />
+        </NavVisibilityProvider>
         <SanityLive />
       </body>
     </html>

@@ -2,15 +2,25 @@ import Link from 'next/link'
 import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
-export function ProjectCard({project}: {project: Project}) {
+export function ProjectCard({
+  project,
+  span,
+  ratio,
+}: {
+  project: Project
+  span: string
+  ratio: string
+}) {
   const isUndisclosed = project.status === 'undisclosed'
 
   const media = (
-    <div className="relative aspect-[4/3] w-full overflow-hidden bg-foreground/5">
+    <div className="relative w-full overflow-hidden" style={{aspectRatio: ratio}}>
       {isUndisclosed ? (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-foreground/10 text-center">
-          <span className="text-xs uppercase tracking-[0.2em] text-foreground/40">Undisclosed</span>
-          <span className="text-[10px] uppercase tracking-[0.25em] text-foreground/30">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-foreground/10 bg-[repeating-linear-gradient(135deg,#eceae4_0_9px,#f4f2ec_9px_18px)] text-center">
+          <span className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">
+            Undisclosed
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/30">
             Details coming soon
           </span>
         </div>
@@ -19,27 +29,31 @@ export function ProjectCard({project}: {project: Project}) {
           media={project.coverMedia}
           alt={project.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+          placeholderLabel="Cover media pending"
         />
       )}
     </div>
   )
 
   const caption = (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-[3px]">
       {!isUndisclosed && project.client && (
-        <span className="text-xs font-medium uppercase tracking-[0.15em] text-foreground/80">
+        <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/80">
           {project.client}
         </span>
       )}
-      <span className="text-sm text-foreground/60">
-        {isUndisclosed ? project.category || 'Project' : project.title}
+      <span className="flex items-baseline justify-between gap-3 text-[15px] tracking-[-0.01em] text-foreground/60">
+        <span>{isUndisclosed ? project.category || 'Project' : project.title}</span>
+        {!isUndisclosed && project.year && (
+          <span className="text-[11px] text-foreground/62">{project.year}</span>
+        )}
       </span>
     </div>
   )
 
   if (isUndisclosed) {
     return (
-      <article className="group flex flex-col gap-3">
+      <article className={`${span} group flex flex-col gap-2.5`}>
         {media}
         {caption}
       </article>
@@ -47,7 +61,11 @@ export function ProjectCard({project}: {project: Project}) {
   }
 
   return (
-    <Link href={`/?project=${project.slug}#work`} scroll={false} className="group flex flex-col gap-3">
+    <Link
+      href={`/?project=${project.slug}#work`}
+      scroll={false}
+      className={`${span} group flex flex-col gap-2.5`}
+    >
       {media}
       {caption}
     </Link>

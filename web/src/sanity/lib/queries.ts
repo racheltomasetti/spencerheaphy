@@ -30,6 +30,7 @@ export const PROJECTS_QUERY = defineQuery(`
     description,
     featured,
     featuredOrder,
+    orientation,
     coverMedia ${MEDIA_ITEM_PROJECTION},
     heroMedia ${MEDIA_ITEM_PROJECTION},
     heroMediaMobile ${MEDIA_ITEM_PROJECTION},
