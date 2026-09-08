@@ -29,17 +29,16 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
             meaningful once the two-column split is active at lg and up. */}
         <div className="col-span-12 flex flex-col gap-[34px] lg:col-span-6 lg:col-start-6">
           <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
-            {name} is a director and creator working across commercial film, music video and
-            stills.
+            {name} is a director and photographer based in New York City.
           </h2>
 
           <p className="max-w-[56ch] text-pretty text-base leading-[1.65] text-foreground/70">
-            Bio copy to come — two or three short paragraphs on how he works, what he shoots, and
-            who he shoots it for. Keep it under 150 words so it reads in one breath.
+            Bio copy to come, this section is still under construction. Playing around with the design, still locking down information to share. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
           </p>
 
           <div className="grid grid-cols-1 gap-7 text-[11px] leading-[2] tracking-[0.13em] uppercase sm:grid-cols-2">
-            <div>
+            {/* <div>
               <p className="mb-2 text-foreground/60">Clients</p>
               <p className="text-foreground/70">
                 {PLACEHOLDER_CLIENT_LINES.map((line, index) => (
@@ -49,12 +48,12 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
                   </span>
                 ))}
               </p>
-            </div>
+            </div> */}
 
             <div>
               {/* <p className="mb-2 text-foreground/60">Location</p> */}
-              <p className="text-foreground/70">Based in NYC</p>
-              <p className="text-foreground/70">Building Community</p>
+              {/* <p className="text-foreground/70">Based in NYC</p> */}
+              <br />
               {settings?.contactEmail && (
                 <a
                   href={`mailto:${settings.contactEmail}`}
