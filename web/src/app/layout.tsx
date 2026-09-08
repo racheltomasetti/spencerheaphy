@@ -1,5 +1,6 @@
 import type {Metadata} from 'next'
 import {Fraunces, Inter} from 'next/font/google'
+import {Suspense} from 'react'
 import {Nav} from '@/components/Nav'
 import {NavVisibilityProvider} from '@/components/NavVisibilityProvider'
 import {SiteFooter} from '@/components/SiteFooter'
@@ -30,7 +31,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <html lang="en" className={`${serif.variable} ${sans.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
         <NavVisibilityProvider>
-          <Nav settings={settings} />
+          <Suspense fallback={null}>
+            <Nav settings={settings} />
+          </Suspense>
           <main className="flex-1">{children}</main>
           <SiteFooter settings={settings} />
         </NavVisibilityProvider>
