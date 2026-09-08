@@ -6,6 +6,7 @@ import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
 const ROW_GRID = 'grid-cols-[52px_1.6fr_1.1fr_64px]'
+const CELL_TEXT = 'text-[10px] uppercase tracking-[0.18em]'
 
 export function ProjectIndex({projects}: {projects: Project[]}) {
   const [hovered, setHovered] = useState<Project | null>(null)
@@ -31,16 +32,16 @@ export function ProjectIndex({projects}: {projects: Project[]}) {
 
         const cells = (
           <>
-            <span className="text-[11px] text-foreground/60">
+            <span className={`${CELL_TEXT} text-foreground/58`}>
               {String(index + 1).padStart(2, '0')}
             </span>
-            <span className="text-[19px] tracking-[-0.015em]">
+            <span className={`${CELL_TEXT} text-foreground/85`}>
               {isUndisclosed ? 'Undisclosed' : project.title}
             </span>
-            <span className="text-[11px] uppercase tracking-[0.12em] text-foreground/72">
+            <span className={`${CELL_TEXT} text-foreground/72`}>
               {isUndisclosed ? '—' : project.client}
             </span>
-            <span className="text-right text-[11px] text-foreground/72">{project.year}</span>
+            <span className={`${CELL_TEXT} text-right text-foreground/72`}>{project.year}</span>
           </>
         )
 
