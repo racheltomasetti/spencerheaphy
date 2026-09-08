@@ -55,6 +55,14 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
               {/* <p className="mb-2 text-foreground/60">Location</p> */}
               <p className="text-foreground/70">Based in NYC</p>
               <p className="text-foreground/70">Building Community</p>
+              {settings?.contactEmail && (
+                <a
+                  href={`mailto:${settings.contactEmail}`}
+                  className="block text-foreground/70 transition-colors hover:text-foreground"
+                >
+                  {settings.contactEmail}
+                </a>
+              )}
             </div>
           </div>
         </div>

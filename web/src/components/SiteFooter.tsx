@@ -13,11 +13,6 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
           </Link>
         </p>
         <div className="flex flex-wrap items-center gap-6">
-          {settings?.contactEmail && (
-            <a href={`mailto:${settings.contactEmail}`} className="hover:opacity-70">
-              {settings.contactEmail}
-            </a>
-          )}
           {settings?.socialLinks?.map((link) => (
             <a
               key={link.url}
