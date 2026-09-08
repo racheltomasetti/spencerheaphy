@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type {SiteSettings} from '@/sanity/lib/types'
 
-const PLACEHOLDER_CLIENT_LINES = ['Client list', 'to come', '—', 'six to ten names']
+const PLACEHOLDER_CLIENT_LINES = ['Client list', 'to come', '—']
 
 export function Bio({settings}: {settings: SiteSettings | null}) {
   const name = settings?.name || 'Spencer Heaphy'
