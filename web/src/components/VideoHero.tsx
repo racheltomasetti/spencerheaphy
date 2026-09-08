@@ -161,18 +161,19 @@ export function VideoHero({projects}: {projects: Project[]}) {
           <span className="text-[10px] uppercase tracking-[0.2em] text-background/55">
             {String(slide + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
           </span>
-          <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
-            {active.title}
-          </span>
-          {meta && (
-            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">{meta}</span>
-          )}
           <Link
             href={`/?project=${active.slug}`}
             scroll={false}
-            className="pointer-events-auto mt-1 w-fit border-b border-background/50 pb-1 text-[11px] uppercase tracking-[0.16em] transition-colors hover:border-background"
+            className="pointer-events-auto flex flex-col gap-2.5"
           >
-            View project
+            <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
+              {active.title}
+            </span>
+            {meta && (
+              <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
+                {meta}
+              </span>
+            )}
           </Link>
         </div>
       </div>
