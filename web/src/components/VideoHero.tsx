@@ -119,9 +119,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
           className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
         >
           {loopedProjects.map((project, loopIndex) => (
-            <div
+            <Link
               key={`${project._id}-${loopIndex}`}
-              className="relative h-full w-full flex-none snap-center snap-always"
+              href={`/?project=${project.slug}`}
+              scroll={false}
+              className="relative block h-full w-full flex-none snap-center snap-always"
             >
               <MediaItemView
                 media={heroMediaFor(project, false)}
@@ -130,30 +132,25 @@ export function VideoHero({projects}: {projects: Project[]}) {
                 placeholderLabel={`Reel — ${project.title}`}
                 placeholderVariant="dark"
               />
-            </div>
+            </Link>
           ))}
         </div>
 
         <div className={SCRIM} />
 
+        {/* Caption sits on top of the slide but doesn't intercept taps — the
+            whole slide underneath is the link, so this is browsable by tapping
+            anywhere, not just the text. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-2.5 p-8 text-background">
           <span className="text-[10px] uppercase tracking-[0.2em] text-background/55">
             {String(slide + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
           </span>
-          <Link
-            href={`/?project=${active.slug}`}
-            scroll={false}
-            className="pointer-events-auto flex flex-col gap-2.5"
-          >
-            <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
-              {active.title}
-            </span>
-            {meta && (
-              <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
-                {meta}
-              </span>
-            )}
-          </Link>
+          <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
+            {active.title}
+          </span>
+          {meta && (
+            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">{meta}</span>
+          )}
         </div>
       </div>
     )
