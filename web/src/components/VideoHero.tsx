@@ -2,13 +2,17 @@
 
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {useEffect, useRef, useState, useSyncExternalStore} from 'react'
+import {useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 import type {Project} from '@/sanity/lib/types'
 
 const AUTO_ADVANCE_MS = 6500
 const DESKTOP_BREAKPOINT = '(min-width: 768px)'
+// How long to wait after a swipe stops before silently repositioning off a
+// clone slide — long enough that it never fires mid-gesture, short enough
+// that it's done before the user looks again.
+const SCROLL_SETTLE_MS = 120
 
 function subscribeToBreakpoint(callback: () => void) {
   const mql = window.matchMedia(DESKTOP_BREAKPOINT)
@@ -51,6 +55,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
+  const settleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Auto-advance and arrows are desktop-only — on mobile, the only way to
   // move between projects is swiping the horizontally-scrolling strip.
@@ -60,18 +65,53 @@ export function VideoHero({projects}: {projects: Project[]}) {
     return () => clearInterval(id)
   }, [isDesktop, count, paused])
 
-  // On mobile, `slide` (for the caption/counter) follows scroll position instead.
-  useEffect(() => {
-    if (isDesktop) return
+  // Mobile strip is padded with a leading clone of the last project and a
+  // trailing clone of the first, so real slides sit at loop index 1..count —
+  // that's what makes swiping past either end feel connected to the other.
+  const loopedProjects = count > 1 ? [projects[count - 1], ...projects, projects[0]] : projects
+
+  // Land on the first real slide (loop index 1) before paint, not the leading clone.
+  useLayoutEffect(() => {
+    if (isDesktop || count <= 1) return
     const node = scrollRef.current
     if (!node) return
-    const onScroll = () => {
-      const index = Math.round(node.scrollLeft / node.clientWidth)
-      setSlide((current) => (index !== current ? index : current))
+    node.scrollLeft = node.clientWidth
+  }, [isDesktop, count])
+
+  // On mobile, `slide` (for the caption/counter) follows scroll position instead.
+  useEffect(() => {
+    if (isDesktop || count <= 1) return
+    const node = scrollRef.current
+    if (!node) return
+
+    const toRealIndex = (loopIndex: number) => {
+      if (loopIndex <= 0) return count - 1
+      if (loopIndex >= count + 1) return 0
+      return loopIndex - 1
     }
+
+    const onScroll = () => {
+      const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
+      setSlide((current) => {
+        const real = toRealIndex(loopIndex)
+        return real !== current ? real : current
+      })
+
+      // Once the swipe has settled on a clone, silently jump to the real
+      // slide it stands in for — identical content, so the jump is invisible.
+      if (settleTimerRef.current) clearTimeout(settleTimerRef.current)
+      settleTimerRef.current = setTimeout(() => {
+        if (loopIndex === 0) node.scrollLeft = count * node.clientWidth
+        else if (loopIndex === count + 1) node.scrollLeft = node.clientWidth
+      }, SCROLL_SETTLE_MS)
+    }
+
     node.addEventListener('scroll', onScroll, {passive: true})
-    return () => node.removeEventListener('scroll', onScroll)
-  }, [isDesktop])
+    return () => {
+      node.removeEventListener('scroll', onScroll)
+      if (settleTimerRef.current) clearTimeout(settleTimerRef.current)
+    }
+  }, [isDesktop, count])
 
   if (count === 0) {
     return (
@@ -99,8 +139,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
           ref={scrollRef}
           className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
         >
-          {projects.map((project) => (
-            <div key={project._id} className="relative h-full w-full flex-none snap-center">
+          {loopedProjects.map((project, loopIndex) => (
+            <div
+              key={`${project._id}-${loopIndex}`}
+              className="relative h-full w-full flex-none snap-center"
+            >
               <MediaItemView
                 media={heroMediaFor(project, false)}
                 alt={project.title}
