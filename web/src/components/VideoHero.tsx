@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {useEffect, useState, useSyncExternalStore} from 'react'
+import {useEffect, useRef, useState, useSyncExternalStore} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 import type {Project} from '@/sanity/lib/types'
@@ -40,6 +40,9 @@ function PlaceholderHero() {
   )
 }
 
+const SCRIM =
+  'pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,19,16,.5)_0%,rgba(20,19,16,0)_26%,rgba(20,19,16,0)_55%,rgba(20,19,16,.62)_100%)]'
+
 export function VideoHero({projects}: {projects: Project[]}) {
   const [slide, setSlide] = useState(0)
   const isDesktop = useIsDesktop()
@@ -47,12 +50,28 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const {heroRef, menuOpen} = useNavVisibility()
   const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
+  const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Auto-advance and arrows are desktop-only — on mobile, the only way to
+  // move between projects is swiping the horizontally-scrolling strip.
   useEffect(() => {
-    if (count <= 1 || paused) return
+    if (!isDesktop || count <= 1 || paused) return
     const id = setInterval(() => setSlide((s) => (s + 1) % count), AUTO_ADVANCE_MS)
     return () => clearInterval(id)
-  }, [count, paused])
+  }, [isDesktop, count, paused])
+
+  // On mobile, `slide` (for the caption/counter) follows scroll position instead.
+  useEffect(() => {
+    if (isDesktop) return
+    const node = scrollRef.current
+    if (!node) return
+    const onScroll = () => {
+      const index = Math.round(node.scrollLeft / node.clientWidth)
+      setSlide((current) => (index !== current ? index : current))
+    }
+    node.addEventListener('scroll', onScroll, {passive: true})
+    return () => node.removeEventListener('scroll', onScroll)
+  }, [isDesktop])
 
   if (count === 0) {
     return (
@@ -66,9 +85,58 @@ export function VideoHero({projects}: {projects: Project[]}) {
     )
   }
 
-  const nextIndex = (slide + 1) % count
   const active = projects[slide]
   const meta = [active.client, active.year].filter(Boolean).join(' · ')
+
+  if (!isDesktop) {
+    return (
+      <div
+        id="top"
+        ref={heroRef}
+        className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      >
+        <div
+          ref={scrollRef}
+          className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
+        >
+          {projects.map((project) => (
+            <div key={project._id} className="relative h-full w-full flex-none snap-center">
+              <MediaItemView
+                media={heroMediaFor(project, false)}
+                alt={project.title}
+                className="h-full w-full object-cover"
+                placeholderLabel={`Reel — ${project.title}`}
+                placeholderVariant="dark"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className={SCRIM} />
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-2.5 p-8 text-background">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-background/55">
+            {String(slide + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+          </span>
+          <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
+            {active.title}
+          </span>
+          {meta && (
+            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">{meta}</span>
+          )}
+          <Link
+            href={`/?project=${active.slug}`}
+            scroll={false}
+            className="pointer-events-auto mt-1 w-fit border-b border-background/50 pb-1 text-[11px] uppercase tracking-[0.16em] transition-colors hover:border-background"
+          >
+            View project
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const nextIndex = (slide + 1) % count
 
   return (
     <div
@@ -95,7 +163,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
         )
       })}
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,19,16,.5)_0%,rgba(20,19,16,0)_26%,rgba(20,19,16,0)_55%,rgba(20,19,16,.62)_100%)]" />
+      <div className={SCRIM} />
 
       <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 p-8 text-background">
         <div className="flex flex-col gap-2.5">
