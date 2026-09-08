@@ -9,10 +9,10 @@ import type {Project} from '@/sanity/lib/types'
 
 const AUTO_ADVANCE_MS = 6500
 const DESKTOP_BREAKPOINT = '(min-width: 768px)'
-// How long to wait after a swipe stops before silently repositioning off a
-// clone slide — long enough that it never fires mid-gesture, short enough
-// that it's done before the user looks again.
-const SCROLL_SETTLE_MS = 120
+// The mobile strip repeats the project list this many times so a normal
+// swipe session — even someone testing it aggressively — never reaches
+// either physical end. No programmatic scroll repositioning needed at all.
+const LOOP_REPEATS = 20
 
 function subscribeToBreakpoint(callback: () => void) {
   const mql = window.matchMedia(DESKTOP_BREAKPOINT)
@@ -55,7 +55,6 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
-  const settleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Auto-advance and arrows are desktop-only — on mobile, the only way to
   // move between projects is swiping the horizontally-scrolling strip.
@@ -65,63 +64,32 @@ export function VideoHero({projects}: {projects: Project[]}) {
     return () => clearInterval(id)
   }, [isDesktop, count, paused])
 
-  // Mobile strip is padded with a leading clone of the last project and a
-  // trailing clone of the first, so real slides sit at loop index 1..count —
-  // that's what makes swiping past either end feel connected to the other.
-  const loopedProjects = count > 1 ? [projects[count - 1], ...projects, projects[0]] : projects
+  const loopedProjects =
+    count > 1 ? Array.from({length: LOOP_REPEATS}, () => projects).flat() : projects
+  const startCopy = Math.floor(LOOP_REPEATS / 2)
 
-  // Land on the first real slide (loop index 1) before paint, not the leading clone.
+  // Land in the middle copy before paint, so there's equal room to swipe
+  // "backward" as there is "forward" before either physical end.
   useLayoutEffect(() => {
     if (isDesktop || count <= 1) return
     const node = scrollRef.current
     if (!node) return
-    node.scrollLeft = node.clientWidth
-  }, [isDesktop, count])
+    node.scrollLeft = startCopy * count * node.clientWidth
+  }, [isDesktop, count, startCopy])
 
-  // On mobile, `slide` (for the caption/counter) follows scroll position instead.
+  // On mobile, `slide` (for the caption/counter) follows scroll position —
+  // just modulo back into the real project range, no repositioning needed.
   useEffect(() => {
     if (isDesktop || count <= 1) return
     const node = scrollRef.current
     if (!node) return
-
-    const toRealIndex = (loopIndex: number) => {
-      if (loopIndex <= 0) return count - 1
-      if (loopIndex >= count + 1) return 0
-      return loopIndex - 1
-    }
-
-    // A raw `scrollLeft` assignment while `scroll-snap-type` is active can
-    // leave the browser's snap tracking stale, so the very next swipe looks
-    // stuck. Briefly disabling snap around the jump avoids that.
-    const jumpTo = (left: number) => {
-      node.style.scrollSnapType = 'none'
-      node.scrollLeft = left
-      requestAnimationFrame(() => {
-        node.style.scrollSnapType = ''
-      })
-    }
-
     const onScroll = () => {
       const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
-      setSlide((current) => {
-        const real = toRealIndex(loopIndex)
-        return real !== current ? real : current
-      })
-
-      // Once the swipe has settled on a clone, silently jump to the real
-      // slide it stands in for — identical content, so the jump is invisible.
-      if (settleTimerRef.current) clearTimeout(settleTimerRef.current)
-      settleTimerRef.current = setTimeout(() => {
-        if (loopIndex === 0) jumpTo(count * node.clientWidth)
-        else if (loopIndex === count + 1) jumpTo(node.clientWidth)
-      }, SCROLL_SETTLE_MS)
+      const real = ((loopIndex % count) + count) % count
+      setSlide((current) => (real !== current ? real : current))
     }
-
     node.addEventListener('scroll', onScroll, {passive: true})
-    return () => {
-      node.removeEventListener('scroll', onScroll)
-      if (settleTimerRef.current) clearTimeout(settleTimerRef.current)
-    }
+    return () => node.removeEventListener('scroll', onScroll)
   }, [isDesktop, count])
 
   if (count === 0) {
