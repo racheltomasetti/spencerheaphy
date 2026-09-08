@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 import type {Project} from '@/sanity/lib/types'
 
-const AUTO_ADVANCE_MS = 6500
 const DESKTOP_BREAKPOINT = '(min-width: 768px)'
 // The mobile strip repeats the project list this many times so a normal
 // swipe session — even someone testing it aggressively — never reaches
@@ -55,14 +54,20 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
+  const goPrev = useCallback(() => setSlide((s) => (s + count - 1) % count), [count])
+  const goNext = useCallback(() => setSlide((s) => (s + 1) % count), [count])
 
-  // Auto-advance and arrows are desktop-only — on mobile, the only way to
-  // move between projects is swiping the horizontally-scrolling strip.
+  // Desktop navigates via the on-screen arrows or the keyboard, both wrapping
+  // infinitely in either direction — no auto-advance on either breakpoint.
   useEffect(() => {
     if (!isDesktop || count <= 1 || paused) return
-    const id = setInterval(() => setSlide((s) => (s + 1) % count), AUTO_ADVANCE_MS)
-    return () => clearInterval(id)
-  }, [isDesktop, count, paused])
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') goPrev()
+      else if (event.key === 'ArrowRight') goNext()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isDesktop, count, paused, goPrev, goNext])
 
   const loopedProjects =
     count > 1 ? Array.from({length: LOOP_REPEATS}, () => projects).flat() : projects
@@ -211,7 +216,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
               <button
                 type="button"
                 aria-label="Previous slide"
-                onClick={() => setSlide((s) => (s + count - 1) % count)}
+                onClick={goPrev}
                 className="flex h-11 w-11 items-center justify-center border border-background/34 text-[15px] transition-colors hover:bg-background/14"
               >
                 ←
@@ -219,7 +224,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
               <button
                 type="button"
                 aria-label="Next slide"
-                onClick={() => setSlide((s) => (s + 1) % count)}
+                onClick={goNext}
                 className="flex h-11 w-11 items-center justify-center border border-background/34 text-[15px] transition-colors hover:bg-background/14"
               >
                 →

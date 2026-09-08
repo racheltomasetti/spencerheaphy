@@ -34,7 +34,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           <Suspense fallback={null}>
             <Nav />
           </Suspense>
-          <main className="flex-1">{children}</main>
+          <main className="flex flex-1 flex-col">{children}</main>
           <SiteFooter settings={settings} />
         </NavVisibilityProvider>
         <SanityLive />
