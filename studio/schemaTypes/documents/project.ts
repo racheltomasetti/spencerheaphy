@@ -105,7 +105,7 @@ export const project = defineType({
       title: 'Hero media',
       description:
         'Optional override for the hero carousel. Falls back to cover media. A cover still is often not the right hero clip — use a landscape loop here.',
-      type: 'mediaItem',
+      type: 'optionalMediaItem',
       hidden: ({document}) => !document?.featured,
     }),
     defineField({
@@ -113,7 +113,7 @@ export const project = defineType({
       title: 'Hero media — mobile (vertical)',
       description:
         'Optional vertical cut shown in place of hero media on narrow screens. Falls back to hero media (or cover media), object-cover cropped, if not supplied.',
-      type: 'mediaItem',
+      type: 'optionalMediaItem',
       hidden: ({document}) => !document?.featured,
     }),
     defineField({
