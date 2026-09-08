@@ -121,7 +121,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
           {loopedProjects.map((project, loopIndex) => (
             <div
               key={`${project._id}-${loopIndex}`}
-              className="relative h-full w-full flex-none snap-center"
+              className="relative h-full w-full flex-none snap-center snap-always"
             >
               <MediaItemView
                 media={heroMediaFor(project, false)}
