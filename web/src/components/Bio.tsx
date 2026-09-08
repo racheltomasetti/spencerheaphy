@@ -13,7 +13,7 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
     >
       <div className="grid grid-cols-12 gap-7 lg:items-center">
         <div
-          className="relative col-span-12 mx-auto mb-16 w-2/3 overflow-hidden lg:col-span-4 lg:mb-0"
+          className="relative col-span-12 mx-auto mb-10 w-2/3 overflow-hidden lg:col-span-4 lg:mb-0"
           style={{aspectRatio: '4/5'}}
         >
           <Image
