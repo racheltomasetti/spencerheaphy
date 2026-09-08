@@ -90,6 +90,17 @@ export function VideoHero({projects}: {projects: Project[]}) {
       return loopIndex - 1
     }
 
+    // A raw `scrollLeft` assignment while `scroll-snap-type` is active can
+    // leave the browser's snap tracking stale, so the very next swipe looks
+    // stuck. Briefly disabling snap around the jump avoids that.
+    const jumpTo = (left: number) => {
+      node.style.scrollSnapType = 'none'
+      node.scrollLeft = left
+      requestAnimationFrame(() => {
+        node.style.scrollSnapType = ''
+      })
+    }
+
     const onScroll = () => {
       const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
       setSlide((current) => {
@@ -101,8 +112,8 @@ export function VideoHero({projects}: {projects: Project[]}) {
       // slide it stands in for — identical content, so the jump is invisible.
       if (settleTimerRef.current) clearTimeout(settleTimerRef.current)
       settleTimerRef.current = setTimeout(() => {
-        if (loopIndex === 0) node.scrollLeft = count * node.clientWidth
-        else if (loopIndex === count + 1) node.scrollLeft = node.clientWidth
+        if (loopIndex === 0) jumpTo(count * node.clientWidth)
+        else if (loopIndex === count + 1) jumpTo(node.clientWidth)
       }, SCROLL_SETTLE_MS)
     }
 
