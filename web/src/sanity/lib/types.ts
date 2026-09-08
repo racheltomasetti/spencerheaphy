@@ -33,7 +33,6 @@ export interface Project {
   slug: string
   title: string
   client?: string
-  category?: string
   year?: number
   status: ProjectStatus
   description?: string

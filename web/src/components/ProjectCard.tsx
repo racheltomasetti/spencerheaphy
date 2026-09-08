@@ -43,7 +43,7 @@ export function ProjectCard({
         </span>
       )}
       <span className="flex items-baseline justify-between gap-3 text-[15px] tracking-[-0.01em] text-foreground/60">
-        <span>{isUndisclosed ? project.category || 'Project' : project.title}</span>
+        <span>{isUndisclosed ? 'Undisclosed' : project.title}</span>
         {!isUndisclosed && project.year && (
           <span className="text-[11px] text-foreground/62">{project.year}</span>
         )}

@@ -4,9 +4,8 @@ import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import {useEffect} from 'react'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
-import type {SiteSettings} from '@/sanity/lib/types'
 
-export function Nav({settings}: {settings: SiteSettings | null}) {
+export function Nav() {
   const searchParams = useSearchParams()
   const projectOpen = searchParams.get('project') !== null
   const {scrolled, menuOpen, setMenuOpen} = useNavVisibility()
@@ -64,37 +63,35 @@ export function Nav({settings}: {settings: SiteSettings | null}) {
         </div>
       </header>
 
-      {menuOpen && <MenuOverlay settings={settings} onClose={() => setMenuOpen(false)} />}
+      {menuOpen && <MenuOverlay onClose={() => setMenuOpen(false)} />}
     </>
   )
 }
 
-function MenuOverlay({settings, onClose}: {settings: SiteSettings | null; onClose: () => void}) {
+function MenuOverlay({onClose}: {onClose: () => void}) {
   return (
     <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-8 text-background">
       <Link
         href="/#work"
         onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a]"
+        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
         Selected Work
       </Link>
       <Link
         href="/#bio"
         onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a]"
+        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
         Bio
       </Link>
-      {settings?.socialLinks && settings.socialLinks.length > 0 && (
-        <div className="mt-11 flex gap-6 text-[11px] uppercase tracking-[0.16em] text-background/60">
-          {settings.socialLinks.map((link) => (
-            <a key={link.url} href={link.url} target="_blank" rel="noreferrer">
-              {link.platform}
-            </a>
-          ))}
-        </div>
-      )}
+      <Link
+        href="/#site-footer"
+        onClick={onClose}
+        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
+      >
+        Connect
+      </Link>
     </div>
   )
 }

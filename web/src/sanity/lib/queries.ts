@@ -24,7 +24,6 @@ export const PROJECTS_QUERY = defineQuery(`
     "slug": slug.current,
     title,
     client,
-    category,
     year,
     status,
     description,

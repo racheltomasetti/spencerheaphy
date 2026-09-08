@@ -66,9 +66,6 @@ export function SelectedWork({projects}: {projects: Project[]}) {
           Selected Work
         </h2>
         <div className="flex items-baseline gap-5 text-[11px] uppercase tracking-[0.16em]">
-          <span className="text-foreground/58">
-            {String(projects.length).padStart(2, '0')} projects
-          </span>
           <ToggleButton label="Grid" active={layout === 'grid'} onClick={() => updateLayout('grid')} />
           <ToggleButton
             label="Index"

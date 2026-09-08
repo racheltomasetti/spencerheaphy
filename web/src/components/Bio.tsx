@@ -2,18 +2,9 @@ import Image from 'next/image'
 import type {SiteSettings} from '@/sanity/lib/types'
 
 const PLACEHOLDER_CLIENT_LINES = ['Client list', 'to come', '—', 'six to ten names']
-const PLACEHOLDER_SOCIALS = [
-  {platform: 'Instagram', url: ''},
-  {platform: 'Vimeo', url: ''},
-]
 
 export function Bio({settings}: {settings: SiteSettings | null}) {
   const name = settings?.name || 'Spencer Heaphy'
-  const email = settings?.contactEmail
-  const socials =
-    settings?.socialLinks && settings.socialLinks.length > 0
-      ? settings.socialLinks
-      : PLACEHOLDER_SOCIALS
 
   return (
     <section
@@ -49,7 +40,7 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
 
           <div className="grid grid-cols-1 gap-7 text-[11px] leading-[2] tracking-[0.13em] uppercase sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-foreground/60">Selected clients</p>
+              <p className="mb-2 text-foreground/60">Clients</p>
               <p className="text-foreground/70">
                 {PLACEHOLDER_CLIENT_LINES.map((line, index) => (
                   <span key={line}>
@@ -61,33 +52,9 @@ export function Bio({settings}: {settings: SiteSettings | null}) {
             </div>
 
             <div>
-              <p className="mb-2 text-foreground/60">Connect</p>
-              <ul className="flex flex-col text-foreground/70">
-                {email && (
-                  <li>
-                    <a href={`mailto:${email}`} className="transition-colors hover:text-foreground">
-                      {email}
-                    </a>
-                  </li>
-                )}
-                {socials.map((link) => (
-                  <li key={link.platform}>
-                    {link.url ? (
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-colors hover:text-foreground"
-                      >
-                        {link.platform}
-                      </a>
-                    ) : (
-                      link.platform
-                    )}
-                  </li>
-                ))}
-                <li>Los Angeles · Worldwide</li>
-              </ul>
+              {/* <p className="mb-2 text-foreground/60">Location</p> */}
+              <p className="text-foreground/70">Based in NYC</p>
+              <p className="text-foreground/70">Building Community</p>
             </div>
           </div>
         </div>

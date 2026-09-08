@@ -32,7 +32,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
         <NavVisibilityProvider>
           <Suspense fallback={null}>
-            <Nav settings={settings} />
+            <Nav />
           </Suspense>
           <main className="flex-1">{children}</main>
           <SiteFooter settings={settings} />

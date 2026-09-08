@@ -5,7 +5,7 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-black/10">
+    <footer id="site-footer" className="scroll-mt-[70px] border-t border-black/10">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 text-xs uppercase tracking-[0.1em] text-foreground/60 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <p>
           <Link href="/creator" className="text-inherit no-underline">

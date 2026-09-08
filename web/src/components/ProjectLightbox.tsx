@@ -43,9 +43,9 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
           type="button"
           onClick={close}
           aria-label="Close"
-          className="fixed right-6 top-6 z-10 text-xs uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground sm:right-10 sm:top-8"
+          className="fixed right-6 top-6 z-10 text-2xl leading-none text-foreground/60 hover:text-foreground sm:right-10 sm:top-8"
         >
-          Close &times;
+          &times;
         </button>
 
         <div className="relative mb-8 aspect-video w-full overflow-hidden bg-foreground/5">

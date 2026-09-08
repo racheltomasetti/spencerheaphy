@@ -68,7 +68,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
   const nextIndex = (slide + 1) % count
   const active = projects[slide]
-  const meta = [active.client, active.category, active.year].filter(Boolean).join(' · ')
+  const meta = [active.client, active.year].filter(Boolean).join(' · ')
 
   return (
     <div

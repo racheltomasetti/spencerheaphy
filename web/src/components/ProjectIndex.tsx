@@ -5,7 +5,7 @@ import {useState} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
-const ROW_GRID = 'grid-cols-[52px_1.6fr_1.1fr_1fr_64px]'
+const ROW_GRID = 'grid-cols-[52px_1.6fr_1.1fr_64px]'
 
 export function ProjectIndex({projects}: {projects: Project[]}) {
   const [hovered, setHovered] = useState<Project | null>(null)
@@ -22,7 +22,6 @@ export function ProjectIndex({projects}: {projects: Project[]}) {
         <span>No.</span>
         <span>Project</span>
         <span>Client</span>
-        <span>Category</span>
         <span className="text-right">Year</span>
       </div>
 
@@ -40,9 +39,6 @@ export function ProjectIndex({projects}: {projects: Project[]}) {
             </span>
             <span className="text-[11px] uppercase tracking-[0.12em] text-foreground/72">
               {isUndisclosed ? '—' : project.client}
-            </span>
-            <span className="text-[11px] uppercase tracking-[0.12em] text-foreground/72">
-              {project.category}
             </span>
             <span className="text-right text-[11px] text-foreground/72">{project.year}</span>
           </>
