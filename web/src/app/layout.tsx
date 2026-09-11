@@ -23,11 +23,7 @@ export const metadata: Metadata = {
   title: 'Spencer Heaphy',
   description: 'Director & Creator',
   icons: {
-    icon: [
-      {url: '/favicon.ico', sizes: 'any'},
-      {url: '/icon.svg', type: 'image/svg+xml'},
-      {url: '/icon.png', type: 'image/png', sizes: '32x32'},
-    ],
+    icon: [{url: '/icon-v2.png', type: 'image/png', sizes: '64x64'}],
     apple: [{url: '/apple-icon.png', sizes: '180x180'}],
   },
 }

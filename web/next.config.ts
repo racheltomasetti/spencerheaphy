@@ -10,13 +10,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async headers() {
+  async redirects() {
     return [
       {
         source: "/favicon.ico",
-        headers: [
-          {key: "Cache-Control", value: "public, max-age=0, must-revalidate"},
-        ],
+        destination: "/icon-v2.png",
+        permanent: false,
       },
     ]
   },
