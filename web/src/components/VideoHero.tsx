@@ -110,7 +110,6 @@ export function VideoHero({projects}: {projects: Project[]}) {
   }
 
   const active = projects[slide]
-  const meta = [active.client, active.year].filter(Boolean).join(' · ')
 
   if (!isDesktop) {
     return (
@@ -153,8 +152,10 @@ export function VideoHero({projects}: {projects: Project[]}) {
           <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
             {active.title}
           </span>
-          {meta && (
-            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">{meta}</span>
+          {active.year && (
+            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
+              {active.year}
+            </span>
           )}
         </div>
       </div>
@@ -198,8 +199,10 @@ export function VideoHero({projects}: {projects: Project[]}) {
           <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
             {active.title}
           </span>
-          {meta && (
-            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">{meta}</span>
+          {active.year && (
+            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
+              {active.year}
+            </span>
           )}
         </div>
 

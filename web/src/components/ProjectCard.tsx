@@ -36,16 +36,15 @@ export function ProjectCard({
   )
 
   const caption = (
-    <div className="flex flex-col gap-[3px]">
-      {!isUndisclosed && (project.client || project.year) && (
-        <span className="flex items-baseline justify-between gap-3 text-[10px] uppercase tracking-[0.18em] text-foreground/72">
-          <span>{project.client}</span>
-          {project.year && <span>{project.year}</span>}
-        </span>
-      )}
+    <div className="flex items-baseline justify-between gap-3">
       <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85">
         {isUndisclosed ? 'Undisclosed' : project.title}
       </span>
+      {!isUndisclosed && project.year && (
+        <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/72">
+          {project.year}
+        </span>
+      )}
     </div>
   )
 

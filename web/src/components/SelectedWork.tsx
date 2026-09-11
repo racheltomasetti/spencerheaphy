@@ -3,10 +3,17 @@
 import {useEffect, useState} from 'react'
 import {ProjectGrid} from '@/components/ProjectGrid'
 import {ProjectIndex} from '@/components/ProjectIndex'
-import type {Project} from '@/sanity/lib/types'
+import type {Project, ProjectRole} from '@/sanity/lib/types'
 
 const LAYOUT_STORAGE_KEY = 'work-layout'
 type Layout = 'grid' | 'index'
+type RoleFilter = 'all' | ProjectRole
+
+const ROLE_FILTERS: {value: RoleFilter; label: string}[] = [
+  {value: 'all', label: 'All'},
+  {value: 'director-editor', label: 'Director & Editor'},
+  {value: 'creator', label: 'Creator'},
+]
 
 function ToggleButton({
   label,
@@ -34,6 +41,7 @@ function ToggleButton({
 
 export function SelectedWork({projects}: {projects: Project[]}) {
   const [layout, setLayout] = useState<Layout>('grid')
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('all')
 
   // Read the persisted choice after mount only, so server and first-client
   // render stay identical and we don't trip a hydration mismatch.
@@ -59,13 +67,25 @@ export function SelectedWork({projects}: {projects: Project[]}) {
     }
   }
 
+  const filteredProjects =
+    roleFilter === 'all' ? projects : projects.filter((project) => project.role === roleFilter)
+
   return (
     <>
       <div className="flex flex-wrap items-end justify-between gap-6 border-b border-foreground/14 px-8 pt-[78px] pb-4">
         <h2 className="text-[clamp(26px,3.4vw,46px)] leading-none font-normal tracking-[-0.025em]">
           Selected Work
         </h2>
-        <div className="flex items-baseline gap-5 text-[11px] uppercase tracking-[0.16em]">
+        <div className="flex flex-wrap items-baseline gap-5 text-[11px] uppercase tracking-[0.16em]">
+          {ROLE_FILTERS.map((filter) => (
+            <ToggleButton
+              key={filter.value}
+              label={filter.label}
+              active={roleFilter === filter.value}
+              onClick={() => setRoleFilter(filter.value)}
+            />
+          ))}
+          <span aria-hidden className="h-3 w-px bg-foreground/14" />
           <ToggleButton label="Grid" active={layout === 'grid'} onClick={() => updateLayout('grid')} />
           <ToggleButton
             label="Index"
@@ -75,7 +95,11 @@ export function SelectedWork({projects}: {projects: Project[]}) {
         </div>
       </div>
 
-      {layout === 'grid' ? <ProjectGrid projects={projects} /> : <ProjectIndex projects={projects} />}
+      {layout === 'grid' ? (
+        <ProjectGrid projects={filteredProjects} />
+      ) : (
+        <ProjectIndex projects={filteredProjects} />
+      )}
     </>
   )
 }

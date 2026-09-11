@@ -1,5 +1,6 @@
 export type ProjectStatus = 'published' | 'in production' | 'undisclosed'
 export type ProjectOrientation = 'landscape' | 'portrait' | 'square'
+export type ProjectRole = 'director-editor' | 'creator'
 
 interface SanityImageAsset {
   _id: string
@@ -32,8 +33,8 @@ export interface Project {
   _id: string
   slug: string
   title: string
-  client?: string
   year?: number
+  role?: ProjectRole
   status: ProjectStatus
   description?: string
   featured?: boolean

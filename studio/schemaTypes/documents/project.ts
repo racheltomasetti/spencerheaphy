@@ -22,15 +22,24 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'client',
-      title: 'Client',
-      type: 'string',
-    }),
-    defineField({
       name: 'year',
       title: 'Year',
       type: 'number',
       validation: (rule) => rule.integer().min(1900).max(2100),
+    }),
+    defineField({
+      name: 'role',
+      title: 'Role',
+      description: 'Spencer’s role on this project. Drives the filter on Selected Work.',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Director & Editor', value: 'director-editor'},
+          {title: 'Creator', value: 'creator'},
+        ],
+        layout: 'radio',
+      },
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'coverMedia',
@@ -139,13 +148,14 @@ export const project = defineType({
   preview: {
     select: {
       title: 'title',
-      client: 'client',
+      role: 'role',
       status: 'status',
       hidden: 'hidden',
       media: 'coverMedia.image',
     },
-    prepare({title, client, status, hidden, media}) {
-      const subtitle = [client, status, hidden ? 'Hidden' : null].filter(Boolean).join(' · ')
+    prepare({title, role, status, hidden, media}) {
+      const roleLabel = role === 'director-editor' ? 'Director & Editor' : role === 'creator' ? 'Creator' : null
+      const subtitle = [roleLabel, status, hidden ? 'Hidden' : null].filter(Boolean).join(' · ')
       return {title, subtitle, media}
     },
   },

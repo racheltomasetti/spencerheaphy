@@ -60,11 +60,6 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
         </div>
 
         <div className="mb-10 flex flex-col gap-2">
-          {project.client && (
-            <span className="text-xs font-medium uppercase tracking-[0.15em] text-foreground/60">
-              {project.client}
-            </span>
-          )}
           <h2 className="font-serif text-3xl uppercase tracking-[0.06em]">{project.title}</h2>
           <span className="text-xs uppercase tracking-[0.15em] text-foreground/40">
             {project.year}
