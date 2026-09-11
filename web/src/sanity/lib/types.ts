@@ -53,8 +53,6 @@ export interface SocialLink {
 
 export interface SiteSettings {
   name?: string
-  tagline?: string
   contactEmail?: string
   socialLinks?: SocialLink[]
-  clientLogos?: SanityImageValue[]
 }

@@ -14,11 +14,6 @@ export const siteSettings = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'tagline',
-      title: 'Tagline',
-      type: 'string',
-    }),
-    defineField({
       name: 'contactEmail',
       title: 'Contact email',
       type: 'string',
@@ -30,27 +25,8 @@ export const siteSettings = defineType({
       type: 'array',
       of: [defineArrayMember({type: 'socialLink'})],
     }),
-    defineField({
-      name: 'clientLogos',
-      title: 'Client logos',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'image',
-          options: {hotspot: true},
-          fields: [
-            defineField({
-              name: 'alt',
-              title: 'Alternative text',
-              type: 'string',
-              validation: (rule) => rule.required(),
-            }),
-          ],
-        }),
-      ],
-    }),
   ],
   preview: {
-    select: {title: 'name', subtitle: 'tagline'},
+    select: {title: 'name', subtitle: 'contactEmail'},
   },
 })

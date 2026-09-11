@@ -40,14 +40,7 @@ export const PROJECTS_QUERY = defineQuery(`
 export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_id == "siteSettings"][0] {
     name,
-    tagline,
     contactEmail,
-    socialLinks[] { platform, url },
-    clientLogos[] {
-      asset -> { _id, url },
-      alt,
-      hotspot,
-      crop
-    }
+    socialLinks[] { platform, url }
   }
 `)
