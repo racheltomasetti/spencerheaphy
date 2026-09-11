@@ -21,7 +21,7 @@ const sans = Inter({
 
 export const metadata: Metadata = {
   title: 'Spencer Heaphy',
-  description: 'Director / cinematographer — selected work, bio, and contact.',
+  description: 'Director & Creator',
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
