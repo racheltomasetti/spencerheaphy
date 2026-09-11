@@ -22,6 +22,14 @@ const sans = Inter({
 export const metadata: Metadata = {
   title: 'Spencer Heaphy',
   description: 'Director & Creator',
+  icons: {
+    icon: [
+      {url: '/favicon.ico', sizes: 'any'},
+      {url: '/icon.svg', type: 'image/svg+xml'},
+      {url: '/icon.png', type: 'image/png', sizes: '32x32'},
+    ],
+    apple: [{url: '/apple-icon.png', sizes: '180x180'}],
+  },
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
