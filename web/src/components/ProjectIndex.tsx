@@ -52,7 +52,7 @@ export function ProjectIndex({projects}: {projects: Project[]}) {
         return (
           <Link
             key={project._id}
-            href={`/?project=${project.slug}#work`}
+            href={`?project=${project.slug}`}
             scroll={false}
             className={rowClassName}
             onMouseEnter={() => setHovered(project)}

@@ -1,17 +1,18 @@
 'use client'
 
-import {useRouter, useSearchParams} from 'next/navigation'
+import {usePathname, useRouter, useSearchParams} from 'next/navigation'
 import {useEffect} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
 export function ProjectLightbox({projects}: {projects: Project[]}) {
   const searchParams = useSearchParams()
+  const pathname = usePathname()
   const router = useRouter()
   const slug = searchParams.get('project')
   const project = slug ? projects.find((p) => p.slug === slug) : undefined
 
-  const close = () => router.push('/#work', {scroll: false})
+  const close = () => router.push(pathname, {scroll: false})
 
   useEffect(() => {
     if (!project) return

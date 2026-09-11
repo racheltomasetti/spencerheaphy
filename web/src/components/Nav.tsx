@@ -34,6 +34,7 @@ export function Nav() {
         >
           <Link
             href="/#top"
+            onClick={() => setMenuOpen(false)}
             aria-label="Spencer Heaphy, home"
             className="font-serif text-sm font-medium uppercase tracking-[0.22em]"
           >
@@ -72,21 +73,21 @@ function MenuOverlay({onClose}: {onClose: () => void}) {
   return (
     <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-8 text-background">
       <Link
-        href="/#work"
+        href="/selected-work"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
         Selected Work
       </Link>
       <Link
-        href="/#bio"
+        href="/bio"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
         Bio
       </Link>
       <Link
-        href="/#site-footer"
+        href="/connect"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >

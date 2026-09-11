@@ -59,7 +59,7 @@ export function ProjectCard({
 
   return (
     <Link
-      href={`/?project=${project.slug}#work`}
+      href={`?project=${project.slug}`}
       scroll={false}
       className={`${span} group flex flex-col gap-2.5`}
     >
