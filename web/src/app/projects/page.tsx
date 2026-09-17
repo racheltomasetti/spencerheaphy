@@ -5,17 +5,18 @@ import {SelectedWork} from '@/components/SelectedWork'
 import {getProjects} from '@/sanity/lib/get-projects'
 
 export const metadata: Metadata = {
-  title: 'Selected Work — Spencer Heaphy',
+  title: 'Projects — Spencer Heaphy',
 }
 
-export default async function SelectedWorkPage() {
+export default async function ProjectsPage() {
   const projects = await getProjects()
+  const directorProjects = projects.filter((project) => project.role !== 'creator')
 
   return (
     <>
-      <SelectedWork projects={projects} />
+      <SelectedWork projects={directorProjects} title="Projects" />
       <Suspense fallback={null}>
-        <ProjectLightbox projects={projects} />
+        <ProjectLightbox projects={directorProjects} />
       </Suspense>
     </>
   )

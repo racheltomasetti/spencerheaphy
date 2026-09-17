@@ -2,19 +2,11 @@ import Link from 'next/link'
 import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
-export function ProjectCard({
-  project,
-  span,
-  ratio,
-}: {
-  project: Project
-  span: string
-  ratio: string
-}) {
+export function ProjectCard({project}: {project: Project}) {
   const isUndisclosed = project.status === 'undisclosed'
 
   const media = (
-    <div className="relative w-full overflow-hidden" style={{aspectRatio: ratio}}>
+    <div className="relative w-full overflow-hidden" style={{aspectRatio: '16 / 9'}}>
       {isUndisclosed ? (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-foreground/10 bg-[repeating-linear-gradient(135deg,#eceae4_0_9px,#f4f2ec_9px_18px)] text-center">
           <span className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">
@@ -50,7 +42,7 @@ export function ProjectCard({
 
   if (isUndisclosed) {
     return (
-      <article className={`${span} group flex flex-col gap-2.5`}>
+      <article className="group flex flex-col gap-2.5">
         {media}
         {caption}
       </article>
@@ -61,7 +53,7 @@ export function ProjectCard({
     <Link
       href={`?project=${project.slug}`}
       scroll={false}
-      className={`${span} group flex flex-col gap-2.5`}
+      className="group flex flex-col gap-2.5"
     >
       {media}
       {caption}

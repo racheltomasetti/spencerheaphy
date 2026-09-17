@@ -73,11 +73,18 @@ function MenuOverlay({onClose}: {onClose: () => void}) {
   return (
     <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-8 text-background">
       <Link
-        href="/selected-work"
+        href="/projects"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
-        Selected Work
+        Projects
+      </Link>
+      <Link
+        href="/creator-work"
+        onClick={onClose}
+        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
+      >
+        Creator Work
       </Link>
       <Link
         href="/bio"

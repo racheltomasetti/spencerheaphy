@@ -20,7 +20,7 @@ export default async function Home() {
       </Suspense>
 
       <section id="work" className="scroll-mt-[70px]">
-        <SelectedWork projects={projects} />
+        <SelectedWork projects={featuredProjects} title="Select Work" />
       </section>
 
       <Bio settings={settings} />

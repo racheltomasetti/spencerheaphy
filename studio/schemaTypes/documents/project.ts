@@ -30,7 +30,7 @@ export const project = defineType({
     defineField({
       name: 'role',
       title: 'Role',
-      description: 'Spencer’s role on this project. Drives the filter on Selected Work.',
+      description: 'Spencer’s role on this project. Director work appears on Projects; Creator work has its own page.',
       type: 'string',
       options: {
         list: [
@@ -50,7 +50,7 @@ export const project = defineType({
     defineField({
       name: 'orientation',
       title: 'Orientation',
-      description: 'Drives the aspect ratio used for this project’s tile in the Selected Work grid.',
+      description: 'Original shooting orientation. Project tiles on the site are shown at 16:9.',
       type: 'string',
       options: {
         list: [

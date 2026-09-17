@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         destination: "/icon-v2.png",
         permanent: false,
       },
+      {
+        source: "/selected-work",
+        destination: "/projects",
+        permanent: true,
+      },
     ]
   },
 };
