@@ -3,7 +3,7 @@ import type {Project} from '@/sanity/lib/types'
 
 export function ProjectGrid({projects}: {projects: Project[]}) {
   if (projects.length === 0) {
-    return <p className="px-8 pb-[60px] pt-6 text-sm text-foreground/50">Projects coming soon.</p>
+    return <p className="px-8 pb-[60px] pt-6 text-[12px] leading-[1.5] text-foreground/72">Projects coming soon.</p>
   }
 
   return (

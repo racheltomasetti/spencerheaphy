@@ -10,10 +10,10 @@ export default async function ContactPage() {
 
   return (
     <section className="flex flex-1 flex-col justify-center gap-7 px-8 pt-[78px] pb-[90px]">
-      <h2 className="text-[clamp(26px,3.4vw,46px)] leading-none font-normal tracking-[-0.025em]">
+      <h2 className="text-[clamp(28px,3.4vw,44px)] leading-[1.05] font-normal tracking-[-0.022em]">
         Contact
       </h2>
-      <div className="flex flex-col gap-2 text-[11px] uppercase tracking-[0.18em] text-foreground/70">
+      <div className="flex flex-col gap-2 text-[13px] leading-[1.5] text-foreground/72">
         {settings?.contactEmail && (
           <a
             href={`mailto:${settings.contactEmail}`}

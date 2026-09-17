@@ -36,7 +36,7 @@ export function Nav() {
             href="/#top"
             onClick={() => setMenuOpen(false)}
             aria-label="Spencer Heaphy, home"
-            className="font-serif text-sm font-medium uppercase tracking-[0.22em]"
+            className="text-[17px] leading-[1.4] font-medium tracking-[0.01em]"
           >
             Spencer Heaphy
           </Link>
@@ -69,35 +69,22 @@ export function Nav() {
   )
 }
 
+const MENU_LINK =
+  'opsz-display text-[clamp(40px,7vw,84px)] leading-[1.06] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,62px)]'
+
 function MenuOverlay({onClose}: {onClose: () => void}) {
   return (
     <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-8 text-background">
-      <Link
-        href="/projects"
-        onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
-      >
+      <Link href="/projects" onClick={onClose} className={MENU_LINK}>
         Projects
       </Link>
-      <Link
-        href="/social"
-        onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
-      >
+      <Link href="/social" onClick={onClose} className={MENU_LINK}>
         Social
       </Link>
-      <Link
-        href="/bio"
-        onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
-      >
+      <Link href="/bio" onClick={onClose} className={MENU_LINK}>
         Bio
       </Link>
-      <Link
-        href="/contact"
-        onClick={onClose}
-        className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
-      >
+      <Link href="/contact" onClick={onClose} className={MENU_LINK}>
         Contact
       </Link>
     </div>
