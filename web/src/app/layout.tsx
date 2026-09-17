@@ -1,5 +1,5 @@
 import type {Metadata} from 'next'
-import {Newsreader} from 'next/font/google'
+import localFont from 'next/font/local'
 import {Suspense} from 'react'
 import {Nav} from '@/components/Nav'
 import {NavVisibilityProvider} from '@/components/NavVisibilityProvider'
@@ -8,10 +8,12 @@ import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 import {SanityLive} from '@/sanity/lib/live'
 import './globals.css'
 
-const newsreader = Newsreader({
+const newsreader = localFont({
+  src: './fonts/newsreader.woff2',
   variable: '--font-newsreader',
-  subsets: ['latin'],
-  axes: ['opsz'],
+  weight: '200 800',
+  display: 'swap',
+  fallback: ['Georgia', 'serif'],
 })
 
 export const metadata: Metadata = {
@@ -28,13 +30,15 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 
   return (
     <html lang="en" className={`${newsreader.variable} h-full`}>
-      <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
+      <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
         <NavVisibilityProvider>
-          <Suspense fallback={null}>
-            <Nav />
-          </Suspense>
-          <main className="flex flex-1 flex-col">{children}</main>
-          <SiteFooter settings={settings} />
+          <div className="flex min-h-dvh flex-1 flex-col">
+            <Suspense fallback={null}>
+              <Nav />
+            </Suspense>
+            <main className="flex flex-1 flex-col">{children}</main>
+            <SiteFooter settings={settings} />
+          </div>
         </NavVisibilityProvider>
         <SanityLive />
       </body>

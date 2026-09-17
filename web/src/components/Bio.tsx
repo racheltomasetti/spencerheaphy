@@ -3,13 +3,23 @@ import type {SiteSettings} from '@/sanity/lib/types'
 
 const PLACEHOLDER_CLIENT_LINES = ['Client list', 'to come', '—']
 
-export function Bio({settings}: {settings: SiteSettings | null}) {
+export function Bio({
+  settings,
+  standalone = false,
+}: {
+  settings: SiteSettings | null
+  standalone?: boolean
+}) {
   const name = settings?.name || 'Spencer Heaphy'
 
   return (
     <section
       id="bio"
-      className="scroll-mt-[70px] border-t border-foreground/14 px-8 pt-[78px] pb-[90px]"
+      className={
+        standalone
+          ? 'w-full'
+          : 'scroll-mt-[70px] border-t border-foreground/14 px-8 pt-[78px] pb-[90px]'
+      }
     >
       <div className="grid grid-cols-12 gap-7 lg:items-center">
         <div
