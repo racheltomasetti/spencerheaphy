@@ -11,6 +11,9 @@ export function MediaItemView({
   height = 900,
   placeholderLabel,
   placeholderVariant = 'light',
+  videoActive = true,
+  playsBeforeAdvance,
+  onAdvance,
 }: {
   media?: MediaItem
   alt: string
@@ -19,9 +22,20 @@ export function MediaItemView({
   height?: number
   placeholderLabel?: string
   placeholderVariant?: 'light' | 'dark'
+  videoActive?: boolean
+  playsBeforeAdvance?: number
+  onAdvance?: () => void
 }) {
   if (media?.mediaType === 'video' && media.video?.asset?.url) {
-    return <LazyVideo src={media.video.asset.url} className={className} />
+    return (
+      <LazyVideo
+        src={media.video.asset.url}
+        className={className}
+        active={videoActive}
+        playsBeforeAdvance={playsBeforeAdvance}
+        onAdvance={onAdvance}
+      />
+    )
   }
 
   if (media?.mediaType === 'image' && media.image?.asset) {

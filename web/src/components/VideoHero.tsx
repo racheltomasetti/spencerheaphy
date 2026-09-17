@@ -2,16 +2,23 @@
 
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore} from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 import type {Project} from '@/sanity/lib/types'
 
 const DESKTOP_BREAKPOINT = '(min-width: 768px)'
-// The mobile strip repeats the project list this many times so a normal
-// swipe session — even someone testing it aggressively — never reaches
-// either physical end. No programmatic scroll repositioning needed at all.
 const LOOP_REPEATS = 20
+const IMAGE_ADVANCE_MS = 8000
+const SWIPE_THRESHOLD = 50
 
 function subscribeToBreakpoint(callback: () => void) {
   const mql = window.matchMedia(DESKTOP_BREAKPOINT)
@@ -32,6 +39,11 @@ function heroMediaFor(project: Project, isDesktop: boolean) {
   return project.heroMedia ?? project.coverMedia
 }
 
+function isVideoSlide(project: Project, isDesktop: boolean) {
+  const media = heroMediaFor(project, isDesktop)
+  return media?.mediaType === 'video' && Boolean(media.video?.asset?.url)
+}
+
 function PlaceholderHero() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
@@ -46,6 +58,51 @@ function PlaceholderHero() {
 const SCRIM =
   'pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,19,16,.5)_0%,rgba(20,19,16,0)_26%,rgba(20,19,16,0)_55%,rgba(20,19,16,.62)_100%)]'
 
+function HeroCaption({project}: {project: Project}) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
+        {project.title}
+      </span>
+      {project.year && (
+        <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
+          {project.year}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function HeroDots({
+  count,
+  slide,
+  onSelect,
+}: {
+  count: number
+  slide: number
+  onSelect: (index: number) => void
+}) {
+  if (count <= 1) return null
+
+  return (
+    <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
+      {Array.from({length: count}, (_, index) => (
+        <button
+          key={index}
+          type="button"
+          role="tab"
+          aria-label={`Go to slide ${index + 1}`}
+          aria-selected={index === slide}
+          onClick={() => onSelect(index)}
+          className={`size-1.5 rounded-full transition-colors ${
+            index === slide ? 'bg-background' : 'bg-background/35 hover:bg-background/55'
+          }`}
+        />
+      ))}
+    </div>
+  )
+}
+
 export function VideoHero({projects}: {projects: Project[]}) {
   const [slide, setSlide] = useState(0)
   const isDesktop = useIsDesktop()
@@ -54,36 +111,66 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const paused = searchParams.get('project') !== null || menuOpen
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
-  const goPrev = useCallback(() => setSlide((s) => (s + count - 1) % count), [count])
-  const goNext = useCallback(() => setSlide((s) => (s + 1) % count), [count])
+  const swipeStartX = useRef<number | null>(null)
+  const [visibleLoopIndex, setVisibleLoopIndex] = useState(0)
 
-  // Desktop navigates via the on-screen arrows or the keyboard, both wrapping
-  // infinitely in either direction — no auto-advance on either breakpoint.
+  const advance = useCallback(
+    (delta: number) => {
+      if (count <= 1) return
+      if (isDesktop) {
+        setSlide((current) => (current + delta + count) % count)
+        return
+      }
+      const node = scrollRef.current
+      if (!node) return
+      const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
+      node.scrollTo({left: (loopIndex + delta) * node.clientWidth, behavior: 'smooth'})
+    },
+    [count, isDesktop],
+  )
+
+  const goPrev = useCallback(() => advance(-1), [advance])
+  const goNext = useCallback(() => advance(1), [advance])
+
+  const goTo = useCallback(
+    (index: number) => {
+      if (count <= 1) return
+      if (isDesktop) {
+        setSlide(index)
+        return
+      }
+      const node = scrollRef.current
+      if (!node) return
+      const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
+      const copy = Math.floor(loopIndex / count)
+      node.scrollTo({left: (copy * count + index) * node.clientWidth, behavior: 'smooth'})
+    },
+    [count, isDesktop],
+  )
+
   useEffect(() => {
-    if (!isDesktop || count <= 1 || paused) return
+    if (count <= 1 || paused) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft') goPrev()
       else if (event.key === 'ArrowRight') goNext()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isDesktop, count, paused, goPrev, goNext])
+  }, [count, paused, goPrev, goNext])
 
   const loopedProjects =
     count > 1 ? Array.from({length: LOOP_REPEATS}, () => projects).flat() : projects
   const startCopy = Math.floor(LOOP_REPEATS / 2)
 
-  // Land in the middle copy before paint, so there's equal room to swipe
-  // "backward" as there is "forward" before either physical end.
   useLayoutEffect(() => {
     if (isDesktop || count <= 1) return
     const node = scrollRef.current
     if (!node) return
-    node.scrollLeft = startCopy * count * node.clientWidth
+    const start = startCopy * count
+    node.scrollLeft = start * node.clientWidth
+    setVisibleLoopIndex(start)
   }, [isDesktop, count, startCopy])
 
-  // On mobile, `slide` (for the caption/counter) follows scroll position —
-  // just modulo back into the real project range, no repositioning needed.
   useEffect(() => {
     if (isDesktop || count <= 1) return
     const node = scrollRef.current
@@ -91,11 +178,35 @@ export function VideoHero({projects}: {projects: Project[]}) {
     const onScroll = () => {
       const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
       const real = ((loopIndex % count) + count) % count
+      setVisibleLoopIndex(loopIndex)
       setSlide((current) => (real !== current ? real : current))
     }
     node.addEventListener('scroll', onScroll, {passive: true})
     return () => node.removeEventListener('scroll', onScroll)
   }, [isDesktop, count])
+
+  const active = projects[slide]
+  const activeIsVideo = active ? isVideoSlide(active, isDesktop) : false
+
+  useEffect(() => {
+    if (count <= 1 || paused || activeIsVideo) return
+    const timer = window.setTimeout(goNext, IMAGE_ADVANCE_MS)
+    return () => window.clearTimeout(timer)
+  }, [count, paused, activeIsVideo, slide, goNext])
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!isDesktop || count <= 1) return
+    if ((event.target as HTMLElement).closest('button, a')) return
+    swipeStartX.current = event.clientX
+  }
+
+  const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (swipeStartX.current == null) return
+    const delta = event.clientX - swipeStartX.current
+    swipeStartX.current = null
+    if (delta > SWIPE_THRESHOLD) goPrev()
+    else if (delta < -SWIPE_THRESHOLD) goNext()
+  }
 
   if (count === 0) {
     return (
@@ -109,8 +220,6 @@ export function VideoHero({projects}: {projects: Project[]}) {
     )
   }
 
-  const active = projects[slide]
-
   if (!isDesktop) {
     return (
       <div
@@ -122,41 +231,38 @@ export function VideoHero({projects}: {projects: Project[]}) {
           ref={scrollRef}
           className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
         >
-          {loopedProjects.map((project, loopIndex) => (
-            <Link
-              key={`${project._id}-${loopIndex}`}
-              href={`/?project=${project.slug}`}
-              scroll={false}
-              className="relative block h-full w-full flex-none snap-center snap-always"
-            >
-              <MediaItemView
-                media={heroMediaFor(project, false)}
-                alt={project.title}
-                className="h-full w-full object-cover"
-                placeholderLabel={`Reel — ${project.title}`}
-                placeholderVariant="dark"
-              />
-            </Link>
-          ))}
+          {loopedProjects.map((project, loopIndex) => {
+            const isActiveCopy = !paused && loopIndex === visibleLoopIndex
+            return (
+              <Link
+                key={`${project._id}-${loopIndex}`}
+                href={`/?project=${project.slug}`}
+                scroll={false}
+                className="relative block h-full w-full flex-none snap-center snap-always"
+              >
+                <MediaItemView
+                  media={heroMediaFor(project, false)}
+                  alt={project.title}
+                  className="h-full w-full object-cover"
+                  placeholderLabel={`Reel — ${project.title}`}
+                  placeholderVariant="dark"
+                  videoActive={isActiveCopy}
+                  playsBeforeAdvance={2}
+                  onAdvance={goNext}
+                />
+              </Link>
+            )
+          })}
         </div>
 
         <div className={SCRIM} />
 
-        {/* Caption sits on top of the slide but doesn't intercept taps — the
-            whole slide underneath is the link, so this is browsable by tapping
-            anywhere, not just the text. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-2.5 p-8 text-background">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-background/55">
-            {String(slide + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
-          </span>
-          <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
-            {active.title}
-          </span>
-          {active.year && (
-            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
-              {active.year}
-            </span>
-          )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-2.5 p-8 pb-14 text-background">
+          <HeroCaption project={active} />
+        </div>
+
+        <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
+          <HeroDots count={count} slide={slide} onSelect={goTo} />
         </div>
       </div>
     )
@@ -169,6 +275,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
       id="top"
       ref={heroRef}
       className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => {
+        swipeStartX.current = null
+      }}
     >
       {projects.map((project, index) => {
         if (index !== slide && index !== nextIndex) return null
@@ -184,6 +295,9 @@ export function VideoHero({projects}: {projects: Project[]}) {
               className="h-full w-full object-cover"
               placeholderLabel={`Reel — ${project.title}`}
               placeholderVariant="dark"
+              videoActive={index === slide && !paused}
+              playsBeforeAdvance={2}
+              onAdvance={goNext}
             />
           </div>
         )
@@ -191,50 +305,35 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
       <div className={SCRIM} />
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 p-8 text-background">
-        <div className="flex flex-col gap-2.5">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-background/55">
-            {String(slide + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
-          </span>
-          <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
-            {active.title}
-          </span>
-          {active.year && (
-            <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
-              {active.year}
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-5">
-          <Link
-            href={`/?project=${active.slug}`}
-            scroll={false}
-            className="whitespace-nowrap border-b border-background/50 pb-1 text-[11px] uppercase tracking-[0.16em] transition-colors hover:border-background"
+      {count > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Previous slide"
+            onClick={goPrev}
+            className="absolute top-1/2 left-8 z-10 -translate-y-1/2 text-[22px] text-background/80 transition-colors hover:text-background"
           >
-            View project
-          </Link>
-          {count > 1 && (
-            <div className="flex gap-2.5">
-              <button
-                type="button"
-                aria-label="Previous slide"
-                onClick={goPrev}
-                className="flex h-11 w-11 items-center justify-center border border-background/34 text-[15px] transition-colors hover:bg-background/14"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                aria-label="Next slide"
-                onClick={goNext}
-                className="flex h-11 w-11 items-center justify-center border border-background/34 text-[15px] transition-colors hover:bg-background/14"
-              >
-                →
-              </button>
-            </div>
-          )}
-        </div>
+            ←
+          </button>
+          <button
+            type="button"
+            aria-label="Next slide"
+            onClick={goNext}
+            className="absolute top-1/2 right-8 z-10 -translate-y-1/2 text-[22px] text-background/80 transition-colors hover:text-background"
+          >
+            →
+          </button>
+        </>
+      )}
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-8 pb-14 text-background">
+        <Link href={`/?project=${active.slug}`} scroll={false} className="pointer-events-auto">
+          <HeroCaption project={active} />
+        </Link>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
+        <HeroDots count={count} slide={slide} onSelect={goTo} />
       </div>
     </div>
   )
