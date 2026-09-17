@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
         destination: "/projects",
         permanent: true,
       },
+      {
+        source: "/connect",
+        destination: "/contact",
+        permanent: true,
+      },
+      {
+        source: "/creator-work",
+        destination: "/social",
+        permanent: true,
+      },
     ]
   },
 };

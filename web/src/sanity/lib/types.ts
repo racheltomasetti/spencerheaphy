@@ -1,6 +1,19 @@
 export type ProjectStatus = 'published' | 'in production' | 'undisclosed'
 export type ProjectOrientation = 'landscape' | 'portrait' | 'square'
-export type ProjectRole = 'director-editor' | 'creator'
+export type ProjectRole = 'director-editor' | 'social' | 'creator'
+
+export function isSocialProject(project: {role?: ProjectRole}) {
+  return project.role === 'social' || project.role === 'creator'
+}
+
+export function isDirectorProject(project: {role?: ProjectRole}) {
+  return !isSocialProject(project)
+}
+
+export interface CrewCredit {
+  role?: string
+  name?: string
+}
 
 interface SanityImageAsset {
   _id: string
@@ -34,7 +47,11 @@ export interface Project {
   slug: string
   title: string
   year?: number
+  date?: string
+  client?: string
+  vimeoUrl?: string
   role?: ProjectRole
+  crew?: CrewCredit[]
   status: ProjectStatus
   description?: string
   featured?: boolean

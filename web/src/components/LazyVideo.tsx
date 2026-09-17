@@ -2,6 +2,17 @@
 
 import {useEffect, useRef, useState} from 'react'
 
+function playVideo(node: HTMLVideoElement) {
+  const attempt = node.play()
+  if (attempt) {
+    attempt.catch((error: unknown) => {
+      // Chrome rejects play() when the element is paused, src-swapped, or
+      // unmounted before playback actually starts. That's expected here.
+      if (error instanceof DOMException && error.name === 'AbortError') return
+    })
+  }
+}
+
 export function LazyVideo({
   src,
   className,
@@ -48,7 +59,7 @@ export function LazyVideo({
 
     if (active) {
       node.currentTime = 0
-      void node.play()
+      playVideo(node)
     } else {
       node.pause()
     }
@@ -72,7 +83,8 @@ export function LazyVideo({
           onAdvance?.()
           return
         }
-        void ref.current?.play()
+        const node = ref.current
+        if (node) playVideo(node)
       }}
     />
   )

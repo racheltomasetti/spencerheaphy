@@ -80,11 +80,11 @@ function MenuOverlay({onClose}: {onClose: () => void}) {
         Projects
       </Link>
       <Link
-        href="/creator-work"
+        href="/social"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
-        Creator Work
+        Social
       </Link>
       <Link
         href="/bio"
@@ -94,11 +94,11 @@ function MenuOverlay({onClose}: {onClose: () => void}) {
         Bio
       </Link>
       <Link
-        href="/connect"
+        href="/contact"
         onClick={onClose}
         className="text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]"
       >
-        Connect
+        Contact
       </Link>
     </div>
   )

@@ -2,16 +2,16 @@ import type {Metadata} from 'next'
 import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 
 export const metadata: Metadata = {
-  title: 'Connect — Spencer Heaphy',
+  title: 'Contact — Spencer Heaphy',
 }
 
-export default async function ConnectPage() {
+export default async function ContactPage() {
   const settings = await getSiteSettings()
 
   return (
     <section className="flex flex-1 flex-col justify-center gap-7 px-8 pt-[78px] pb-[90px]">
       <h2 className="text-[clamp(26px,3.4vw,46px)] leading-none font-normal tracking-[-0.025em]">
-        Connect
+        Contact
       </h2>
       <div className="flex flex-col gap-2 text-[11px] uppercase tracking-[0.18em] text-foreground/70">
         {settings?.contactEmail && (

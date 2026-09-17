@@ -3,6 +3,7 @@ import {Suspense} from 'react'
 import {ProjectLightbox} from '@/components/ProjectLightbox'
 import {SelectedWork} from '@/components/SelectedWork'
 import {getProjects} from '@/sanity/lib/get-projects'
+import {isDirectorProject} from '@/sanity/lib/types'
 
 export const metadata: Metadata = {
   title: 'Projects — Spencer Heaphy',
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   const projects = await getProjects()
-  const directorProjects = projects.filter((project) => project.role !== 'creator')
+  const directorProjects = projects.filter(isDirectorProject)
 
   return (
     <>

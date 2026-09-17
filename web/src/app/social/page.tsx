@@ -3,20 +3,21 @@ import {Suspense} from 'react'
 import {ProjectLightbox} from '@/components/ProjectLightbox'
 import {SelectedWork} from '@/components/SelectedWork'
 import {getProjects} from '@/sanity/lib/get-projects'
+import {isSocialProject} from '@/sanity/lib/types'
 
 export const metadata: Metadata = {
-  title: 'Creator Work — Spencer Heaphy',
+  title: 'Social — Spencer Heaphy',
 }
 
-export default async function CreatorWorkPage() {
+export default async function SocialPage() {
   const projects = await getProjects()
-  const creatorProjects = projects.filter((project) => project.role === 'creator')
+  const socialProjects = projects.filter(isSocialProject)
 
   return (
     <>
-      <SelectedWork projects={creatorProjects} title="Creator Work" />
+      <SelectedWork projects={socialProjects} title="Social" />
       <Suspense fallback={null}>
-        <ProjectLightbox projects={creatorProjects} />
+        <ProjectLightbox projects={socialProjects} />
       </Suspense>
     </>
   )
