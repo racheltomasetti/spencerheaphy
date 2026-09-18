@@ -9,14 +9,11 @@ export function SelectedWork({
   title?: string
 }) {
   return (
-    <>
-      <div className="flex flex-wrap items-end justify-between gap-6 border-b border-foreground/14 px-8 pt-[78px] pb-4">
-        <h2 className="text-[clamp(28px,3.4vw,44px)] leading-[1.05] font-normal tracking-[-0.022em]">
-          {title}
-        </h2>
-      </div>
-
+    <div className="w-full px-8 pt-[78px] pb-[60px] sm:px-12 lg:px-16">
+      <h2 className="pb-10 text-[clamp(28px,3.4vw,44px)] leading-[1.05] font-normal tracking-[-0.022em]">
+        {title}
+      </h2>
       <ProjectGrid projects={projects} />
-    </>
+    </div>
   )
 }

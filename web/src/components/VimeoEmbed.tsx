@@ -3,6 +3,14 @@ export function vimeoIdFromUrl(url: string): string | null {
   return match?.[1] ?? null
 }
 
+// Unlisted videos need this token or the player reports the video as private.
+// Share links carry it as vimeo.com/<id>/<hash>; player URLs as ?h=<hash>.
+export function vimeoHashFromUrl(url: string): string | null {
+  const inPath = url.match(/vimeo\.com\/(?:video\/)?\d+\/([a-z0-9]+)/i)
+  if (inPath) return inPath[1]
+  return url.match(/[?&]h=([a-z0-9]+)/i)?.[1] ?? null
+}
+
 export function VimeoEmbed({
   url,
   title,
@@ -22,6 +30,8 @@ export function VimeoEmbed({
     byline: '0',
     portrait: '0',
   })
+  const hash = vimeoHashFromUrl(url)
+  if (hash) params.set('h', hash)
   if (autoplay) params.set('autoplay', '1')
 
   return (

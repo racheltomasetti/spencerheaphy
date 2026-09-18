@@ -1,4 +1,3 @@
-
 import type {SiteSettings} from '@/sanity/lib/types'
 
 export function SiteFooter({settings}: {settings: SiteSettings | null}) {
@@ -17,7 +16,7 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:opacity-70"
+              className="transition-colors hover:text-foreground"
             >
               {link.platform}
             </a>
