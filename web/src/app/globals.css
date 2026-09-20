@@ -12,6 +12,19 @@
   --font-sans: var(--font-sans-body), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* The fixed nav is 2 * py-5 (2.5rem) plus one line of the name at leading-[1.3], so
+   its height follows the fluid name size. Pages pad their top by --nav-h to clear it. */
+:root {
+  --nav-name-size: clamp(20px, 6vw, 32px);
+  --nav-h: calc(2.5rem + 1.3 * var(--nav-name-size));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nav-name-size: clamp(30px, 4vw, 50px);
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

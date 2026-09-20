@@ -19,6 +19,7 @@ export function BoldLink({
   external = false,
   weight = 700,
   className,
+  onClick,
 }: {
   href: string
   label: string
@@ -29,6 +30,7 @@ export function BoldLink({
   external?: boolean
   weight?: number
   className?: string
+  onClick?: () => void
 }) {
   const handlers = {
     onMouseEnter: onActivate,
@@ -36,7 +38,14 @@ export function BoldLink({
       if (event.currentTarget.matches(':focus-visible')) onActivate()
     },
     onBlur: onDeactivate,
+    onClick,
   }
+
+  // A transition takes its timing from the state it's heading into, so the link gaining
+  // emphasis snaps in quickly while the one losing it eases out a beat slower. The two
+  // overlap, which reads as the bold flowing across rather than swapping.
+  const ms = emphasized ? 150 : 200
+  const ease = 'cubic-bezier(0.4, 0, 0.2, 1)'
 
   const content = (
     <span
@@ -44,7 +53,8 @@ export function BoldLink({
       style={{
         display: 'inline-grid',
         transform: emphasized ? 'scale(1.08)' : 'scale(1)',
-        transition: 'transform 200ms ease-out',
+        transition: `transform ${ms}ms ${ease}`,
+        willChange: 'transform',
       }}
     >
       <span
@@ -53,7 +63,7 @@ export function BoldLink({
           gridArea: '1 / 1',
           justifySelf: 'center',
           fontWeight: emphasized ? weight : undefined,
-          transition: 'font-weight 200ms ease-out',
+          transition: `font-weight ${ms}ms ${ease}`,
         }}
       >
         {label}

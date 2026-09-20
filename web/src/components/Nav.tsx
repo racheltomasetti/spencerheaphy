@@ -12,11 +12,9 @@ const NAV_LINKS = [
   {href: '/bio', label: 'Bio'},
 ] as const
 
-const OVERLAY_LINK =
-  'text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]'
-
-const BAR_LINK = 'text-[14px] uppercase tracking-[0.18em]'
-const NAME_LINK = 'text-[20px] leading-[1.3] font-bold uppercase tracking-[0.18em]'
+const BAR_LINK = 'text-[clamp(13px,1.6vw,20px)] uppercase tracking-[0.18em]'
+const NAME_LINK =
+  'text-[length:var(--nav-name-size)] leading-[1.3] font-bold uppercase tracking-[0.18em]'
 
 export function Nav() {
   const searchParams = useSearchParams()
@@ -48,10 +46,10 @@ export function Nav() {
     <>
       <header
         className="fixed inset-x-0 top-0 z-[80] transition-[background-color] duration-500 ease-in-out"
-        style={{background: dark ? 'rgba(20,19,16,0)' : '#faf9f6'}}
+        style={{background: menuOpen ? '#141310' : dark ? 'rgba(20,19,16,0)' : '#faf9f6'}}
       >
         <div
-          className="flex items-center justify-between gap-6 px-5 md:px-8 py-5 transition-colors duration-500 ease-in-out md:items-baseline"
+          className="flex items-center justify-between gap-6 px-5 md:px-8 py-5 transition-colors duration-500 ease-in-out"
           style={{color: dark ? '#faf9f6' : '#141310'}}
         >
           <Link
@@ -103,21 +101,43 @@ export function Nav() {
             />
           </button>
         </div>
+
+        {menuOpen && <MobileMenu pathname={pathname} onClose={() => setMenuOpen(false)} />}
       </header>
 
-      {menuOpen && <MenuOverlay onClose={() => setMenuOpen(false)} />}
+      {menuOpen && (
+        <div
+          aria-hidden
+          onClick={() => setMenuOpen(false)}
+          className="fixed inset-0 z-[70] animate-[menu-fade-in_240ms_ease] bg-black/40 md:hidden"
+        />
+      )}
     </>
   )
 }
 
-function MenuOverlay({onClose}: {onClose: () => void}) {
+// A compact dropdown that hangs from the header, only as tall as its links. The header
+// turns solid ink while it's open, so the panel reads as an extension of the bar.
+function MobileMenu({pathname, onClose}: {pathname: string; onClose: () => void}) {
   return (
-    <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-5 text-background md:hidden">
+    <nav
+      aria-label="Menu"
+      className="animate-[menu-fade-in_240ms_ease] px-5 pb-3 text-[#faf9f6] md:hidden"
+    >
       {NAV_LINKS.map((link) => (
-        <Link key={link.href} href={link.href} onClick={onClose} className={OVERLAY_LINK}>
-          {link.label}
-        </Link>
+        <div key={link.href} className="border-t border-[#faf9f6]/15">
+          <BoldLink
+            href={link.href}
+            label={link.label}
+            className="py-4 text-[15px] uppercase tracking-[0.18em]"
+            current={pathname === link.href}
+            emphasized={pathname === link.href}
+            onActivate={() => {}}
+            onDeactivate={() => {}}
+            onClick={onClose}
+          />
+        </div>
       ))}
-    </div>
+    </nav>
   )
 }
