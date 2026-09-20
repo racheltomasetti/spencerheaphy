@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import {usePathname, useSearchParams} from 'next/navigation'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
+import {BoldLink} from '@/components/BoldLink'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 
 const NAV_LINKS = [
@@ -14,8 +15,8 @@ const NAV_LINKS = [
 const OVERLAY_LINK =
   'text-[clamp(38px,7vw,86px)] leading-[1.12] tracking-[-0.03em] transition-colors hover:text-[#c8a27a] md:text-[clamp(34px,5vw,60px)]'
 
-const BAR_LINK =
-  'text-[14px] uppercase tracking-[0.18em] transition-colors hover:text-[#c8a27a]'
+const BAR_LINK = 'text-[14px] uppercase tracking-[0.18em]'
+const NAME_LINK = 'text-[20px] leading-[1.3] font-bold uppercase tracking-[0.18em]'
 
 export function Nav() {
   const searchParams = useSearchParams()
@@ -25,6 +26,7 @@ export function Nav() {
   // Menu open forces the transparent/cream-ink state even when scrolled, so a
   // solid cream bar never paints cream text on top of the dark overlay.
   const dark = !scrolled || menuOpen
+  const [activeHref, setActiveHref] = useState<string | null>(null)
 
   useEffect(() => {
     if (projectOpen) setMenuOpen(false)
@@ -49,27 +51,34 @@ export function Nav() {
         style={{background: dark ? 'rgba(20,19,16,0)' : '#faf9f6'}}
       >
         <div
-          className="flex items-center justify-between gap-6 px-8 py-5 transition-colors duration-500 ease-in-out md:items-baseline"
+          className="flex items-center justify-between gap-6 px-5 md:px-8 py-5 transition-colors duration-500 ease-in-out md:items-baseline"
           style={{color: dark ? '#faf9f6' : '#141310'}}
         >
           <Link
             href="/#top"
             onClick={() => setMenuOpen(false)}
             aria-label="Spencer Heaphy, home"
-            className="text-[18px] leading-[1.3] font-bold uppercase tracking-[0.18em]"
+            className={NAME_LINK}
           >
             Spencer Heaphy
           </Link>
 
-          <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
+          <nav
+            className="hidden items-center gap-7 md:flex"
+            aria-label="Primary"
+            onMouseLeave={() => setActiveHref(null)}
+          >
             {NAV_LINKS.map((link) => (
-              <Link
+              <BoldLink
                 key={link.href}
                 href={link.href}
-                className={`${BAR_LINK} ${pathname === link.href ? 'text-[#c8a27a]' : ''}`}
-              >
-                {link.label}
-              </Link>
+                label={link.label}
+                className={BAR_LINK}
+                current={pathname === link.href}
+                emphasized={activeHref === null ? pathname === link.href : activeHref === link.href}
+                onActivate={() => setActiveHref(link.href)}
+                onDeactivate={() => setActiveHref(null)}
+              />
             ))}
           </nav>
 
@@ -103,7 +112,7 @@ export function Nav() {
 
 function MenuOverlay({onClose}: {onClose: () => void}) {
   return (
-    <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-8 text-background md:hidden">
+    <div className="fixed inset-0 z-[70] flex animate-[menu-fade-in_320ms_ease] flex-col justify-center gap-1.5 bg-foreground px-5 text-background md:hidden">
       {NAV_LINKS.map((link) => (
         <Link key={link.href} href={link.href} onClick={onClose} className={OVERLAY_LINK}>
           {link.label}

@@ -11,9 +11,11 @@ const GRID_CLASS = {
 export function ProjectGrid({
   projects,
   columns = 3,
+  subheaderRight = false,
 }: {
   projects: Project[]
   columns?: keyof typeof GRID_CLASS
+  subheaderRight?: boolean
 }) {
   if (projects.length === 0) {
     return <p className="text-sm text-foreground/50">Projects coming soon.</p>
@@ -22,7 +24,7 @@ export function ProjectGrid({
   return (
     <div className={GRID_CLASS[columns]}>
       {projects.map((project) => (
-        <ProjectCard key={project._id} project={project} />
+        <ProjectCard key={project._id} project={project} subheaderRight={subheaderRight} />
       ))}
     </div>
   )

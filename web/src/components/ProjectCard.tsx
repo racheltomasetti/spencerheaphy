@@ -2,7 +2,13 @@ import Link from 'next/link'
 import {MediaItemView} from '@/components/MediaItemView'
 import type {Project} from '@/sanity/lib/types'
 
-export function ProjectCard({project}: {project: Project}) {
+export function ProjectCard({
+  project,
+  subheaderRight = false,
+}: {
+  project: Project
+  subheaderRight?: boolean
+}) {
   const isUndisclosed = project.status === 'undisclosed'
 
   const media = (
@@ -28,12 +34,20 @@ export function ProjectCard({project}: {project: Project}) {
   )
 
   const caption = (
-    <div className="flex flex-col gap-1">
+    <div
+      className={
+        subheaderRight ? 'flex items-baseline justify-between gap-3' : 'flex flex-col gap-1'
+      }
+    >
       <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85">
         {isUndisclosed ? 'Undisclosed' : project.title}
       </span>
       {!isUndisclosed && project.subheader && (
-        <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/72">
+        <span
+          className={`text-[10px] uppercase tracking-[0.18em] text-foreground/72 ${
+            subheaderRight ? 'text-right' : ''
+          }`}
+        >
           {project.subheader}
         </span>
       )}
