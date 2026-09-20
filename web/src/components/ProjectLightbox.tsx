@@ -83,28 +83,36 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
             )}
           </div>
 
-          <div className="mb-10 flex flex-col gap-2">
-            <h2 className="font-serif text-3xl uppercase tracking-[0.06em]">{project.title}</h2>
-            <span className="text-xs uppercase tracking-[0.15em] text-foreground/40">
-              {[project.subheader, displayDate].filter(Boolean).join(' · ')}
-            </span>
-            {project.description && (
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/80">
-                {project.description}
-              </p>
+          {/* Sizes track the viewport, so the copy holds its proportion to the film on
+              every screen. From lg the title spans the top row and the credits sit in the
+              right-hand columns, level with the subheader whatever the title does. */}
+          <div className="mb-12 grid gap-x-8 lg:grid-cols-12">
+            <h2 className="mb-2 font-serif text-[clamp(26px,2.6vw,44px)] uppercase leading-[1.1] tracking-[0.06em] lg:col-span-12">
+              {project.title}
+            </h2>
+
+            <div className="flex flex-col lg:col-span-7">
+              <span className="text-[clamp(11px,0.85vw,13px)] uppercase tracking-[0.15em] text-foreground/55">
+                {[project.subheader, displayDate].filter(Boolean).join(' · ')}
+              </span>
+              {project.description && (
+                <p className="mt-4 max-w-[60ch] text-[clamp(15px,1.1vw,19px)] leading-relaxed text-foreground/80">
+                  {project.description}
+                </p>
+              )}
+            </div>
+
+            {crew.length > 0 && (
+              <dl className="mt-10 grid grid-cols-[auto_1fr] content-start gap-x-8 gap-y-2 text-[clamp(11px,0.8vw,13px)] uppercase tracking-[0.13em] lg:col-span-4 lg:col-start-9 lg:mt-0">
+                {crew.map((credit, index) => (
+                  <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
+                    <dt className="text-foreground/50">{credit.role}</dt>
+                    <dd className="min-w-0 break-words text-foreground/80">{credit.name}</dd>
+                  </div>
+                ))}
+              </dl>
             )}
           </div>
-
-          {crew.length > 0 && (
-            <dl className="mb-12 grid max-w-xl grid-cols-[auto_1fr] gap-x-8 gap-y-2 text-[11px] uppercase tracking-[0.13em]">
-              {crew.map((credit, index) => (
-                <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
-                  <dt className="text-foreground/50">{credit.role}</dt>
-                  <dd className="text-foreground/80">{credit.name}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
 
           {project.gallery && project.gallery.length > 0 && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

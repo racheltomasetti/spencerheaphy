@@ -15,7 +15,7 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <SelectedWork projects={directorProjects} columns={4} subheaderRight />
+      <SelectedWork projects={directorProjects} columns={4} subheaderRight hoverFocusVideo />
       <Suspense fallback={null}>
         <ProjectLightbox projects={directorProjects} />
       </Suspense>

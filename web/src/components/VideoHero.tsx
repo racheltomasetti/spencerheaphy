@@ -107,8 +107,10 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const [slide, setSlide] = useState(0)
   const isDesktop = useIsDesktop()
   const searchParams = useSearchParams()
-  const {heroRef, menuOpen} = useNavVisibility()
-  const paused = searchParams.get('project') !== null || menuOpen
+  const {heroRef} = useNavVisibility()
+  // Only an open project covers the hero. The menu is a compact dropdown now, so the
+  // slides keep playing and advancing underneath it.
+  const paused = searchParams.get('project') !== null
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
   const swipeStartX = useRef<number | null>(null)

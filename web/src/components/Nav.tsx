@@ -16,10 +16,12 @@ const BAR_LINK = 'text-[clamp(13px,1.6vw,20px)] uppercase tracking-[0.18em]'
 const NAME_LINK =
   'text-[length:var(--nav-name-size)] leading-[1.3] font-bold uppercase tracking-[0.18em]'
 
-// Scrolling down slides the bar out of view so it never sits on top of work; the
-// first scroll back up brings it straight back. Below this distance it always shows.
+// Scrolling down slides the bar out of view so it never sits on top of work; scrolling
+// back up brings it straight back. Both need a run of deliberate travel in one direction,
+// so momentum jitter, edge bounce and late-loading images can't make it flicker.
 const SHOW_NEAR_TOP = 10
-const SCROLL_STEP = 6
+const HIDE_AFTER = 24
+const SHOW_AFTER = 32
 
 // `embedded` renders the bar inside the project view, which scrolls on its own. The
 // page-level copy hides while a project is open so there's only ever one.
@@ -35,9 +37,11 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   const [activeHref, setActiveHref] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
+  const travel = useRef(0)
 
   useEffect(() => {
     lastY.current = 0
+    travel.current = 0
     setHidden(false)
 
     // Scroll events don't bubble, but they can be caught in the capture phase. The page
@@ -46,12 +50,26 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
     const onScroll = (event: Event) => {
       const isDocument = event.target === document
       if (isDocument === embedded) return
-      const y = isDocument ? window.scrollY : (event.target as Element).scrollTop
-      const delta = y - lastY.current
 
-      if (y < SHOW_NEAR_TOP || delta < -SCROLL_STEP) setHidden(false)
-      else if (delta > SCROLL_STEP) setHidden(true)
-      if (Math.abs(delta) > SCROLL_STEP || y < SHOW_NEAR_TOP) lastY.current = y
+      const scroller = isDocument ? document.documentElement : (event.target as Element)
+      const max = Math.max(0, scroller.scrollHeight - scroller.clientHeight)
+      // Clamp so rubber-banding past either end reads as standing still, not as a reversal.
+      const y = Math.min(Math.max(isDocument ? window.scrollY : scroller.scrollTop, 0), max)
+      const delta = y - lastY.current
+      lastY.current = y
+      if (delta === 0) return
+
+      if (y < SHOW_NEAR_TOP) {
+        travel.current = 0
+        setHidden(false)
+        return
+      }
+
+      // Distance covered in the current direction; a reversal starts the count over.
+      travel.current =
+        Math.sign(delta) === Math.sign(travel.current) ? travel.current + delta : delta
+      if (travel.current > HIDE_AFTER) setHidden(true)
+      else if (travel.current < -SHOW_AFTER) setHidden(false)
     }
 
     document.addEventListener('scroll', onScroll, {capture: true, passive: true})
