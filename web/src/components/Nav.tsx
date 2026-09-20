@@ -14,7 +14,7 @@ const NAV_LINKS = [
 
 const BAR_LINK = 'text-[clamp(13px,1.6vw,20px)] uppercase tracking-[0.18em]'
 const NAME_LINK =
-  'text-[length:var(--nav-name-size)] leading-[1.3] font-bold uppercase tracking-[0.18em]'
+  'font-serif text-[length:var(--nav-name-size)] leading-[1.3] font-medium uppercase tracking-[0.18em]'
 
 // Scrolling down slides the bar out of view so it never sits on top of work; scrolling
 // back up brings it straight back. Both need a run of deliberate travel in one direction,
@@ -104,7 +104,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
         onFocusCapture={() => setHidden(false)}
       >
         <div
-          className="flex items-center justify-between gap-6 px-5 md:px-8 py-5 transition-colors duration-500 ease-in-out"
+          className="flex items-center justify-between gap-6 px-(--edge) py-5 transition-colors duration-500 ease-in-out"
           style={{color: dark ? '#faf9f6' : '#141310'}}
         >
           <Link
@@ -177,7 +177,7 @@ function MobileMenu({pathname, onClose}: {pathname: string; onClose: () => void}
   return (
     <nav
       aria-label="Menu"
-      className="animate-[menu-fade-in_240ms_ease] px-5 pb-3 text-[#faf9f6] md:hidden"
+      className="animate-[menu-fade-in_240ms_ease] px-(--edge) pb-3 text-[#faf9f6] md:hidden"
     >
       {NAV_LINKS.map((link) => (
         <div key={link.href} className="border-t border-[#faf9f6]/15">

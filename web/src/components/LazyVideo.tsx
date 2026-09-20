@@ -18,6 +18,7 @@ export function LazyVideo({
   className,
   loop = true,
   active = true,
+  preload = 'none',
   playsBeforeAdvance,
   onAdvance,
 }: {
@@ -25,6 +26,7 @@ export function LazyVideo({
   className?: string
   loop?: boolean
   active?: boolean
+  preload?: 'none' | 'metadata' | 'auto'
   playsBeforeAdvance?: number
   onAdvance?: () => void
 }) {
@@ -70,7 +72,7 @@ export function LazyVideo({
       ref={ref}
       className={className}
       src={inView ? src : undefined}
-      preload="none"
+      preload={preload}
       autoPlay={inView && active}
       muted
       loop={shouldLoop}

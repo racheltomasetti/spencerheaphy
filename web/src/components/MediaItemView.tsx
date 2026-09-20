@@ -12,6 +12,7 @@ export function MediaItemView({
   placeholderLabel,
   placeholderVariant = 'light',
   videoActive = true,
+  videoPreload,
   playsBeforeAdvance,
   onAdvance,
 }: {
@@ -23,6 +24,7 @@ export function MediaItemView({
   placeholderLabel?: string
   placeholderVariant?: 'light' | 'dark'
   videoActive?: boolean
+  videoPreload?: 'none' | 'metadata' | 'auto'
   playsBeforeAdvance?: number
   onAdvance?: () => void
 }) {
@@ -32,6 +34,7 @@ export function MediaItemView({
         src={media.video.asset.url}
         className={className}
         active={videoActive}
+        preload={videoPreload}
         playsBeforeAdvance={playsBeforeAdvance}
         onAdvance={onAdvance}
       />

@@ -19,6 +19,7 @@ const DESKTOP_BREAKPOINT = '(min-width: 768px)'
 const LOOP_REPEATS = 20
 const IMAGE_ADVANCE_MS = 8000
 const SWIPE_THRESHOLD = 50
+const CROSSFADE_MS = 600
 
 function subscribeToBreakpoint(callback: () => void) {
   const mql = window.matchMedia(DESKTOP_BREAKPOINT)
@@ -31,6 +32,22 @@ function useIsDesktop() {
     subscribeToBreakpoint,
     () => window.matchMedia(DESKTOP_BREAKPOINT).matches,
     () => true,
+  )
+}
+
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
+
+function subscribeToReducedMotion(callback: () => void) {
+  const mql = window.matchMedia(REDUCED_MOTION)
+  mql.addEventListener('change', callback)
+  return () => mql.removeEventListener('change', callback)
+}
+
+function useReducedMotion() {
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => false,
   )
 }
 
@@ -55,51 +72,40 @@ function PlaceholderHero() {
   )
 }
 
-const SCRIM =
-  'pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,19,16,.5)_0%,rgba(20,19,16,0)_26%,rgba(20,19,16,0)_55%,rgba(20,19,16,.62)_100%)]'
+// Soft top and bottom scrims so the nav and the caption hold up over bright footage.
+function HeroScrims() {
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[30%] bg-[linear-gradient(to_bottom,rgba(0,0,0,.25),rgba(0,0,0,.12)_50%,rgba(0,0,0,0))]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[50%] bg-[linear-gradient(to_top,rgba(0,0,0,.5),rgba(0,0,0,.25)_50%,rgba(0,0,0,0))]" />
+    </>
+  )
+}
 
+// Keyed by project so it remounts, and fades in shortly after each slide has settled.
 function HeroCaption({project}: {project: Project}) {
   return (
-    <div className="flex flex-col gap-2.5">
-      <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
-        {project.title}
-      </span>
-      {project.subheader && (
-        <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
-          {project.subheader}
-        </span>
-      )}
+    <div
+      key={project._id}
+      className="flex min-w-0 animate-[hero-caption-in_450ms_ease_150ms_both] flex-col gap-3 motion-reduce:animate-none"
+    >
+      {project.subheader && <span className="type-project-subhead">{project.subheader}</span>}
+      <span className="type-project-title">{project.title}</span>
     </div>
   )
 }
 
-function HeroDots({
-  count,
-  slide,
-  onSelect,
-}: {
-  count: number
-  slide: number
-  onSelect: (index: number) => void
-}) {
+function HeroCounter({slide, count}: {slide: number; count: number}) {
   if (count <= 1) return null
+  const pad = (value: number) => String(value).padStart(2, '0')
 
   return (
-    <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
-      {Array.from({length: count}, (_, index) => (
-        <button
-          key={index}
-          type="button"
-          role="tab"
-          aria-label={`Go to slide ${index + 1}`}
-          aria-selected={index === slide}
-          onClick={() => onSelect(index)}
-          className={`size-1.5 rounded-full transition-colors ${
-            index === slide ? 'bg-background' : 'bg-background/35 hover:bg-background/55'
-          }`}
-        />
-      ))}
-    </div>
+    <span
+      className="type-project-subhead shrink-0 tabular-nums"
+      aria-label={`Slide ${slide + 1} of ${count}`}
+    >
+      {pad(slide + 1)} / {pad(count)}
+    </span>
   )
 }
 
@@ -111,6 +117,12 @@ export function VideoHero({projects}: {projects: Project[]}) {
   // Only an open project covers the hero. The menu is a compact dropdown now, so the
   // slides keep playing and advancing underneath it.
   const paused = searchParams.get('project') !== null
+  const reducedMotion = useReducedMotion()
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  // Hovering the hero, keyboard focus inside it, or a reduced-motion preference holds the
+  // slide in place: nothing auto-advances and videos loop until the hold is released.
+  const hold = hovered || focused || reducedMotion
   const count = projects.length
   const scrollRef = useRef<HTMLDivElement>(null)
   const swipeStartX = useRef<number | null>(null)
@@ -133,22 +145,6 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
   const goPrev = useCallback(() => advance(-1), [advance])
   const goNext = useCallback(() => advance(1), [advance])
-
-  const goTo = useCallback(
-    (index: number) => {
-      if (count <= 1) return
-      if (isDesktop) {
-        setSlide(index)
-        return
-      }
-      const node = scrollRef.current
-      if (!node) return
-      const loopIndex = Math.round(node.scrollLeft / node.clientWidth)
-      const copy = Math.floor(loopIndex / count)
-      node.scrollTo({left: (copy * count + index) * node.clientWidth, behavior: 'smooth'})
-    },
-    [count, isDesktop],
-  )
 
   useEffect(() => {
     if (count <= 1 || paused) return
@@ -187,14 +183,27 @@ export function VideoHero({projects}: {projects: Project[]}) {
     return () => node.removeEventListener('scroll', onScroll)
   }, [isDesktop, count])
 
+  // The slide that just changed away stays mounted under the incoming one until the
+  // crossfade is done, so the picture never dips to black between videos.
+  const prevSlide = useRef(slide)
+  const [leaving, setLeaving] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (prevSlide.current === slide) return
+    setLeaving(prevSlide.current)
+    prevSlide.current = slide
+    const timer = window.setTimeout(() => setLeaving(null), CROSSFADE_MS)
+    return () => window.clearTimeout(timer)
+  }, [slide])
+
   const active = projects[slide]
   const activeIsVideo = active ? isVideoSlide(active, isDesktop) : false
 
   useEffect(() => {
-    if (count <= 1 || paused || activeIsVideo) return
+    if (count <= 1 || paused || hold || activeIsVideo) return
     const timer = window.setTimeout(goNext, IMAGE_ADVANCE_MS)
     return () => window.clearTimeout(timer)
-  }, [count, paused, activeIsVideo, slide, goNext])
+  }, [count, paused, hold, activeIsVideo, slide, goNext])
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!isDesktop || count <= 1) return
@@ -249,7 +258,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
                   placeholderLabel={`Reel — ${project.title}`}
                   placeholderVariant="dark"
                   videoActive={isActiveCopy}
-                  playsBeforeAdvance={2}
+                  playsBeforeAdvance={hold ? undefined : 2}
                   onAdvance={goNext}
                 />
               </Link>
@@ -257,14 +266,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
           })}
         </div>
 
-        <div className={SCRIM} />
+        <HeroScrims />
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-2.5 p-8 pb-14 text-background">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
           <HeroCaption project={active} />
-        </div>
-
-        <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
-          <HeroDots count={count} slide={slide} onSelect={goTo} />
+          <HeroCounter slide={slide} count={count} />
         </div>
       </div>
     )
@@ -276,7 +282,17 @@ export function VideoHero({projects}: {projects: Project[]}) {
     <div
       id="top"
       ref={heroRef}
-      className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      className="group relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') setHovered(true)
+      }}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={(event) => {
+        if (event.target.matches(':focus-visible')) setFocused(true)
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false)
+      }}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerCancel={() => {
@@ -284,12 +300,17 @@ export function VideoHero({projects}: {projects: Project[]}) {
       }}
     >
       {projects.map((project, index) => {
-        if (index !== slide && index !== nextIndex) return null
+        if (index !== slide && index !== nextIndex && index !== leaving) return null
+        const isCurrent = index === slide
         return (
           <div
             key={project._id}
-            className="absolute inset-0 transition-opacity duration-[1100ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            style={{opacity: index === slide ? 1 : 0}}
+            className="absolute inset-0 transition-opacity duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
+            // Current fades in on top of the leaving slide, which holds at full opacity below.
+            style={{
+              opacity: isCurrent || index === leaving ? 1 : 0,
+              zIndex: isCurrent ? 2 : index === leaving ? 1 : 0,
+            }}
           >
             <MediaItemView
               media={heroMediaFor(project, isDesktop)}
@@ -297,23 +318,26 @@ export function VideoHero({projects}: {projects: Project[]}) {
               className="h-full w-full object-cover"
               placeholderLabel={`Reel — ${project.title}`}
               placeholderVariant="dark"
-              videoActive={index === slide && !paused}
-              playsBeforeAdvance={2}
+              videoActive={(isCurrent || index === leaving) && !paused}
+              videoPreload="auto"
+              playsBeforeAdvance={isCurrent && !hold ? 2 : undefined}
               onAdvance={goNext}
             />
           </div>
         )
       })}
 
-      <div className={SCRIM} />
+      <HeroScrims />
 
+      {/* Desktop hover only: the arrows fade in while the pointer is over the hero (or when
+          one takes keyboard focus) and stay out of the way otherwise. */}
       {count > 1 && (
         <>
           <button
             type="button"
             aria-label="Previous slide"
             onClick={goPrev}
-            className="absolute top-1/2 left-8 z-10 -translate-y-1/2 text-[22px] text-background/80 transition-colors hover:text-background"
+            className="left-(--edge) absolute top-1/2 z-10 -translate-y-1/2 p-2 text-[22px] text-background opacity-0 pointer-events-none transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 motion-reduce:transition-none"
           >
             ←
           </button>
@@ -321,21 +345,22 @@ export function VideoHero({projects}: {projects: Project[]}) {
             type="button"
             aria-label="Next slide"
             onClick={goNext}
-            className="absolute top-1/2 right-8 z-10 -translate-y-1/2 text-[22px] text-background/80 transition-colors hover:text-background"
+            className="right-(--edge) absolute top-1/2 z-10 -translate-y-1/2 p-2 text-[22px] text-background opacity-0 pointer-events-none transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 motion-reduce:transition-none"
           >
             →
           </button>
         </>
       )}
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-8 pb-14 text-background">
-        <Link href={`/?project=${active.slug}`} scroll={false} className="pointer-events-auto">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
+        <Link
+          href={`/?project=${active.slug}`}
+          scroll={false}
+          className="pointer-events-auto min-w-0"
+        >
           <HeroCaption project={active} />
         </Link>
-      </div>
-
-      <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
-        <HeroDots count={count} slide={slide} onSelect={goTo} />
+        <HeroCounter slide={slide} count={count} />
       </div>
     </div>
   )

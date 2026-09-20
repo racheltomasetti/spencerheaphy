@@ -18,7 +18,7 @@ export function Bio({
       className={
         standalone
           ? 'w-full'
-          : 'scroll-mt-(--nav-h) px-5 md:px-8 pt-[calc(var(--nav-h)+1rem)] pb-[90px]'
+          : 'scroll-mt-(--nav-h) px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[90px]'
       }
     >
       <div className="grid grid-cols-12 gap-7 lg:items-center">

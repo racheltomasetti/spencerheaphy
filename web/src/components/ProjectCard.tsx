@@ -35,19 +35,15 @@ export function ProjectCard({
 
   const caption = (
     <div
-      className={
+      className={`[--project-subhead-size:10px] [--project-title-size:1.125rem] ${
         subheaderRight ? 'flex items-baseline justify-between gap-3' : 'flex flex-col gap-1'
-      }
+      }`}
     >
-      <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none">
+      <span className="type-project-title text-foreground/85 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none">
         {isUndisclosed ? 'Undisclosed' : project.title}
       </span>
       {!isUndisclosed && project.subheader && (
-        <span
-          className={`text-[10px] uppercase tracking-[0.18em] text-foreground/72 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none ${
-            subheaderRight ? 'text-right' : ''
-          }`}
-        >
+        <span className={`type-project-subhead ${subheaderRight ? 'text-right' : ''}`}>
           {project.subheader}
         </span>
       )}

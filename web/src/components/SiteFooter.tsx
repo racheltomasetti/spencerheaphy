@@ -6,7 +6,7 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
 
   return (
     <footer id="site-footer" className="scroll-mt-(--nav-h)">
-      <div className="flex flex-col items-center gap-4 px-5 md:px-8 py-10 text-center text-xs uppercase tracking-[0.1em] text-foreground/60 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+      <div className="flex flex-col items-center gap-4 px-(--edge) py-10 text-center text-xs uppercase tracking-[0.1em] text-foreground/60 sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <p className="text-foreground/60">
         &copy; {year} {settings?.name || 'Spencer Heaphy'}
         </p>

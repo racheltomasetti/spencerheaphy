@@ -15,7 +15,7 @@ export function SelectedWork({
   hoverFocusVideo?: boolean
 }) {
   return (
-    <div className="w-full px-5 md:px-8 pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
+    <div className="w-full px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
       {title && (
         <h2 className="pb-10 text-[clamp(26px,3.4vw,46px)] leading-none font-normal tracking-[-0.025em]">
           {title}

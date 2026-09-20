@@ -59,7 +59,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
       }}
     >
       <Nav embedded />
-      <div className="px-5 pb-16 pt-[calc(var(--nav-h)+2rem)] md:px-8">
+      <div className="px-(--edge) pb-16 pt-[calc(var(--nav-h)+2rem)]">
         {/* Fills the page gutters, but never wider than a 16:9 video that still fits the
             screen's height, so the whole film is in view below the nav. */}
         <div
@@ -87,12 +87,10 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
               every screen. From lg the title spans the top row and the credits sit in the
               right-hand columns, level with the subheader whatever the title does. */}
           <div className="mb-12 grid gap-x-8 lg:grid-cols-12">
-            <h2 className="mb-2 font-serif text-[clamp(26px,2.6vw,44px)] uppercase leading-[1.1] tracking-[0.06em] lg:col-span-12">
-              {project.title}
-            </h2>
+            <h2 className="type-project-title mb-2 lg:col-span-12">{project.title}</h2>
 
             <div className="flex flex-col lg:col-span-7">
-              <span className="text-[clamp(11px,0.85vw,13px)] uppercase tracking-[0.15em] text-foreground/55">
+              <span className="type-project-subhead">
                 {[project.subheader, displayDate].filter(Boolean).join(' · ')}
               </span>
               {project.description && (
