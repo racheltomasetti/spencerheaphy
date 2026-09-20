@@ -16,7 +16,7 @@
    and footer all pad by --edge, so their left and right edges line up. */
 :root {
   --edge: 1.25rem;
-  --project-title-size: clamp(2rem, 4vw, 3.5rem);
+  --project-title-size: clamp(1.5rem, 3vw, 2.5rem);
   --project-subhead-size: 12px;
 }
 
