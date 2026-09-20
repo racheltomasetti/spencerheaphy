@@ -59,7 +59,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
           type="button"
           onClick={close}
           aria-label="Close"
-          className="fixed right-6 top-6 z-10 text-2xl leading-none text-foreground/72 hover:text-foreground sm:right-10 sm:top-8"
+          className="fixed right-6 top-6 z-10 text-2xl leading-none text-foreground/60 hover:text-foreground sm:right-10 sm:top-8"
         >
           &times;
         </button>
@@ -80,23 +80,23 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
         </div>
 
         <div className="mb-10 flex flex-col gap-2">
-          <h2 className="text-[clamp(26px,3.2vw,40px)] leading-[1.08] tracking-[-0.022em]">{project.title}</h2>
-          <span className="text-[13px] leading-[1.5] text-foreground/72">
-            {[project.client, displayDate].filter(Boolean).join(' · ')}
+          <h2 className="font-serif text-3xl uppercase tracking-[0.06em]">{project.title}</h2>
+          <span className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+            {[project.subheader, displayDate].filter(Boolean).join(' · ')}
           </span>
           {project.description && (
-            <p className="mt-4 max-w-2xl text-[17px] leading-[1.62] text-foreground/80">
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/80">
               {project.description}
             </p>
           )}
         </div>
 
         {crew.length > 0 && (
-          <dl className="mb-12 grid max-w-xl grid-cols-[auto_1fr] gap-x-8 gap-y-2">
+          <dl className="mb-12 grid max-w-xl grid-cols-[auto_1fr] gap-x-8 gap-y-2 text-[11px] uppercase tracking-[0.13em]">
             {crew.map((credit, index) => (
               <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
-                <dt className="text-[13px] leading-[1.5] text-foreground/72">{credit.role}</dt>
-                <dd className="text-[15px] leading-[1.62] text-foreground/80">{credit.name}</dd>
+                <dt className="text-foreground/50">{credit.role}</dt>
+                <dd className="text-foreground/80">{credit.name}</dd>
               </div>
             ))}
           </dl>

@@ -25,7 +25,7 @@ export const PROJECTS_QUERY = defineQuery(`
     title,
     year,
     date,
-    client,
+    subheader,
     vimeoUrl,
     role,
     crew[] { role, name },

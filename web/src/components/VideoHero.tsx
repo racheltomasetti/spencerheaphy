@@ -48,7 +48,7 @@ function PlaceholderHero() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="absolute inset-0 animate-[hero-drift_12s_ease-in-out_infinite] bg-[linear-gradient(120deg,#1d1c18,#2a2823,#141310,#232019)] bg-[length:200%_200%]" />
-      <p className="relative text-[12px] leading-[1.5] text-background/72">
+      <p className="relative text-[10px] uppercase tracking-[0.25em] text-background/40">
         Reel coming soon
       </p>
     </div>
@@ -61,12 +61,12 @@ const SCRIM =
 function HeroCaption({project}: {project: Project}) {
   return (
     <div className="flex flex-col gap-2.5">
-      <span className="text-[clamp(30px,4vw,54px)] leading-[1.1] tracking-[-0.025em]">
+      <span className="font-serif text-[clamp(28px,3.6vw,50px)] leading-none tracking-[-0.025em]">
         {project.title}
       </span>
-      {project.year && (
-        <span className="text-[13px] leading-[1.5] text-background/78">
-          {project.year}
+      {project.subheader && (
+        <span className="text-[11px] uppercase tracking-[0.14em] text-background/62">
+          {project.subheader}
         </span>
       )}
     </div>

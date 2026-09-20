@@ -15,7 +15,7 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <SelectedWork projects={directorProjects} title="Projects" />
+      <SelectedWork projects={directorProjects} columns={4} />
       <Suspense fallback={null}>
         <ProjectLightbox projects={directorProjects} />
       </Suspense>

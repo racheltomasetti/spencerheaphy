@@ -9,10 +9,10 @@ export function ProjectCard({project}: {project: Project}) {
     <div className="relative w-full overflow-hidden" style={{aspectRatio: '16 / 9'}}>
       {isUndisclosed ? (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-foreground/10 bg-[repeating-linear-gradient(135deg,#eceae4_0_9px,#f4f2ec_9px_18px)] text-center">
-          <span className="text-[13px] leading-[1.5] text-foreground/72">
+          <span className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">
             Undisclosed
           </span>
-          <span className="text-[12px] leading-[1.5] text-foreground/72">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/30">
             Details coming soon
           </span>
         </div>
@@ -28,13 +28,13 @@ export function ProjectCard({project}: {project: Project}) {
   )
 
   const caption = (
-    <div className="flex items-baseline justify-between gap-3">
-      <span className="text-[18px] leading-[1.25] tracking-[-0.01em] text-foreground/85">
+    <div className="flex flex-col gap-1">
+      <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85">
         {isUndisclosed ? 'Undisclosed' : project.title}
       </span>
-      {!isUndisclosed && project.year && (
-        <span className="text-[13px] leading-[1.5] text-foreground/72">
-          {project.year}
+      {!isUndisclosed && project.subheader && (
+        <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/72">
+          {project.subheader}
         </span>
       )}
     </div>

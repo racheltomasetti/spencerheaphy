@@ -38,19 +38,19 @@ export function Bio({
         {/* Column 5 is a deliberate empty gutter between portrait and text — only
             meaningful once the two-column split is active at lg and up. */}
         <div className="col-span-12 flex flex-col gap-[34px] lg:col-span-6 lg:col-start-6">
-          <h2 className="opsz-display text-pretty text-[clamp(30px,4vw,54px)] leading-[1.1] font-normal tracking-[-0.025em]">
+          <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
             {name} is a director and photographer based in New York City.
           </h2>
 
-          <p className="max-w-[56ch] text-pretty text-[17px] leading-[1.62] text-foreground/72">
+          <p className="max-w-[56ch] text-pretty text-base leading-[1.65] text-foreground/70">
             Bio copy to come, this section is still under construction. Playing around with the design, still locking down information to share. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
           </p>
 
-          <div className="grid grid-cols-1 gap-7 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-7 text-[11px] leading-[2] tracking-[0.13em] uppercase sm:grid-cols-2">
             {/* <div>
-              <p className="mb-2 text-[13px] leading-[1.5] text-foreground/72">Clients</p>
-              <p className="text-[15px] leading-[1.62] text-foreground/72">
+              <p className="mb-2 text-foreground/60">Clients</p>
+              <p className="text-foreground/70">
                 {PLACEHOLDER_CLIENT_LINES.map((line, index) => (
                   <span key={line}>
                     {line}
@@ -61,13 +61,13 @@ export function Bio({
             </div> */}
 
             <div>
-              {/* <p className="mb-2 text-[13px] leading-[1.5] text-foreground/72">Location</p> */}
-              {/* <p className="text-[15px] leading-[1.62] text-foreground/72">Based in NYC</p> */}
+              {/* <p className="mb-2 text-foreground/60">Location</p> */}
+              {/* <p className="text-foreground/70">Based in NYC</p> */}
               <br />
               {settings?.contactEmail && (
                 <a
                   href={`mailto:${settings.contactEmail}`}
-                  className="block text-[15px] leading-[1.62] text-foreground/72 transition-colors hover:text-foreground"
+                  className="block text-foreground/70 transition-colors hover:text-foreground"
                 >
                   {settings.contactEmail}
                 </a>

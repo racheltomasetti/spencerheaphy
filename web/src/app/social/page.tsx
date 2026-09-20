@@ -15,7 +15,7 @@ export default async function SocialPage() {
 
   return (
     <>
-      <SelectedWork projects={socialProjects} title="Social" />
+      <SelectedWork projects={socialProjects} />
       <Suspense fallback={null}>
         <ProjectLightbox projects={socialProjects} />
       </Suspense>

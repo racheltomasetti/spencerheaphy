@@ -48,7 +48,7 @@ export interface Project {
   title: string
   year?: number
   date?: string
-  client?: string
+  subheader?: string
   vimeoUrl?: string
   role?: ProjectRole
   crew?: CrewCredit[]

@@ -1,6 +1,7 @@
 import type {Metadata} from 'next'
-import localFont from 'next/font/local'
+import {Fraunces, Inter} from 'next/font/google'
 import {Suspense} from 'react'
+import {HideOnHome} from '@/components/HideOnHome'
 import {Nav} from '@/components/Nav'
 import {NavVisibilityProvider} from '@/components/NavVisibilityProvider'
 import {SiteFooter} from '@/components/SiteFooter'
@@ -8,12 +9,15 @@ import {getSiteSettings} from '@/sanity/lib/get-site-settings'
 import {SanityLive} from '@/sanity/lib/live'
 import './globals.css'
 
-const newsreader = localFont({
-  src: './fonts/newsreader.woff2',
-  variable: '--font-newsreader',
-  weight: '200 800',
-  display: 'swap',
-  fallback: ['Georgia', 'serif'],
+const serif = Fraunces({
+  variable: '--font-serif-display',
+  subsets: ['latin'],
+  axes: ['opsz'],
+})
+
+const sans = Inter({
+  variable: '--font-sans-body',
+  subsets: ['latin'],
 })
 
 export const metadata: Metadata = {
@@ -29,7 +33,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const settings = await getSiteSettings()
 
   return (
-    <html lang="en" className={`${newsreader.variable} h-full`}>
+    <html lang="en" className={`${serif.variable} ${sans.variable} h-full`}>
       <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
         <NavVisibilityProvider>
           <div className="flex min-h-dvh flex-1 flex-col">
@@ -37,7 +41,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               <Nav />
             </Suspense>
             <main className="flex flex-1 flex-col">{children}</main>
-            <SiteFooter settings={settings} />
+            <HideOnHome>
+              <SiteFooter settings={settings} />
+            </HideOnHome>
           </div>
         </NavVisibilityProvider>
         <SanityLive />

@@ -64,8 +64,8 @@ export function MediaItemView({
     >
       {placeholderLabel && (
         <span
-          className={`text-[12px] leading-[1.5] ${
-            isDark ? 'text-background/72' : 'text-foreground/72'
+          className={`text-[10px] uppercase tracking-[0.16em] ${
+            isDark ? 'text-background/68' : 'text-foreground/40'
           }`}
         >
           {placeholderLabel}

@@ -51,8 +51,9 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'client',
-      title: 'Client',
+      name: 'subheader',
+      title: 'Subheader',
+      description: 'Short line under the title, e.g. Summer Road Trip.',
       type: 'string',
     }),
     defineField({
