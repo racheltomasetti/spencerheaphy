@@ -29,6 +29,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Grid hover: while a clickable card is hovered, the other cards recede. Nothing
+   moves, so the grid stays perfectly still. Gated to devices that can really hover. */
+@media (hover: hover) {
+  .project-grid:has(a.project-card:hover) .project-card:not(:hover) {
+    opacity: 0.72;
+  }
+}
+
 body {
   font-family: var(--font-sans);
 }

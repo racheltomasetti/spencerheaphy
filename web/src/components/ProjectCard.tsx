@@ -26,7 +26,7 @@ export function ProjectCard({
         <MediaItemView
           media={project.coverMedia}
           alt={project.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           placeholderLabel="Cover media pending"
         />
       )}
@@ -39,12 +39,12 @@ export function ProjectCard({
         subheaderRight ? 'flex items-baseline justify-between gap-3' : 'flex flex-col gap-1'
       }
     >
-      <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85">
+      <span className="font-serif text-lg tracking-[-0.015em] text-foreground/85 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none">
         {isUndisclosed ? 'Undisclosed' : project.title}
       </span>
       {!isUndisclosed && project.subheader && (
         <span
-          className={`text-[10px] uppercase tracking-[0.18em] text-foreground/72 ${
+          className={`text-[10px] uppercase tracking-[0.18em] text-foreground/72 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none ${
             subheaderRight ? 'text-right' : ''
           }`}
         >
@@ -56,7 +56,7 @@ export function ProjectCard({
 
   if (isUndisclosed) {
     return (
-      <article className="group flex flex-col gap-2.5">
+      <article className="project-card flex flex-col gap-2.5 transition-opacity duration-300 motion-reduce:transition-none">
         {media}
         {caption}
       </article>
@@ -67,7 +67,7 @@ export function ProjectCard({
     <Link
       href={`?project=${project.slug}`}
       scroll={false}
-      className="group flex flex-col gap-2.5"
+      className="project-card group flex flex-col gap-2.5 transition-opacity duration-300 motion-reduce:transition-none"
     >
       {media}
       {caption}

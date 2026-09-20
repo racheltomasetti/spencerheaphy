@@ -23,7 +23,7 @@ export function ProjectGrid({
   }
 
   return (
-    <div className={GRID_CLASS[columns]}>
+    <div className={`project-grid ${GRID_CLASS[columns]}`}>
       {projects.map((project) => (
         <ProjectCard key={project._id} project={project} subheaderRight={subheaderRight} />
       ))}
