@@ -22,7 +22,6 @@ const UNDERLINE =
 // Scrolling down slides the bar out of view so it never sits on top of work; scrolling
 // back up brings it straight back. Both need a run of deliberate travel in one direction,
 // so momentum jitter, edge bounce and late-loading images can't make it flicker.
-const MENU_FADE_MS = 300
 const SHOW_NEAR_TOP = 10
 const HIDE_AFTER = 24
 const SHOW_AFTER = 32
@@ -102,9 +101,6 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   // Over the hero (or an open menu sheet) the bar is cream-on-transparent. Everywhere
   // else it's ink on cream. Route and menu changes snap; only scrolling the hero fades.
   const overHero = !scrolled && !projectOpen
-  const [sheet, setSheet] = useState(false)
-  const wasOverlay = useRef(false)
-
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
   const travel = useRef(0)
@@ -148,16 +144,8 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
 
   useEffect(() => {
     setMenuOpen(false)
+    document.documentElement.style.backgroundColor = ''
   }, [pathname, projectOpen, setMenuOpen])
-
-  useEffect(() => {
-    if (menuOpen) {
-      setSheet(true)
-      return
-    }
-    const timeout = window.setTimeout(() => setSheet(false), MENU_FADE_MS)
-    return () => window.clearTimeout(timeout)
-  }, [menuOpen])
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)')
@@ -171,21 +159,17 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
 
   if (projectOpen && !embedded) return null
 
-  const overlayActive = menuOpen || sheet
-  const overlayEnded = wasOverlay.current && !overlayActive
-  wasOverlay.current = overlayActive
-  const ink = overlayActive || overHero
-  // Only fade cream in while scrolling the home hero away. Route changes snap —
-  // otherwise the leftover cream bar eases off after you are already on the hero.
-  const animateChrome = pathname === '/' && scrolled && !overlayActive && !overlayEnded
+  const creamText = menuOpen || overHero
+  // Only fade cream in while scrolling the home hero away. Route and menu changes snap.
+  const animateChrome = pathname === '/' && scrolled && !menuOpen
 
   return (
     <>
       <header
         className="fixed inset-x-0 top-0 z-[80]"
         style={{
-          background: overlayActive ? '#141310' : overHero ? 'rgba(20,19,16,0)' : '#faf9f6',
-          transform: hidden && !overlayActive ? 'translateY(-100%)' : 'none',
+          background: menuOpen ? '#141310' : overHero ? 'rgba(20,19,16,0)' : '#faf9f6',
+          transform: hidden && !menuOpen ? 'translateY(-100%)' : 'none',
           transition: animateChrome
             ? 'background-color 400ms ease-out, transform 300ms ease-out'
             : 'transform 300ms ease-out',
@@ -196,7 +180,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
           className={`flex items-center justify-between gap-6 px-(--edge) py-5 ${
             animateChrome ? 'transition-colors duration-[400ms] ease-out' : ''
           }`}
-          style={{color: ink ? '#faf9f6' : '#141310'}}
+          style={{color: creamText ? '#faf9f6' : '#141310'}}
         >
           <Link
             href="/#top"
@@ -263,9 +247,8 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
 
     const html = document.documentElement
     const previousOverflow = html.style.overflow
-    const previousBg = html.style.backgroundColor
     html.style.overflow = 'hidden'
-    html.style.backgroundColor = '#141310'
+    html.style.backgroundColor = ''
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false)
@@ -273,7 +256,7 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
     document.addEventListener('keydown', onKey)
     return () => {
       html.style.overflow = previousOverflow
-      html.style.backgroundColor = previousBg
+      html.style.backgroundColor = ''
       document.removeEventListener('keydown', onKey)
     }
   }, [open, setMenuOpen])
