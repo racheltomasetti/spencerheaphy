@@ -1,7 +1,7 @@
 'use client'
 
 import {usePathname} from 'next/navigation'
-import {createContext, useCallback, useContext, useEffect, useRef, useState} from 'react'
+import {createContext, useCallback, useContext, useRef, useState} from 'react'
 
 interface NavVisibilityContextValue {
   /** True once the hero has scrolled out of view (or on pages with no hero at all). */
@@ -54,11 +54,6 @@ export function NavVisibilityProvider({children}: {children: React.ReactNode}) {
   }, [])
 
   const scrolled = !onHome || !heroInView
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('on-home', onHome)
-    return () => document.documentElement.classList.remove('on-home')
-  }, [onHome])
 
   return (
     <NavVisibilityContext.Provider value={{scrolled, menuOpen, setMenuOpen, heroRef}}>

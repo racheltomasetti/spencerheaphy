@@ -60,11 +60,6 @@ html {
   scroll-behavior: auto;
 }
 
-html.on-home,
-html.on-home body {
-  background: #141310;
-}
-
 /* Grid hover: the hovered project steps slightly forward. Gated to devices
    that can really hover. */
 @media (hover: hover) {

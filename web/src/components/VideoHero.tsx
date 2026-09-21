@@ -61,13 +61,6 @@ function isVideoSlide(project: Project, isDesktop: boolean) {
   return media?.mediaType === 'video' && Boolean(media.video?.asset?.url)
 }
 
-const HERO_FRAME_DESKTOP =
-  'relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground'
-// `fixed` + `100lvh` so the reel covers the large viewport — including the areas
-// behind iOS Safari's toolbars — the same way the mobile menu sheet does.
-const HERO_FRAME_MOBILE =
-  'fixed inset-0 z-0 h-[100lvh] min-h-dvh w-full overflow-hidden bg-foreground'
-
 function PlaceholderHero() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
@@ -228,7 +221,11 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
   if (count === 0) {
     return (
-      <div id="top" ref={heroRef} className={isDesktop ? HERO_FRAME_DESKTOP : HERO_FRAME_MOBILE}>
+      <div
+        id="top"
+        ref={heroRef}
+        className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      >
         <PlaceholderHero />
       </div>
     )
@@ -236,40 +233,46 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
   if (!isDesktop) {
     return (
-      <div id="top" ref={heroRef} className={HERO_FRAME_MOBILE}>
-        <div
-          ref={scrollRef}
-          className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
-        >
-          {loopedProjects.map((project, loopIndex) => {
-            const isActiveCopy = !paused && loopIndex === visibleLoopIndex
-            return (
-              <Link
-                key={`${project._id}-${loopIndex}`}
-                href={`/?project=${project.slug}`}
-                scroll={false}
-                className="relative block h-full w-full flex-none snap-center snap-always"
-              >
-                <MediaItemView
-                  media={heroMediaFor(project, false)}
-                  alt={project.title}
-                  className="h-full w-full object-cover"
-                  placeholderLabel={`Reel — ${project.title}`}
-                  placeholderVariant="dark"
-                  videoActive={isActiveCopy}
-                  playsBeforeAdvance={hold ? undefined : 2}
-                  onAdvance={goNext}
-                />
-              </Link>
-            )
-          })}
+      <div id="top" ref={heroRef} className="relative z-0 h-dvh min-h-[540px] w-full">
+        {/* Same `fixed inset-0` as the mobile menu, so the reel covers the visual
+            viewport (including behind Safari chrome). Caption stays in the page-height
+            box so it doesn't sit under the toolbar. */}
+        <div className="fixed inset-0 z-0 overflow-hidden bg-foreground">
+          <div
+            ref={scrollRef}
+            className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
+          >
+            {loopedProjects.map((project, loopIndex) => {
+              const isActiveCopy = !paused && loopIndex === visibleLoopIndex
+              return (
+                <Link
+                  key={`${project._id}-${loopIndex}`}
+                  href={`/?project=${project.slug}`}
+                  scroll={false}
+                  className="relative block h-full w-full flex-none snap-center snap-always"
+                >
+                  <MediaItemView
+                    media={heroMediaFor(project, false)}
+                    alt={project.title}
+                    className="h-full w-full object-cover"
+                    placeholderLabel={`Reel — ${project.title}`}
+                    placeholderVariant="dark"
+                    videoActive={isActiveCopy}
+                    playsBeforeAdvance={hold ? undefined : 2}
+                    onAdvance={goNext}
+                  />
+                </Link>
+              )
+            })}
+          </div>
         </div>
 
-        <HeroScrims />
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-[max(var(--edge),env(safe-area-inset-bottom))] text-background">
-          <HeroCaption project={active} />
-          <HeroCounter slide={slide} count={count} />
+        <div className="pointer-events-none relative z-10 h-full">
+          <HeroScrims />
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
+            <HeroCaption project={active} />
+            <HeroCounter slide={slide} count={count} />
+          </div>
         </div>
       </div>
     )
@@ -281,7 +284,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
     <div
       id="top"
       ref={heroRef}
-      className={`group ${HERO_FRAME_DESKTOP}`}
+      className="group relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') setHovered(true)
       }}

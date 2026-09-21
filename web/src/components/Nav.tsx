@@ -295,7 +295,7 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
             key={link.href}
             href={link.href}
             label={link.label}
-            className="text-[clamp(16px,4vw,19px)] uppercase tracking-[0.14em] leading-none"
+            className="text-[clamp(22px,6.5vw,28px)] uppercase tracking-[0.14em] leading-none"
             current={pathname === link.href}
             underlined={(hovered ?? pathname) === link.href}
             onMouseEnter={() => setHovered(link.href)}
