@@ -128,10 +128,13 @@ export function VideoHero({projects}: {projects: Project[]}) {
   const swipeStartX = useRef<number | null>(null)
   const [visibleLoopIndex, setVisibleLoopIndex] = useState(0)
 
+  const [direction, setDirection] = useState<1 | -1>(1)
+
   const advance = useCallback(
     (delta: number) => {
       if (count <= 1) return
       if (isDesktop) {
+        setDirection(delta > 0 ? 1 : -1)
         setSlide((current) => (current + delta + count) % count)
         return
       }
@@ -184,7 +187,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
   }, [isDesktop, count])
 
   // The slide that just changed away stays mounted under the incoming one until the
-  // crossfade is done, so the picture never dips to black between videos.
+  // slide transition is done, so the picture never dips to black between videos.
   const prevSlide = useRef(slide)
   const [leaving, setLeaving] = useState<number | null>(null)
 
@@ -304,14 +307,25 @@ export function VideoHero({projects}: {projects: Project[]}) {
         if (index !== slide && index !== nextIndex && index !== prevIndex && index !== leaving)
           return null
         const isCurrent = index === slide
+        const isLeaving = index === leaving
+        // Current sits centered; the leaving slide exits in the direction of travel; the
+        // preloaded next/prev slides wait just off-screen, ready to slide in.
+        const offset = isCurrent
+          ? 0
+          : isLeaving
+            ? direction === 1
+              ? -100
+              : 100
+            : index === nextIndex
+              ? 100
+              : -100
         return (
           <div
             key={project._id}
-            className="absolute inset-0 transition-opacity duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
-            // Current fades in on top of the leaving slide, which holds at full opacity below.
+            className="absolute inset-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
             style={{
-              opacity: isCurrent || index === leaving ? 1 : 0,
-              zIndex: isCurrent ? 2 : index === leaving ? 1 : 0,
+              transform: `translateX(${offset}%)`,
+              zIndex: isCurrent ? 2 : isLeaving ? 1 : 0,
             }}
           >
             <MediaItemView
