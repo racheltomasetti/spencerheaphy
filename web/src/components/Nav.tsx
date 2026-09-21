@@ -159,8 +159,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
 
   if (projectOpen && !embedded) return null
 
-  const creamText = overHero && !menuOpen
-  // Only fade cream in while scrolling the home hero away. Route and menu changes snap.
+  const creamText = overHero
   const animateChrome = pathname === '/' && scrolled && !menuOpen
 
   return (
@@ -203,7 +202,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
             <svg width="26" height="13" viewBox="0 0 26 13" aria-hidden className="overflow-visible">
               <path
                 d="M0 .5h26"
-                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                className="fill-none stroke-current transition-[transform,opacity] duration-200 ease-out"
                 style={{
                   strokeWidth: 1,
                   transformBox: 'fill-box',
@@ -213,12 +212,12 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
               />
               <path
                 d="M0 6.5h26"
-                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                className="fill-none stroke-current transition-[transform,opacity] duration-200 ease-out"
                 style={{strokeWidth: 1, opacity: menuOpen ? 0 : 1}}
               />
               <path
                 d="M0 12.5h26"
-                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                className="fill-none stroke-current transition-[transform,opacity] duration-200 ease-out"
                 style={{
                   strokeWidth: 1,
                   transformBox: 'fill-box',
@@ -266,10 +265,52 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
       aria-hidden={!open}
       inert={!open}
       onClick={() => setMenuOpen(false)}
-      className={`fixed inset-0 z-[70] flex flex-col justify-center bg-[#faf9f6] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#141310] transition-opacity duration-300 ease-out md:hidden motion-reduce:transition-none ${
+      className={`fixed inset-0 z-[90] flex flex-col justify-center bg-[#faf9f6] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#141310] transition-opacity duration-200 ease-out md:hidden motion-reduce:transition-none ${
         open ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
+      <div
+        className="absolute inset-x-0 top-0 flex items-center justify-between px-(--edge) py-5"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Link
+          href="/#top"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Spencer Heaphy, home"
+          className={NAME_LINK}
+        >
+          Spencer Heaphy
+        </Link>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Close menu"
+          className="py-1.5 pl-5"
+        >
+          <svg width="26" height="13" viewBox="0 0 26 13" aria-hidden className="overflow-visible">
+            <path
+              d="M0 .5h26"
+              className="fill-none stroke-current"
+              style={{
+                strokeWidth: 1,
+                transformBox: 'fill-box',
+                transformOrigin: 'center',
+                transform: 'translateY(6px) rotate(45deg)',
+              }}
+            />
+            <path
+              d="M0 12.5h26"
+              className="fill-none stroke-current"
+              style={{
+                strokeWidth: 1,
+                transformBox: 'fill-box',
+                transformOrigin: 'center',
+                transform: 'translateY(-6px) rotate(-45deg)',
+              }}
+            />
+          </svg>
+        </button>
+      </div>
       <div
         className="flex flex-col items-start gap-8"
         onClick={(event) => event.stopPropagation()}
