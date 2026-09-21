@@ -73,15 +73,9 @@ function PlaceholderHero() {
 }
 
 // Soft top and bottom scrims so the nav and the caption hold up over bright footage.
-function HeroScrims({intoCream = false}: {intoCream?: boolean}) {
+function HeroScrims() {
   return (
     <>
-      {intoCream && (
-        <>
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-[linear-gradient(to_bottom,var(--background),transparent)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-16 bg-[linear-gradient(to_top,var(--background),transparent)]" />
-        </>
-      )}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[30%] bg-[linear-gradient(to_bottom,rgba(0,0,0,.25),rgba(0,0,0,.12)_50%,rgba(0,0,0,0))]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[50%] bg-[linear-gradient(to_top,rgba(0,0,0,.5),rgba(0,0,0,.25)_50%,rgba(0,0,0,0))]" />
     </>
@@ -272,7 +266,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
           })}
         </div>
 
-        <HeroScrims intoCream />
+        <HeroScrims />
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
           <HeroCaption project={active} />
