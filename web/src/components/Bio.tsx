@@ -37,7 +37,7 @@ export function Bio({
 
         {/* Column 5 is a deliberate empty gutter between portrait and text — only
             meaningful once the two-column split is active at lg and up. */}
-        <div className="col-span-12 flex flex-col gap-[34px] lg:col-span-6 lg:col-start-6">
+        <div className="col-span-12 flex flex-col items-center gap-[34px] text-center lg:col-span-6 lg:col-start-6 lg:items-start lg:text-left">
           <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
             {name} is a director and photographer based in New York City.
           </h2>
