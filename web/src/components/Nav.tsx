@@ -184,7 +184,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
       <header
         className="fixed inset-x-0 top-0 z-[80]"
         style={{
-          background: ink ? 'rgba(20,19,16,0)' : '#faf9f6',
+          background: overlayActive ? '#141310' : overHero ? 'rgba(20,19,16,0)' : '#faf9f6',
           transform: hidden && !overlayActive ? 'translateY(-100%)' : 'none',
           transition: animateChrome
             ? 'background-color 400ms ease-out, transform 300ms ease-out'
@@ -262,15 +262,18 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
     if (!open) return
 
     const html = document.documentElement
-    const previous = html.style.overflow
+    const previousOverflow = html.style.overflow
+    const previousBg = html.style.backgroundColor
     html.style.overflow = 'hidden'
+    html.style.backgroundColor = '#141310'
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false)
     }
     document.addEventListener('keydown', onKey)
     return () => {
-      html.style.overflow = previous
+      html.style.overflow = previousOverflow
+      html.style.backgroundColor = previousBg
       document.removeEventListener('keydown', onKey)
     }
   }, [open, setMenuOpen])
