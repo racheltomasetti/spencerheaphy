@@ -73,9 +73,15 @@ function PlaceholderHero() {
 }
 
 // Soft top and bottom scrims so the nav and the caption hold up over bright footage.
-function HeroScrims() {
+function HeroScrims({intoCream = false}: {intoCream?: boolean}) {
   return (
     <>
+      {intoCream && (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-[linear-gradient(to_bottom,var(--background),transparent)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-16 bg-[linear-gradient(to_top,var(--background),transparent)]" />
+        </>
+      )}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[30%] bg-[linear-gradient(to_bottom,rgba(0,0,0,.25),rgba(0,0,0,.12)_50%,rgba(0,0,0,0))]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[50%] bg-[linear-gradient(to_top,rgba(0,0,0,.5),rgba(0,0,0,.25)_50%,rgba(0,0,0,0))]" />
     </>
@@ -233,46 +239,44 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
   if (!isDesktop) {
     return (
-      <div id="top" ref={heroRef} className="relative z-0 h-dvh min-h-[540px] w-full">
-        {/* Same `fixed inset-0` as the mobile menu, so the reel covers the visual
-            viewport (including behind Safari chrome). Caption stays in the page-height
-            box so it doesn't sit under the toolbar. */}
-        <div className="fixed inset-0 z-0 overflow-hidden bg-foreground">
-          <div
-            ref={scrollRef}
-            className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
-          >
-            {loopedProjects.map((project, loopIndex) => {
-              const isActiveCopy = !paused && loopIndex === visibleLoopIndex
-              return (
-                <Link
-                  key={`${project._id}-${loopIndex}`}
-                  href={`/?project=${project.slug}`}
-                  scroll={false}
-                  className="relative block h-full w-full flex-none snap-center snap-always"
-                >
-                  <MediaItemView
-                    media={heroMediaFor(project, false)}
-                    alt={project.title}
-                    className="h-full w-full object-cover"
-                    placeholderLabel={`Reel — ${project.title}`}
-                    placeholderVariant="dark"
-                    videoActive={isActiveCopy}
-                    playsBeforeAdvance={hold ? undefined : 2}
-                    onAdvance={goNext}
-                  />
-                </Link>
-              )
-            })}
-          </div>
+      <div
+        id="top"
+        ref={heroRef}
+        className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      >
+        <div
+          ref={scrollRef}
+          className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
+        >
+          {loopedProjects.map((project, loopIndex) => {
+            const isActiveCopy = !paused && loopIndex === visibleLoopIndex
+            return (
+              <Link
+                key={`${project._id}-${loopIndex}`}
+                href={`/?project=${project.slug}`}
+                scroll={false}
+                className="relative block h-full w-full flex-none snap-center snap-always"
+              >
+                <MediaItemView
+                  media={heroMediaFor(project, false)}
+                  alt={project.title}
+                  className="h-full w-full object-cover"
+                  placeholderLabel={`Reel — ${project.title}`}
+                  placeholderVariant="dark"
+                  videoActive={isActiveCopy}
+                  playsBeforeAdvance={hold ? undefined : 2}
+                  onAdvance={goNext}
+                />
+              </Link>
+            )
+          })}
         </div>
 
-        <div className="pointer-events-none relative z-10 h-full">
-          <HeroScrims />
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
-            <HeroCaption project={active} />
-            <HeroCounter slide={slide} count={count} />
-          </div>
+        <HeroScrims intoCream />
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
+          <HeroCaption project={active} />
+          <HeroCounter slide={slide} count={count} />
         </div>
       </div>
     )
