@@ -1,7 +1,25 @@
 'use client'
 
-import {useState, type ComponentProps} from 'react'
+import {useEffect, useRef, useState, type ComponentProps, type FocusEvent, type MouseEvent} from 'react'
 import Link from 'next/link'
+
+export function useRestOnReturn(reset: () => void) {
+  const resetRef = useRef(reset)
+  resetRef.current = reset
+
+  useEffect(() => {
+    const rest = () => resetRef.current()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') rest()
+    }
+    window.addEventListener('pageshow', rest)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener('pageshow', rest)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [])
+}
 
 // A link that enlarges slightly and goes bold when emphasized. The parent owns the
 // emphasis state so a group of these can hand the bold from one to the next. Driven
@@ -36,13 +54,20 @@ export function BoldLink({
   resetOnLeave?: boolean
 }) {
   const handlers = {
-    onMouseEnter: onActivate,
+    onMouseEnter: () => {
+      if (window.matchMedia('(hover: hover)').matches) onActivate()
+    },
     onMouseLeave: resetOnLeave ? onDeactivate : undefined,
-    onFocus: (event: React.FocusEvent<HTMLAnchorElement>) => {
+    onPointerLeave: resetOnLeave ? onDeactivate : undefined,
+    onFocus: (event: FocusEvent<HTMLAnchorElement>) => {
       if (event.currentTarget.matches(':focus-visible')) onActivate()
     },
     onBlur: onDeactivate,
-    onClick,
+    onClick: (event: MouseEvent<HTMLAnchorElement>) => {
+      onDeactivate()
+      event.currentTarget.blur()
+      onClick?.()
+    },
   }
 
   // A transition takes its timing from the state it's heading into, so the link gaining
@@ -110,6 +135,7 @@ export function StandaloneBoldLink(
   props: Omit<ComponentProps<typeof BoldLink>, 'emphasized' | 'onActivate' | 'onDeactivate'>,
 ) {
   const [on, setOn] = useState(false)
+  useRestOnReturn(() => setOn(false))
   return (
     <BoldLink
       {...props}

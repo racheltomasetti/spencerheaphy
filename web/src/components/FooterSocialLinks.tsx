@@ -1,18 +1,20 @@
 'use client'
 
 import {useState} from 'react'
-import {BoldLink} from '@/components/BoldLink'
+import {BoldLink, useRestOnReturn} from '@/components/BoldLink'
 import type {SiteSettings} from '@/sanity/lib/types'
 
 type SocialLinks = NonNullable<SiteSettings['socialLinks']>
 
 export function FooterSocialLinks({links}: {links: SocialLinks}) {
   const [activeUrl, setActiveUrl] = useState<string | null>(null)
+  useRestOnReturn(() => setActiveUrl(null))
 
   return (
     <div
       className="flex flex-nowrap items-center justify-center gap-6 lg:justify-end"
       onMouseLeave={() => setActiveUrl(null)}
+      onPointerLeave={() => setActiveUrl(null)}
     >
       {links.map((link) => (
         <BoldLink
