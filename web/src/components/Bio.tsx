@@ -18,12 +18,12 @@ export function Bio({
       className={
         standalone
           ? 'w-full'
-          : 'scroll-mt-(--nav-h) px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[90px]'
+          : 'scroll-mt-(--nav-h) px-(--edge) pt-[calc(var(--nav-h)+2.5rem)] pb-[90px]'
       }
     >
-      <div className="grid grid-cols-12 gap-7 lg:items-center">
+      <div className="grid grid-cols-12 gap-x-7 gap-y-10 lg:items-center lg:gap-7">
         <div
-          className="relative col-span-12 mx-auto mb-10 w-2/3 overflow-hidden lg:col-span-4 lg:mb-0"
+          className="relative col-span-12 mx-auto w-2/3 overflow-hidden lg:col-span-4"
           style={{aspectRatio: '4/5'}}
         >
           <Image
@@ -43,8 +43,10 @@ export function Bio({
           </h2>
 
           <p className="max-w-[56ch] text-pretty text-base leading-[1.65] text-foreground/70">
-            Bio copy to come, this section is still under construction. Playing around with the design, still locking down information to share. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+            Starting his career in the mailroom at CAA, Spencer was able to learn
+            about Hollywood and apply that knowledge to his visual storytelling.
+            He focuses on the emotion behind each story
+            and combines it with a keen eye for what brands want.
           </p>
 
           <div className="grid grid-cols-1 gap-7 text-[11px] leading-[2] tracking-[0.13em] uppercase sm:grid-cols-2">
@@ -67,7 +69,7 @@ export function Bio({
               {settings?.contactEmail && (
                 <a
                   href={`mailto:${settings.contactEmail}`}
-                  className="block text-foreground/70 transition-colors hover:text-foreground"
+                  className="block text-xs uppercase tracking-[0.1em] text-foreground/60 transition-colors hover:text-foreground"
                 >
                   {settings.contactEmail}
                 </a>

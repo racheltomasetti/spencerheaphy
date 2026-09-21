@@ -10,7 +10,7 @@ export default async function BioPage() {
   const settings = await getSiteSettings()
 
   return (
-    <div className="flex w-full flex-1 flex-col justify-center px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-12">
+    <div className="flex w-full flex-1 flex-col px-(--edge) pt-[calc(var(--nav-h)+2.5rem)] pb-12 lg:justify-center">
       <Bio settings={settings} standalone />
     </div>
   )
