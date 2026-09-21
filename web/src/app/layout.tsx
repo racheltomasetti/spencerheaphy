@@ -1,4 +1,4 @@
-import type {Metadata} from 'next'
+import type {Metadata, Viewport} from 'next'
 import {Fraunces, Inter} from 'next/font/google'
 import {Suspense} from 'react'
 import {HideOnHome} from '@/components/HideOnHome'
@@ -19,6 +19,11 @@ const sans = Inter({
   variable: '--font-sans-body',
   subsets: ['latin'],
 })
+
+export const viewport: Viewport = {
+  viewportFit: 'cover',
+  themeColor: '#faf9f6',
+}
 
 export const metadata: Metadata = {
   title: 'Spencer Heaphy',

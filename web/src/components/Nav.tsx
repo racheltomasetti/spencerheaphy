@@ -22,6 +22,7 @@ const UNDERLINE =
 // Scrolling down slides the bar out of view so it never sits on top of work; scrolling
 // back up brings it straight back. Both need a run of deliberate travel in one direction,
 // so momentum jitter, edge bounce and late-loading images can't make it flicker.
+const MENU_FADE_MS = 300
 const SHOW_NEAR_TOP = 10
 const HIDE_AFTER = 24
 const SHOW_AFTER = 32
@@ -98,10 +99,12 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   const pathname = usePathname()
   const projectOpen = searchParams.get('project') !== null
   const {scrolled, menuOpen, setMenuOpen} = useNavVisibility()
-  // Menu open forces the transparent/cream-ink state even when scrolled, so a
-  // solid cream bar never paints cream text on top of the dark overlay. An open
-  // project sits on a light backdrop, so the bar stays solid there, even over the hero.
-  const dark = (!scrolled && !projectOpen) || menuOpen
+  // Over the hero (or an open menu sheet) the bar is cream-on-transparent. Everywhere
+  // else it's ink on cream. Route and menu changes snap; only scrolling the hero fades.
+  const overHero = !scrolled && !projectOpen
+  const [sheet, setSheet] = useState(false)
+  const wasOverlay = useRef(false)
+
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
   const travel = useRef(0)
@@ -144,8 +147,17 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   }, [embedded])
 
   useEffect(() => {
-    if (projectOpen) setMenuOpen(false)
-  }, [projectOpen, setMenuOpen])
+    setMenuOpen(false)
+  }, [pathname, projectOpen, setMenuOpen])
+
+  useEffect(() => {
+    if (menuOpen) {
+      setSheet(true)
+      return
+    }
+    const timeout = window.setTimeout(() => setSheet(false), MENU_FADE_MS)
+    return () => window.clearTimeout(timeout)
+  }, [menuOpen])
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)')
@@ -159,20 +171,32 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
 
   if (projectOpen && !embedded) return null
 
+  const overlayActive = menuOpen || sheet
+  const overlayEnded = wasOverlay.current && !overlayActive
+  wasOverlay.current = overlayActive
+  const ink = overlayActive || overHero
+  // Only fade cream in while scrolling the home hero away. Route changes snap —
+  // otherwise the leftover cream bar eases off after you are already on the hero.
+  const animateChrome = pathname === '/' && scrolled && !overlayActive && !overlayEnded
+
   return (
     <>
       <header
         className="fixed inset-x-0 top-0 z-[80]"
         style={{
-          background: menuOpen ? '#141310' : dark ? 'rgba(20,19,16,0)' : '#faf9f6',
-          transform: hidden && !menuOpen ? 'translateY(-100%)' : 'none',
-          transition: 'background-color 500ms ease-in-out, transform 300ms ease-out',
+          background: ink ? 'rgba(20,19,16,0)' : '#faf9f6',
+          transform: hidden && !overlayActive ? 'translateY(-100%)' : 'none',
+          transition: animateChrome
+            ? 'background-color 400ms ease-out, transform 300ms ease-out'
+            : 'transform 300ms ease-out',
         }}
         onFocusCapture={() => setHidden(false)}
       >
         <div
-          className="flex items-center justify-between gap-6 px-(--edge) py-5 transition-colors duration-500 ease-in-out"
-          style={{color: dark ? '#faf9f6' : '#141310'}}
+          className={`flex items-center justify-between gap-6 px-(--edge) py-5 ${
+            animateChrome ? 'transition-colors duration-[400ms] ease-out' : ''
+          }`}
+          style={{color: ink ? '#faf9f6' : '#141310'}}
         >
           <Link
             href="/#top"
@@ -190,36 +214,53 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
-            className="flex flex-col gap-[5px] py-1.5 pl-5 md:hidden"
+            className="py-1.5 pl-5 md:hidden"
           >
-            <span
-              className="block h-px w-[26px] bg-current transition-transform duration-300 ease-in-out"
-              style={{transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none'}}
-            />
-            <span
-              className="block h-px w-[26px] bg-current transition-opacity duration-200 ease-in-out"
-              style={{opacity: menuOpen ? 0 : 1}}
-            />
-            <span
-              className="block h-px w-[26px] bg-current transition-transform duration-300 ease-in-out"
-              style={{transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none'}}
-            />
+            <svg width="26" height="13" viewBox="0 0 26 13" aria-hidden className="overflow-visible">
+              <path
+                d="M0 .5h26"
+                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                style={{
+                  strokeWidth: 1,
+                  transformBox: 'fill-box',
+                  transformOrigin: 'center',
+                  transform: menuOpen ? 'translateY(6px) rotate(45deg)' : undefined,
+                }}
+              />
+              <path
+                d="M0 6.5h26"
+                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                style={{strokeWidth: 1, opacity: menuOpen ? 0 : 1}}
+              />
+              <path
+                d="M0 12.5h26"
+                className="fill-none stroke-current transition-[transform,opacity] duration-300 ease-out"
+                style={{
+                  strokeWidth: 1,
+                  transformBox: 'fill-box',
+                  transformOrigin: 'center',
+                  transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : undefined,
+                }}
+              />
+            </svg>
           </button>
         </div>
       </header>
 
-      {menuOpen && <MobileMenu pathname={pathname} />}
+      <MobileMenu pathname={pathname} open={menuOpen} />
     </>
   )
 }
 
 // Full-screen takeover on small screens. Same tab language as desktop — Inter, uppercase,
 // underline on the current page — sized up and given room, without the old poster type or gold.
-function MobileMenu({pathname}: {pathname: string}) {
+function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
   const {setMenuOpen} = useNavVisibility()
   const [hovered, setHovered] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!open) return
+
     const html = document.documentElement
     const previous = html.style.overflow
     html.style.overflow = 'hidden'
@@ -232,15 +273,17 @@ function MobileMenu({pathname}: {pathname: string}) {
       html.style.overflow = previous
       document.removeEventListener('keydown', onKey)
     }
-  }, [setMenuOpen])
-
-  const onClose = () => setMenuOpen(false)
+  }, [open, setMenuOpen])
 
   return (
     <nav
       aria-label="Menu"
-      onClick={onClose}
-      className="fixed inset-0 z-[70] flex animate-[menu-fade-in_240ms_ease] flex-col justify-center bg-[#141310] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#faf9f6] md:hidden"
+      aria-hidden={!open}
+      inert={!open}
+      onClick={() => setMenuOpen(false)}
+      className={`fixed inset-0 z-[70] flex flex-col justify-center bg-[#141310] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#faf9f6] transition-opacity duration-300 ease-out md:hidden motion-reduce:transition-none ${
+        open ? 'opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       <div
         className="flex flex-col items-start gap-8"
@@ -252,12 +295,12 @@ function MobileMenu({pathname}: {pathname: string}) {
             key={link.href}
             href={link.href}
             label={link.label}
-            className="text-[clamp(22px,6.5vw,32px)] uppercase tracking-[0.14em] leading-none"
+            className="text-[clamp(16px,4vw,19px)] uppercase tracking-[0.14em] leading-none"
             current={pathname === link.href}
             underlined={(hovered ?? pathname) === link.href}
             onMouseEnter={() => setHovered(link.href)}
             onFocus={() => setHovered(link.href)}
-            onClick={onClose}
+            onClick={pathname === link.href ? () => setMenuOpen(false) : undefined}
           />
         ))}
       </div>
