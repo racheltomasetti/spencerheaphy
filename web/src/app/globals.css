@@ -52,7 +52,7 @@
 /* The fixed nav is 2 * py-5 (2.5rem) plus one line of the name at leading-[1.3].
    Name and tabs share this fluid size so the bar height stays in step. */
 :root {
-  --nav-name-size: clamp(14px, 1.8vw, 24px);
+  --nav-name-size: clamp(18px, 1.8vw, 24px);
   --nav-h: calc(2.5rem + 1.3 * var(--nav-name-size));
 }
 

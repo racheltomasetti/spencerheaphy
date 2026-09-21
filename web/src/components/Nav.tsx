@@ -206,41 +206,61 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
             />
           </button>
         </div>
-
-        {menuOpen && <MobileMenu pathname={pathname} onClose={() => setMenuOpen(false)} />}
       </header>
 
-      {menuOpen && (
-        <div
-          aria-hidden
-          onClick={() => setMenuOpen(false)}
-          className="fixed inset-0 z-[70] animate-[menu-fade-in_240ms_ease] bg-black/40 md:hidden"
-        />
-      )}
+      {menuOpen && <MobileMenu pathname={pathname} />}
     </>
   )
 }
 
-// A compact dropdown that hangs from the header, only as tall as its links. The header
-// turns solid ink while it's open, so the panel reads as an extension of the bar.
-function MobileMenu({pathname, onClose}: {pathname: string; onClose: () => void}) {
+// Full-screen takeover on small screens. Same tab language as desktop — Inter, uppercase,
+// underline on the current page — sized up and given room, without the old poster type or gold.
+function MobileMenu({pathname}: {pathname: string}) {
+  const {setMenuOpen} = useNavVisibility()
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  useEffect(() => {
+    const html = document.documentElement
+    const previous = html.style.overflow
+    html.style.overflow = 'hidden'
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      html.style.overflow = previous
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [setMenuOpen])
+
+  const onClose = () => setMenuOpen(false)
+
   return (
     <nav
       aria-label="Menu"
-      className="animate-[menu-fade-in_240ms_ease] px-(--edge) pb-3 text-[#faf9f6] md:hidden"
+      onClick={onClose}
+      className="fixed inset-0 z-[70] flex animate-[menu-fade-in_240ms_ease] flex-col justify-center bg-[#141310] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#faf9f6] md:hidden"
     >
-      {NAV_LINKS.map((link) => (
-        <div key={link.href} className="border-t border-[#faf9f6]/15">
+      <div
+        className="flex flex-col items-start gap-8"
+        onClick={(event) => event.stopPropagation()}
+        onMouseLeave={() => setHovered(null)}
+      >
+        {NAV_LINKS.map((link) => (
           <NavLink
+            key={link.href}
             href={link.href}
             label={link.label}
-            className="py-4 text-[15px] uppercase tracking-[0.18em]"
+            className="text-[clamp(22px,6.5vw,32px)] uppercase tracking-[0.14em] leading-none"
             current={pathname === link.href}
-            underlined={pathname === link.href}
+            underlined={(hovered ?? pathname) === link.href}
+            onMouseEnter={() => setHovered(link.href)}
+            onFocus={() => setHovered(link.href)}
             onClick={onClose}
           />
-        </div>
-      ))}
+        ))}
+      </div>
     </nav>
   )
 }
