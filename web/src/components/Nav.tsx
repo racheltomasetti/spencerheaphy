@@ -159,7 +159,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
 
   if (projectOpen && !embedded) return null
 
-  const creamText = menuOpen || overHero
+  const creamText = overHero && !menuOpen
   // Only fade cream in while scrolling the home hero away. Route and menu changes snap.
   const animateChrome = pathname === '/' && scrolled && !menuOpen
 
@@ -168,7 +168,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
       <header
         className="fixed inset-x-0 top-0 z-[80]"
         style={{
-          background: menuOpen ? '#141310' : overHero ? 'rgba(20,19,16,0)' : '#faf9f6',
+          background: creamText ? 'rgba(20,19,16,0)' : '#faf9f6',
           transform: hidden && !menuOpen ? 'translateY(-100%)' : 'none',
           transition: animateChrome
             ? 'background-color 400ms ease-out, transform 300ms ease-out'
@@ -236,8 +236,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   )
 }
 
-// Full-screen takeover on small screens. Same tab language as desktop — Inter, uppercase,
-// underline on the current page — sized up and given room, without the old poster type or gold.
+// Full-screen cream sheet on small screens. Same tab language as desktop.
 function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
   const {setMenuOpen} = useNavVisibility()
   const [hovered, setHovered] = useState<string | null>(null)
@@ -267,7 +266,7 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
       aria-hidden={!open}
       inert={!open}
       onClick={() => setMenuOpen(false)}
-      className={`fixed inset-0 z-[70] flex flex-col justify-center bg-[#141310] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#faf9f6] transition-opacity duration-300 ease-out md:hidden motion-reduce:transition-none ${
+      className={`fixed inset-0 z-[70] flex flex-col justify-center bg-[#faf9f6] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#141310] transition-opacity duration-300 ease-out md:hidden motion-reduce:transition-none ${
         open ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
