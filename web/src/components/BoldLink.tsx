@@ -1,5 +1,6 @@
 'use client'
 
+import {useState, type ComponentProps} from 'react'
 import Link from 'next/link'
 
 // A link that enlarges slightly and goes bold when emphasized. The parent owns the
@@ -20,6 +21,7 @@ export function BoldLink({
   weight = 700,
   className,
   onClick,
+  resetOnLeave = false,
 }: {
   href: string
   label: string
@@ -31,9 +33,11 @@ export function BoldLink({
   weight?: number
   className?: string
   onClick?: () => void
+  resetOnLeave?: boolean
 }) {
   const handlers = {
     onMouseEnter: onActivate,
+    onMouseLeave: resetOnLeave ? onDeactivate : undefined,
     onFocus: (event: React.FocusEvent<HTMLAnchorElement>) => {
       if (event.currentTarget.matches(':focus-visible')) onActivate()
     },
@@ -75,11 +79,11 @@ export function BoldLink({
   )
 
   if (external) {
+    const mailto = href.startsWith('mailto:')
     return (
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...(mailto ? {} : {target: '_blank', rel: 'noopener noreferrer'})}
         className={className}
         style={{display: 'inline-block'}}
         {...handlers}
@@ -99,5 +103,20 @@ export function BoldLink({
     >
       {content}
     </Link>
+  )
+}
+
+export function StandaloneBoldLink(
+  props: Omit<ComponentProps<typeof BoldLink>, 'emphasized' | 'onActivate' | 'onDeactivate'>,
+) {
+  const [on, setOn] = useState(false)
+  return (
+    <BoldLink
+      {...props}
+      emphasized={on}
+      resetOnLeave
+      onActivate={() => setOn(true)}
+      onDeactivate={() => setOn(false)}
+    />
   )
 }

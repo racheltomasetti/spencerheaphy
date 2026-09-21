@@ -11,7 +11,7 @@ export function FooterSocialLinks({links}: {links: SocialLinks}) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-center gap-6 sm:justify-end"
+      className="flex flex-nowrap items-center justify-center gap-6 lg:justify-end"
       onMouseLeave={() => setActiveUrl(null)}
     >
       {links.map((link) => (

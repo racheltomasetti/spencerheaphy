@@ -46,15 +46,6 @@ export function Bio({
             He focuses on the emotion behind each story
             and combines it with a keen eye for what brands want.
           </p>
-
-          {settings?.contactEmail && (
-            <a
-              href={`mailto:${settings.contactEmail}`}
-              className="hidden text-xs uppercase tracking-[0.1em] text-foreground/60 transition-colors hover:text-foreground sm:block"
-            >
-              {settings.contactEmail}
-            </a>
-          )}
         </div>
       </div>
     </section>
