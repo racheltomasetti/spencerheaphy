@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import {usePathname, useSearchParams} from 'next/navigation'
 import {useEffect, useRef, useState} from 'react'
-import {BoldLink} from '@/components/BoldLink'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
 
 const NAV_LINKS = [
@@ -12,9 +11,13 @@ const NAV_LINKS = [
   {href: '/bio', label: 'Bio'},
 ] as const
 
-const BAR_LINK = 'text-[clamp(13px,1.6vw,20px)] uppercase tracking-[0.18em]'
 const NAME_LINK =
-  'font-serif text-[length:var(--nav-name-size)] leading-[1.3] font-medium uppercase tracking-[0.18em]'
+  'font-serif text-[length:var(--nav-name-size)] leading-[1.3] font-medium uppercase tracking-[0.11em]'
+
+const BAR_LINK = 'text-[clamp(13px,1.6vw,16px)] uppercase tracking-[0.18em]'
+
+const UNDERLINE =
+  'relative inline-block pb-0.5 no-underline after:pointer-events-none after:absolute after:left-0 after:-bottom-px after:h-[1.5px] after:w-0 after:bg-current after:transition-[width] after:duration-300 after:ease-out motion-reduce:after:transition-none'
 
 // Scrolling down slides the bar out of view so it never sits on top of work; scrolling
 // back up brings it straight back. Both need a run of deliberate travel in one direction,
@@ -22,6 +25,71 @@ const NAME_LINK =
 const SHOW_NEAR_TOP = 10
 const HIDE_AFTER = 24
 const SHOW_AFTER = 32
+
+function NavLink({
+  href,
+  label,
+  current,
+  underlined,
+  className,
+  onClick,
+  onMouseEnter,
+  onFocus,
+}: {
+  href: string
+  label: string
+  current: boolean
+  underlined: boolean
+  className?: string
+  onClick?: () => void
+  onMouseEnter?: () => void
+  onFocus?: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={current ? 'page' : undefined}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onFocus={onFocus}
+      data-underlined={underlined || undefined}
+      className={`${UNDERLINE} data-[underlined]:after:w-full ${className ?? ''}`}
+    >
+      {label}
+    </Link>
+  )
+}
+
+function NavTabs({pathname, className}: {pathname: string; className?: string}) {
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  return (
+    <nav
+      className={className}
+      aria-label="Primary"
+      onMouseLeave={() => setHovered(null)}
+      onBlur={(event) => {
+        const next = event.relatedTarget
+        if (!(next instanceof Node) || !event.currentTarget.contains(next)) {
+          setHovered(null)
+        }
+      }}
+    >
+      {NAV_LINKS.map((link) => (
+        <NavLink
+          key={link.href}
+          href={link.href}
+          label={link.label}
+          className={BAR_LINK}
+          current={pathname === link.href}
+          underlined={(hovered ?? pathname) === link.href}
+          onMouseEnter={() => setHovered(link.href)}
+          onFocus={() => setHovered(link.href)}
+        />
+      ))}
+    </nav>
+  )
+}
 
 // `embedded` renders the bar inside the project view, which scrolls on its own. The
 // page-level copy hides while a project is open so there's only ever one.
@@ -34,7 +102,6 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   // solid cream bar never paints cream text on top of the dark overlay. An open
   // project sits on a light backdrop, so the bar stays solid there, even over the hero.
   const dark = (!scrolled && !projectOpen) || menuOpen
-  const [activeHref, setActiveHref] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
   const travel = useRef(0)
@@ -116,24 +183,7 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
             Spencer Heaphy
           </Link>
 
-          <nav
-            className="hidden items-center gap-7 md:flex"
-            aria-label="Primary"
-            onMouseLeave={() => setActiveHref(null)}
-          >
-            {NAV_LINKS.map((link) => (
-              <BoldLink
-                key={link.href}
-                href={link.href}
-                label={link.label}
-                className={BAR_LINK}
-                current={pathname === link.href}
-                emphasized={activeHref === null ? pathname === link.href : activeHref === link.href}
-                onActivate={() => setActiveHref(link.href)}
-                onDeactivate={() => setActiveHref(null)}
-              />
-            ))}
-          </nav>
+          <NavTabs pathname={pathname} className="hidden items-center gap-7 md:flex" />
 
           <button
             type="button"
@@ -181,14 +231,12 @@ function MobileMenu({pathname, onClose}: {pathname: string; onClose: () => void}
     >
       {NAV_LINKS.map((link) => (
         <div key={link.href} className="border-t border-[#faf9f6]/15">
-          <BoldLink
+          <NavLink
             href={link.href}
             label={link.label}
             className="py-4 text-[15px] uppercase tracking-[0.18em]"
             current={pathname === link.href}
-            emphasized={pathname === link.href}
-            onActivate={() => {}}
-            onDeactivate={() => {}}
+            underlined={pathname === link.href}
             onClick={onClose}
           />
         </div>

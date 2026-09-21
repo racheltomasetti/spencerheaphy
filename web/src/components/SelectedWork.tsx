@@ -6,13 +6,11 @@ export function SelectedWork({
   title,
   columns,
   subheaderRight,
-  hoverFocusVideo,
 }: {
   projects: Project[]
   title?: string
   columns?: 3 | 4
   subheaderRight?: boolean
-  hoverFocusVideo?: boolean
 }) {
   return (
     <div className="w-full px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
@@ -21,12 +19,7 @@ export function SelectedWork({
           {title}
         </h2>
       )}
-      <ProjectGrid
-        projects={projects}
-        columns={columns}
-        subheaderRight={subheaderRight}
-        hoverFocusVideo={hoverFocusVideo}
-      />
+      <ProjectGrid projects={projects} columns={columns} subheaderRight={subheaderRight} />
     </div>
   )
 }

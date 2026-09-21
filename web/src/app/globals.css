@@ -16,7 +16,7 @@
    and footer all pad by --edge, so their left and right edges line up. */
 :root {
   --edge: 1.25rem;
-  --project-title-size: clamp(1.5rem, 3.4vw, 3rem);
+  --project-title-size: clamp(1.5rem, 3.4vw, 36px);
   --project-subhead-size: 12px;
 }
 
@@ -31,7 +31,7 @@
    (the grid cards) overrides --project-title-size / --project-subhead-size locally.
    The subhead takes 85% of whatever text colour it sits in, white on the hero. */
 @utility type-project-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-weight: 500;
   font-size: var(--project-title-size);
   line-height: 1.05;
@@ -49,28 +49,29 @@
   color: color-mix(in srgb, currentColor 85%, transparent);
 }
 
-/* The fixed nav is 2 * py-5 (2.5rem) plus one line of the name at leading-[1.3], so
-   its height follows the fluid name size. Pages pad their top by --nav-h to clear it. */
+/* The fixed nav is 2 * py-5 (2.5rem) plus one line of the name at leading-[1.3].
+   Name and tabs share this fluid size so the bar height stays in step. */
 :root {
-  --nav-name-size: clamp(20px, 6vw, 32px);
+  --nav-name-size: clamp(14px, 1.8vw, 24px);
   --nav-h: calc(2.5rem + 1.3 * var(--nav-name-size));
-}
-
-@media (min-width: 768px) {
-  :root {
-    --nav-name-size: clamp(30px, 4vw, 50px);
-  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Grid hover: while a clickable card is hovered, the other cards recede. Nothing
-   moves, so the grid stays perfectly still. Gated to devices that can really hover. */
+/* Grid hover: the hovered project steps slightly forward. Gated to devices
+   that can really hover. */
 @media (hover: hover) {
-  .project-grid:has(a.project-card:hover) .project-card:not(:hover) {
-    opacity: 0.72;
+  .project-grid a.project-card:hover {
+    z-index: 1;
+    transform: scale(1.03);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  .project-grid a.project-card:hover {
+    transform: none;
   }
 }
 

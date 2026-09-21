@@ -26,7 +26,7 @@ export function ProjectCard({
         <MediaItemView
           media={project.coverMedia}
           alt={project.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          className="h-full w-full object-cover transition-transform duration-250 group-hover:scale-[1.04]"
           placeholderLabel="Cover media pending"
         />
       )}
@@ -63,7 +63,7 @@ export function ProjectCard({
     <Link
       href={`?project=${project.slug}`}
       scroll={false}
-      className="project-card group flex flex-col gap-2.5 transition-opacity duration-300 motion-reduce:transition-none"
+      className="project-card group relative flex flex-col gap-2.5 transition-transform duration-250 motion-reduce:transition-none"
     >
       {media}
       {caption}

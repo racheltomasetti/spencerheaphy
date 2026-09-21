@@ -1,5 +1,4 @@
 import {ProjectCard} from '@/components/ProjectCard'
-import {VideoFocusGrid} from '@/components/VideoFocusGrid'
 import type {Project} from '@/sanity/lib/types'
 
 // Full class strings so Tailwind can see them. Both step up through 2 → 3
@@ -14,26 +13,20 @@ export function ProjectGrid({
   projects,
   columns = 3,
   subheaderRight = false,
-  hoverFocusVideo = false,
 }: {
   projects: Project[]
   columns?: keyof typeof GRID_CLASS
   subheaderRight?: boolean
-  hoverFocusVideo?: boolean
 }) {
   if (projects.length === 0) {
     return <p className="text-sm text-foreground/50">Projects coming soon.</p>
   }
 
-  const className = `project-grid ${GRID_CLASS[columns]}`
-  const cards = projects.map((project) => (
-    <ProjectCard key={project._id} project={project} subheaderRight={subheaderRight} />
-  ))
-
-  // Only the wrapper needs to be a client component, and only when it has work to do.
-  return hoverFocusVideo ? (
-    <VideoFocusGrid className={className}>{cards}</VideoFocusGrid>
-  ) : (
-    <div className={className}>{cards}</div>
+  return (
+    <div className={`project-grid ${GRID_CLASS[columns]}`}>
+      {projects.map((project) => (
+        <ProjectCard key={project._id} project={project} subheaderRight={subheaderRight} />
+      ))}
+    </div>
   )
 }
