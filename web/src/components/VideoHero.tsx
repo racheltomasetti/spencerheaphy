@@ -277,6 +277,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
   }
 
   const nextIndex = (slide + 1) % count
+  const prevIndex = (slide - 1 + count) % count
 
   return (
     <div
@@ -300,7 +301,8 @@ export function VideoHero({projects}: {projects: Project[]}) {
       }}
     >
       {projects.map((project, index) => {
-        if (index !== slide && index !== nextIndex && index !== leaving) return null
+        if (index !== slide && index !== nextIndex && index !== prevIndex && index !== leaving)
+          return null
         const isCurrent = index === slide
         return (
           <div
