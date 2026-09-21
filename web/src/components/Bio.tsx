@@ -19,23 +19,18 @@ export function Bio({
           : 'scroll-mt-(--nav-h) px-(--edge) pt-[calc(var(--nav-h)+2.5rem)] pb-[90px]'
       }
     >
-      <div className="grid grid-cols-12 gap-x-7 gap-y-10 lg:items-center lg:gap-7">
-        <div
-          className="relative col-span-12 mx-auto w-2/3 overflow-hidden lg:col-span-4"
-          style={{aspectRatio: '4/5'}}
-        >
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10 md:flex-row md:items-center md:gap-x-12 lg:gap-x-16">
+        <div className="relative aspect-[4/5] w-[clamp(13.75rem,62vw,20rem)] shrink-0 overflow-hidden md:w-[clamp(14rem,22vw,20rem)]">
           <Image
             src="/bio-portrait.jpg"
             alt={`${name} portrait`}
             fill
-            sizes="(min-width: 1024px) 22vw, 67vw"
+            sizes="320px"
             className="object-cover"
           />
         </div>
 
-        {/* Column 5 is a deliberate empty gutter between portrait and text — only
-            meaningful once the two-column split is active at lg and up. */}
-        <div className="col-span-12 flex flex-col items-center gap-[34px] text-center lg:col-span-6 lg:col-start-6 lg:items-start lg:text-left">
+        <div className="flex min-w-0 flex-col items-center gap-[34px] text-center md:items-start md:text-left">
           <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
             {name} is a director and photographer based in New York City.
           </h2>
