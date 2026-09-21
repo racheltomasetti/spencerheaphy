@@ -11,6 +11,14 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
         &copy; {year} {settings?.name || 'Spencer Heaphy'}
         </p>
         {settings?.socialLinks && <FooterSocialLinks links={settings.socialLinks} />}
+        {settings?.contactEmail && (
+          <a
+            href={`mailto:${settings.contactEmail}`}
+            className="transition-colors hover:text-foreground sm:hidden"
+          >
+            {settings.contactEmail}
+          </a>
+        )}
       </div>
     </footer>
   )

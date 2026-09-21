@@ -1,8 +1,6 @@
 import Image from 'next/image'
 import type {SiteSettings} from '@/sanity/lib/types'
 
-const PLACEHOLDER_CLIENT_LINES = ['Client list', 'to come', '—']
-
 export function Bio({
   settings,
   standalone = false,
@@ -49,33 +47,14 @@ export function Bio({
             and combines it with a keen eye for what brands want.
           </p>
 
-          <div className="grid grid-cols-1 gap-7 text-[11px] leading-[2] tracking-[0.13em] uppercase sm:grid-cols-2">
-            {/* <div>
-              <p className="mb-2 text-foreground/60">Clients</p>
-              <p className="text-foreground/70">
-                {PLACEHOLDER_CLIENT_LINES.map((line, index) => (
-                  <span key={line}>
-                    {line}
-                    {index < PLACEHOLDER_CLIENT_LINES.length - 1 && <br />}
-                  </span>
-                ))}
-              </p>
-            </div> */}
-
-            <div>
-              {/* <p className="mb-2 text-foreground/60">Location</p> */}
-              {/* <p className="text-foreground/70">Based in NYC</p> */}
-              <br />
-              {settings?.contactEmail && (
-                <a
-                  href={`mailto:${settings.contactEmail}`}
-                  className="block text-xs uppercase tracking-[0.1em] text-foreground/60 transition-colors hover:text-foreground"
-                >
-                  {settings.contactEmail}
-                </a>
-              )}
-            </div>
-          </div>
+          {settings?.contactEmail && (
+            <a
+              href={`mailto:${settings.contactEmail}`}
+              className="hidden text-xs uppercase tracking-[0.1em] text-foreground/60 transition-colors hover:text-foreground sm:block"
+            >
+              {settings.contactEmail}
+            </a>
+          )}
         </div>
       </div>
     </section>
