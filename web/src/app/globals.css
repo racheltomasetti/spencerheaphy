@@ -60,12 +60,18 @@ html {
   scroll-behavior: auto;
 }
 
-/* Grid hover: the hovered project steps slightly forward. Gated to devices
-   that can really hover. */
+/* The whole card — picture, film strip, and title — steps forward together.
+   The picture does not zoom inside the strip. */
 @media (hover: hover) {
   .project-grid a.project-card:hover {
     z-index: 1;
     transform: scale(1.03);
+  }
+
+  /* Cover the scaled edge so the picture doesn't show through the top of the strip. */
+  .project-grid a.project-card:hover .film-key {
+    top: -1px;
+    bottom: -1px;
   }
 }
 
