@@ -1,7 +1,7 @@
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 import {ProjectLightbox} from '@/components/ProjectLightbox'
-import {SelectedWork} from '@/components/SelectedWork'
+import {VeilGrid} from '@/components/VeilGrid'
 import {getProjects} from '@/sanity/lib/get-projects'
 import {isDirectorProject} from '@/sanity/lib/types'
 
@@ -15,7 +15,14 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <SelectedWork projects={directorProjects} columns={4} subheaderRight filmKey />
+      <div className="w-full px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
+        <h1 className="sr-only">Work</h1>
+        {directorProjects.length === 0 ? (
+          <p className="text-sm text-foreground/50">Projects coming soon.</p>
+        ) : (
+          <VeilGrid projects={directorProjects} />
+        )}
+      </div>
       <Suspense fallback={null}>
         <ProjectLightbox projects={directorProjects} />
       </Suspense>
