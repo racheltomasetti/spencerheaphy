@@ -1,7 +1,7 @@
 'use client'
 
 import {usePathname, useRouter} from 'next/navigation'
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import FlexCarousel, {type FlexCarouselItem} from '@/components/FlexCarousel'
 import {urlFor} from '@/sanity/lib/image'
 import type {Project} from '@/sanity/lib/types'
@@ -67,6 +67,35 @@ function useMedia(media: string) {
   return matches
 }
 
+// Room kept under the card for the title and subtitle. The card is centred in the
+// stage, so the same amount stays clear above it.
+const CAPTION_ROOM = 68
+// On a narrow screen a full-height card would be nearly as wide as the screen; cap its
+// width so the neighbours still show at the edges.
+const MAX_WIDTH_SHARE = 0.74
+
+// The card's height as a share of the stage: as tall as the stage allows once the
+// caption has its room, at any screen size.
+function useCardHeight() {
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [share, setShare] = useState(0.7)
+
+  useEffect(() => {
+    const stage = stageRef.current
+    if (!stage) return
+    const observer = new ResizeObserver(([entry]) => {
+      const {width, height} = entry.contentRect
+      if (!width || !height) return
+      const tallest = Math.min(height - CAPTION_ROOM * 2, (width * MAX_WIDTH_SHARE * 16) / 9)
+      setShare(Math.min(0.9, Math.max(0.3, tallest / height)))
+    })
+    observer.observe(stage)
+    return () => observer.disconnect()
+  }, [])
+
+  return {stageRef, share}
+}
+
 export function SocialCarousel({projects}: {projects: Project[]}) {
   const router = useRouter()
   const pathname = usePathname()
@@ -74,6 +103,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   // Same gutters as the work grid: 24px from the lg breakpoint up, 16px below it.
   const gap = useMedia('(min-width: 1024px)') ? 24 : 16
   const items = useMemo(() => projects.map(toItem), [projects])
+  const {stageRef, share} = useCardHeight()
   // The lens is sized against the row's width, so on a phone it would bend the centred
   // card itself. Widen it there so the bend starts past the centre card, and ease the
   // bend so the neighbours don't swing down over the footer.
@@ -92,7 +122,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
 
   return (
     // Takes whatever height the page has between the nav and the site footer.
-    <div className="relative min-h-[420px] flex-1">
+    <div ref={stageRef} className="relative min-h-[420px] flex-1">
       <div className="absolute inset-0">
         <FlexCarousel
           items={items}
@@ -100,7 +130,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           {...lens}
           intro="rise"
           fit="tall"
-          cardHeight={compact ? 0.56 : 0.64}
+          cardHeight={share}
           gap={gap}
           squeeze={0.18}
           focusOnClick={false}
