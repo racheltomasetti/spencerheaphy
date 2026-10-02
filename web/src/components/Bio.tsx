@@ -32,14 +32,14 @@ export function Bio({
 
         <div className="flex min-w-0 flex-col items-center gap-[34px] text-center md:items-start md:text-left">
           <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
-            {name} is a director and photographer based in New York City.
+            Spencer is a 27 year-old Director and Creator in NYC.
           </h2>
 
           <p className="max-w-[56ch] text-pretty text-base leading-[1.65] text-foreground/70">
-            Starting his career in the mailroom at CAA, Spencer was able to learn
-            about Hollywood and apply that knowledge to his visual storytelling.
-            He focuses on the emotion behind each story
-            and combines it with a keen eye for what brands want.
+            Starting his career at CAA, he quickly developed an eye for
+            storytelling across multiple mediums and continues to pursue
+            narrative filmmaking. He now directs and shoots projects for some of
+            the largest brands in the world including his own scripts and stories.
           </p>
         </div>
       </div>
