@@ -15,7 +15,7 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <div className="w-full px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
+      <div className="w-full px-(--edge) pt-[calc(var(--nav-h)+1rem)] pb-[60px] lg:px-[clamp(2.5rem,5vw,6rem)]">
         <h1 className="sr-only">Work</h1>
         {directorProjects.length === 0 ? (
           <p className="text-sm text-foreground/50">Projects coming soon.</p>
