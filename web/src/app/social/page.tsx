@@ -18,7 +18,9 @@ export default async function SocialPage() {
 
   return (
     <>
-      <div className="flex w-full flex-1 flex-col pt-[calc(var(--nav-h)+0.5rem)]">
+      {/* The top padding equals the site footer's height (pt-10, one 16px line, pb-6), so
+          the row's midpoint sits at exactly half the screen height. */}
+      <div className="flex w-full flex-1 flex-col pt-20">
         <h1 className="sr-only">Social</h1>
         {socialProjects.length === 0 ? (
           <p className="px-(--edge) text-sm text-foreground/50">Projects coming soon.</p>
