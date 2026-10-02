@@ -122,3 +122,35 @@ body {
     opacity: 1;
   }
 }
+
+/* Work grid reveal: fade and settle. A tile starts invisible; once UnveilOnScroll
+   marks it, it fades in where it stands while the film inside eases back from a slight
+   zoom. Nothing travels, so a row's edges stay level throughout. */
+.unveil-frame {
+  opacity: 0;
+  transition: opacity 1600ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.unveil[data-unveiled] .unveil-frame {
+  opacity: 1;
+}
+
+.unveil-film {
+  scale: 1.08;
+  transition: scale 2200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.unveil[data-unveiled] .unveil-film {
+  scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unveil-frame {
+    transition: opacity 300ms ease-out;
+  }
+
+  .unveil-film {
+    scale: 1;
+    transition: none;
+  }
+}
