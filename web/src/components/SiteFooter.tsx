@@ -7,9 +7,10 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
 
   return (
     <footer id="site-footer" className="scroll-mt-(--nav-h)">
-      <div className="flex flex-col items-center gap-4 px-(--edge) py-10 text-center text-xs uppercase tracking-[0.1em] text-foreground/60 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:text-left">
-        <p className="order-3 text-foreground/60 lg:order-none lg:justify-self-start lg:whitespace-nowrap">
-        &copy; {year} {settings?.name || 'Spencer Heaphy'}
+      <div className="flex flex-nowrap items-center justify-between gap-3 whitespace-nowrap px-(--edge) py-10 text-[10px] uppercase tracking-[0.08em] text-foreground/60 max-[359px]:gap-2 max-[359px]:text-[9px] max-[359px]:tracking-normal sm:text-xs sm:tracking-[0.1em] md:grid md:grid-cols-[1fr_auto_1fr]">
+        <p className="text-foreground/60 md:justify-self-start">
+          &copy; {year}
+          <span className="hidden sm:inline"> {settings?.name || 'Spencer Heaphy'}</span>
         </p>
         {settings?.contactEmail ? (
           <StandaloneBoldLink
@@ -17,13 +18,13 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
             label={settings.contactEmail}
             external
             weight={500}
-            className="order-1 transition-colors hover:text-foreground lg:order-none lg:justify-self-center"
+            className="transition-colors hover:text-foreground md:justify-self-center"
           />
         ) : (
-          <span className="hidden lg:block" />
+          <span />
         )}
         {settings?.socialLinks && (
-          <div className="order-2 lg:order-none lg:justify-self-end">
+          <div className="md:justify-self-end">
             <FooterSocialLinks links={settings.socialLinks} />
           </div>
         )}
