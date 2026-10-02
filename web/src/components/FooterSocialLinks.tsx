@@ -2,14 +2,15 @@
 
 import {useState} from 'react'
 import type {IconType} from 'react-icons'
-import {FaInstagram, FaLinkedin, FaYoutube} from 'react-icons/fa6'
+import {FaLinkedin, FaYoutube} from 'react-icons/fa6'
+import {RiInstagramFill} from 'react-icons/ri'
 import {BoldLink, useRestOnReturn} from '@/components/BoldLink'
 import type {SiteSettings} from '@/sanity/lib/types'
 
 type SocialLinks = NonNullable<SiteSettings['socialLinks']>
 
 const ICONS: Record<string, IconType> = {
-  instagram: FaInstagram,
+  instagram: RiInstagramFill,
   linkedin: FaLinkedin,
   youtube: FaYoutube,
 }
