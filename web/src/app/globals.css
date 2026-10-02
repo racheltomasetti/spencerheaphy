@@ -123,34 +123,37 @@ body {
   }
 }
 
-/* Work grid reveal: fade and settle. A tile starts invisible; once UnveilOnScroll
-   marks it, it fades in where it stands while the film inside eases back from a slight
-   zoom. Nothing travels, so a row's edges stay level throughout. */
-.unveil-frame {
+/* Work grid reveal: fade and settle, on scroll only. Tiles are visible by default.
+   UnveilOnScroll marks the ones that start below the fold as pending, which hides them
+   at once; when one scrolls into view the mark comes off and it fades in where it
+   stands while the film inside eases back from a slight zoom. The transition is only
+   on the un-pending state, so hiding is instant and showing is animated. */
+.unveil[data-pending] .unveil-frame {
   opacity: 0;
+}
+
+.unveil[data-pending] .unveil-film {
+  scale: 1.08;
+}
+
+.unveil:not([data-pending]) .unveil-frame {
   transition: opacity 1600ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-.unveil[data-unveiled] .unveil-frame {
-  opacity: 1;
-}
-
-.unveil-film {
-  scale: 1.08;
+.unveil:not([data-pending]) .unveil-film {
   transition: scale 2200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.unveil[data-unveiled] .unveil-film {
-  scale: 1;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .unveil-frame {
+  .unveil[data-pending] .unveil-film {
+    scale: 1;
+  }
+
+  .unveil:not([data-pending]) .unveil-frame {
     transition: opacity 300ms ease-out;
   }
 
-  .unveil-film {
-    scale: 1;
+  .unveil:not([data-pending]) .unveil-film {
     transition: none;
   }
 }

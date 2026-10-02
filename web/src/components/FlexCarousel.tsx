@@ -12,7 +12,7 @@
 //   lines across a full-bleed stage.
 // - the pointer cursor shows over cards whenever onSelect is set, not only with focusOnClick.
 // - the caption markup (not included in the pasted source) is written here: the centred
-//   card's title and subtitle, set under it.
+//   card's title and subtitle, set under it in the site's shared project type styles.
 
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
@@ -1536,16 +1536,16 @@ const FlexCarousel = ({
         >
           <span
             key={active}
-            className="flex flex-col items-center gap-1.5 animate-[flex-carousel-title_600ms_cubic-bezier(0.22,1,0.36,1)_both] motion-reduce:animate-none"
+            className="flex flex-col items-center gap-1 animate-[flex-carousel-title_600ms_cubic-bezier(0.22,1,0.36,1)_both] motion-reduce:animate-none"
           >
             <span
               data-flex-title
-              className="max-w-full truncate font-serif text-[1.2rem] leading-[1.3] tracking-[-0.02em] text-foreground"
+              className="type-project-title max-w-full truncate pb-1 text-foreground [--project-title-size:1.25rem]"
             >
               {label}
             </span>
             {current.subtitle && (
-              <span className="max-w-full truncate text-[12px] leading-tight text-foreground/50">
+              <span className="type-project-subhead max-w-full truncate text-foreground [--project-subhead-size:10px]">
                 {current.subtitle}
               </span>
             )}
