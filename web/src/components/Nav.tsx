@@ -320,7 +320,7 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
                 href={link.href}
                 aria-current={current ? 'page' : undefined}
                 onClick={current ? () => setMenuOpen(false) : undefined}
-                className={`block py-6 text-center text-[18px] font-medium uppercase tracking-[0.28em] ${
+                className={`block py-6 text-center text-[24px] font-medium uppercase tracking-[0.28em] ${
                   current ? 'text-foreground' : 'text-foreground/55'
                 }`}
               >
