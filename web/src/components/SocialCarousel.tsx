@@ -155,15 +155,22 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
 
   const current = projects[wrap(position, count)]
   let row = null
+  let cardCenter: number | null = null
 
   if (size && count > 0) {
     const gap = size.width >= 1024 ? 24 : 16
     const narrow = size.width < NARROW_STAGE
     const captionRoom = narrow ? NARROW_CAPTION_ROOM : CAPTION_ROOM
+    const widthCap = (size.width * MAX_WIDTH_SHARE * 16) / 9
+    // On a phone the row sits just under the nav, and the spare room falls above the
+    // footer so the footer rests at the bottom of the screen.
+    const topGap = narrow ? 12 : 0
     const cardHeight = Math.max(
       120,
-      Math.min(size.height - captionRoom * 2, (size.width * MAX_WIDTH_SHARE * 16) / 9),
+      Math.min(narrow ? size.height - captionRoom - topGap : size.height - captionRoom * 2, widthCap),
     )
+    const cardTop = narrow ? topGap : (size.height - cardHeight) / 2
+    cardCenter = cardTop + cardHeight / 2
     const cardWidth = (cardHeight * 9) / 16
     const pitch = cardWidth + gap
     // Enough slots either side to fill the stage, plus one waiting off-screen so a card
@@ -188,12 +195,12 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
                 centred ? [project.title, project.subheader].filter(Boolean).join(', ') : undefined
               }
               onClick={centred ? undefined : () => step(offset)}
-              className="absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden data-[centred]:cursor-default bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
+              className="absolute left-1/2 block cursor-pointer overflow-hidden data-[centred]:cursor-default bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
               style={{
                 width: cardWidth,
                 height: cardHeight,
                 marginLeft: -cardWidth / 2,
-                marginTop: -cardHeight / 2,
+                top: cardTop,
                 transform: `translate3d(${offset * pitch}px, 0, 0)`,
               }}
             >
@@ -212,7 +219,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
               ? 'flex-col items-center gap-1 text-center'
               : 'items-baseline justify-between gap-4'
           }`}
-          style={{width: cardWidth, marginLeft: -cardWidth / 2, top: `calc(50% + ${cardHeight / 2 + 14}px)`}}
+          style={{width: cardWidth, marginLeft: -cardWidth / 2, top: cardTop + cardHeight + 14}}
         >
           <span
             className={`type-project-title min-w-0 text-pretty pb-1 ${
@@ -238,7 +245,8 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   }
 
   const arrow =
-    'absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/70 text-foreground backdrop-blur-sm transition-colors duration-200 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/50'
+    'absolute z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/70 text-foreground backdrop-blur-sm transition-colors duration-200 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/50'
+  const arrowStyle = {top: cardCenter ?? '50%'}
 
   return (
     // Takes whatever height the page has between the nav and the site footer.
@@ -262,6 +270,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             aria-label="Previous project"
             onClick={() => step(-1)}
             className={`left-(--edge) ${arrow}`}
+            style={arrowStyle}
           >
             <Arrow glyph="←" />
           </button>
@@ -270,6 +279,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             aria-label="Next project"
             onClick={() => step(1)}
             className={`right-(--edge) ${arrow}`}
+            style={arrowStyle}
           >
             <Arrow glyph="→" />
           </button>
