@@ -34,9 +34,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} h-full`}>
-      <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
+      <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
         <NavVisibilityProvider>
-          <div className="flex min-h-dvh flex-1 flex-col">
+          <div className="flex min-h-full w-full flex-1 flex-col">
             <Suspense fallback={null}>
               <Nav />
             </Suspense>
