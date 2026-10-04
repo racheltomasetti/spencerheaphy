@@ -214,7 +214,13 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           }`}
           style={{width: cardWidth, marginLeft: -cardWidth / 2, top: `calc(50% + ${cardHeight / 2 + 14}px)`}}
         >
-          <span className={`type-project-title min-w-0 text-pretty pb-1 ${narrow ? '' : 'truncate'}`}>
+          <span
+            className={`type-project-title min-w-0 text-pretty pb-1 ${
+              narrow
+                ? 'underline decoration-foreground/70 decoration-1 underline-offset-4'
+                : 'truncate'
+            }`}
+          >
             {isUndisclosed ? 'Undisclosed' : current.title}
           </span>
           {!isUndisclosed && current.subheader && (
