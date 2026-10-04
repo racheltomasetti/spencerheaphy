@@ -8,7 +8,7 @@ export function SiteFooter({settings}: {settings: SiteSettings | null}) {
   return (
     <footer id="site-footer" className="scroll-mt-(--nav-h)">
       <div className="flex flex-nowrap items-center justify-between gap-3 whitespace-nowrap px-(--edge) pt-10 pb-6 text-[10px] uppercase tracking-[0.08em] text-foreground/60 max-[359px]:gap-2 max-[359px]:text-[9px] max-[359px]:tracking-normal sm:text-xs sm:tracking-[0.1em] md:grid md:grid-cols-[1fr_auto_1fr]">
-        <p className="text-foreground/60 md:justify-self-start">
+        <p className="hidden text-foreground/60 md:block md:justify-self-start">
           &copy; {year}
           <span className="hidden sm:inline"> {settings?.name || 'Spencer Heaphy'}</span>
         </p>

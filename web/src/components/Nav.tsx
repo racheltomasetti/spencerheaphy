@@ -235,10 +235,10 @@ export function Nav({embedded = false}: {embedded?: boolean}) {
   )
 }
 
-// Full-screen cream sheet on small screens. Same tab language as desktop.
+// Full-screen cream sheet on small screens. The tabs are a centered ruled list,
+// in the same uppercase tracking as the desktop bar, with the open page in full ink.
 function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
   const {setMenuOpen} = useNavVisibility()
-  const [hovered, setHovered] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -265,7 +265,7 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
       aria-hidden={!open}
       inert={!open}
       onClick={() => setMenuOpen(false)}
-      className={`fixed inset-0 z-[90] flex flex-col justify-center bg-[#faf9f6] px-(--edge) pt-[var(--nav-h)] pb-[12vh] text-[#141310] transition-opacity duration-200 ease-out md:hidden motion-reduce:transition-none ${
+      className={`fixed inset-0 z-[90] flex flex-col justify-center bg-[#faf9f6] px-(--edge) pt-[var(--nav-h)] text-[#141310] transition-opacity duration-200 ease-out md:hidden motion-reduce:transition-none ${
         open ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
@@ -311,25 +311,25 @@ function MobileMenu({pathname, open}: {pathname: string; open: boolean}) {
           </svg>
         </button>
       </div>
-      <div
-        className="flex flex-col items-start gap-8"
-        onClick={(event) => event.stopPropagation()}
-        onMouseLeave={() => setHovered(null)}
-      >
-        {NAV_LINKS.map((link) => (
-          <NavLink
-            key={link.href}
-            href={link.href}
-            label={link.label}
-            className="text-[clamp(22px,6.5vw,28px)] uppercase tracking-[0.14em] leading-none"
-            current={pathname === link.href}
-            underlined={(hovered ?? pathname) === link.href}
-            onMouseEnter={() => setHovered(link.href)}
-            onFocus={() => setHovered(link.href)}
-            onClick={pathname === link.href ? () => setMenuOpen(false) : undefined}
-          />
-        ))}
-      </div>
+      <ul className="border-t border-foreground/20" onClick={(event) => event.stopPropagation()}>
+        {NAV_LINKS.map((link) => {
+          const current = pathname === link.href
+          return (
+            <li key={link.href} className="border-b border-foreground/20">
+              <Link
+                href={link.href}
+                aria-current={current ? 'page' : undefined}
+                onClick={current ? () => setMenuOpen(false) : undefined}
+                className={`block py-6 text-center text-[18px] font-medium uppercase tracking-[0.28em] ${
+                  current ? 'text-foreground' : 'text-foreground/55'
+                }`}
+              >
+                {link.label}
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
     </nav>
   )
 }

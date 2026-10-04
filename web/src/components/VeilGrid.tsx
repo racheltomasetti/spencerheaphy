@@ -6,7 +6,7 @@ import type {Project} from '@/sanity/lib/types'
 // Three across on open gutters, every film in a 16:9 frame and shown clean. Hovering
 // draws a dark veil over the film and brings its title and subheader up in the middle,
 // in the site's shared project type styles (serif title, small uppercase subheader),
-// with the subheader underlined.
+// with the title underlined.
 // Touch screens can't hover, so there a lighter veil and the title stay on.
 // Tiles below the fold fade in as they are scrolled to (see UnveilOnScroll).
 
@@ -60,12 +60,10 @@ function VeilCard({project}: {project: Project}) {
           aria-hidden
           className={`absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center text-white ${REVEAL}`}
         >
-          <span className="type-project-title">{project.title}</span>
-          {project.subheader && (
-            <span className="type-project-subhead underline decoration-white/70 decoration-1 underline-offset-4">
-              {project.subheader}
-            </span>
-          )}
+          <span className="type-project-title underline decoration-white/70 decoration-1 underline-offset-4">
+            {project.title}
+          </span>
+          {project.subheader && <span className="type-project-subhead">{project.subheader}</span>}
         </div>
       </div>
     </Link>
@@ -74,7 +72,7 @@ function VeilCard({project}: {project: Project}) {
 
 export function VeilGrid({projects}: {projects: Project[]}) {
   return (
-    <UnveilOnScroll className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+    <UnveilOnScroll className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-11">
       {projects.map((project) => (
         <VeilCard key={project._id} project={project} />
       ))}
