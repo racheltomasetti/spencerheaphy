@@ -1,6 +1,5 @@
 'use client'
 
-import {usePathname, useRouter} from 'next/navigation'
 import {useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent} from 'react'
 import {LazyVideo} from '@/components/LazyVideo'
 import {MediaItemView} from '@/components/MediaItemView'
@@ -8,8 +7,9 @@ import type {Project} from '@/sanity/lib/types'
 
 // The social work as one row of 9:16 cards with the current one centred on the screen.
 // The row steps a card at a time: arrow keys, the on-screen arrows, or a finger swipe.
-// It loops, so there is no first or last card. The centred video plays; clicking the
-// centred card opens the project, and clicking a side card brings it to the centre.
+// It loops, so there is no first or last card. The centred video plays, and clicking a
+// side card brings it to the centre. The cards don't open anything for now: what a
+// social project should lead to (most likely the posted video) is still to be decided.
 
 // Room kept under the card for the caption. The card is centred in the stage, so the
 // same amount stays clear above it. Narrow screens stack the title and subheader, so
@@ -109,8 +109,6 @@ function Arrow({glyph}: {glyph: '←' | '→'}) {
 }
 
 export function SocialCarousel({projects}: {projects: Project[]}) {
-  const router = useRouter()
-  const pathname = usePathname()
   const stageRef = useRef<HTMLDivElement>(null)
   const swipeStartX = useRef<number | null>(null)
   const [size, setSize] = useState<{width: number; height: number} | null>(null)
@@ -134,8 +132,6 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   useEffect(() => {
     if (count <= 1) return
     const onKeyDown = (event: KeyboardEvent) => {
-      // The lightbox has its own arrow keys while a project is open.
-      if (window.location.search.includes('project=')) return
       if (event.metaKey || event.ctrlKey || event.altKey) return
       if (event.key === 'ArrowLeft') step(-1)
       else if (event.key === 'ArrowRight') step(1)
@@ -155,11 +151,6 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     swipeStartX.current = null
     if (delta > SWIPE_THRESHOLD) step(-1)
     else if (delta < -SWIPE_THRESHOLD) step(1)
-  }
-
-  const open = (project: Project) => {
-    if (project.status === 'undisclosed') return
-    router.push(`${pathname}?project=${project.slug}`, {scroll: false})
   }
 
   const current = projects[wrap(position, count)]
@@ -188,16 +179,16 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           const offset = slot - position
           const centred = offset === 0
           return (
-            <button
+            <div
               key={slot}
-              type="button"
-              tabIndex={centred ? 0 : -1}
+              data-centred={centred || undefined}
+              role={centred ? 'group' : undefined}
               aria-hidden={centred ? undefined : true}
               aria-label={
                 centred ? [project.title, project.subheader].filter(Boolean).join(', ') : undefined
               }
-              onClick={() => (centred ? open(project) : step(offset))}
-              className="absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
+              onClick={centred ? undefined : () => step(offset)}
+              className="absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden data-[centred]:cursor-default bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
               style={{
                 width: cardWidth,
                 height: cardHeight,
@@ -207,7 +198,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
               }}
             >
               <CardMedia project={project} active={centred} />
-            </button>
+            </div>
           )
         })}
 
@@ -218,7 +209,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           aria-hidden
           className={`pointer-events-none absolute left-1/2 flex animate-[hero-caption-in_450ms_ease_both] text-foreground motion-reduce:animate-none [--project-subhead-size:10px] [--project-title-size:1.25rem] ${
             narrow
-              ? 'flex-col items-start gap-1'
+              ? 'flex-col items-center gap-1 text-center'
               : 'items-baseline justify-between gap-4'
           }`}
           style={{width: cardWidth, marginLeft: -cardWidth / 2, top: `calc(50% + ${cardHeight / 2 + 14}px)`}}

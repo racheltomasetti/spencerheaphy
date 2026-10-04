@@ -1,6 +1,4 @@
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
-import {ProjectLightbox} from '@/components/ProjectLightbox'
 import {SocialCarousel} from '@/components/SocialCarousel'
 import {getProjects} from '@/sanity/lib/get-projects'
 import {isSocialProject} from '@/sanity/lib/types'
@@ -28,9 +26,6 @@ export default async function SocialPage() {
           <SocialCarousel projects={socialProjects} />
         )}
       </div>
-      <Suspense fallback={null}>
-        <ProjectLightbox projects={socialProjects} />
-      </Suspense>
     </>
   )
 }
