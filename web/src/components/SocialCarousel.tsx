@@ -111,7 +111,7 @@ function Arrow({glyph}: {glyph: '←' | '→'}) {
 export function SocialCarousel({projects}: {projects: Project[]}) {
   const stageRef = useRef<HTMLDivElement>(null)
   const swipeStartX = useRef<number | null>(null)
-  const [size, setSize] = useState<{width: number; height: number} | null>(null)
+  const [size, setSize] = useState<{width: number; height: number; top: number; header: number} | null>(null)
   // Counts steps without wrapping, so the row always slides the short way round.
   const [position, setPosition] = useState(0)
   const count = projects.length
@@ -119,10 +119,12 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   useEffect(() => {
     const stage = stageRef.current
     if (!stage) return
-    const observer = new ResizeObserver(([entry]) => {
-      const {width, height} = entry.contentRect
-      if (width && height) setSize({width, height})
-    })
+    const measure = () => {
+      const rect = stage.getBoundingClientRect()
+      const header = document.querySelector('header')?.getBoundingClientRect().height ?? 0
+      if (rect.width && rect.height) setSize({width: rect.width, height: rect.height, top: rect.top, header})
+    }
+    const observer = new ResizeObserver(measure)
     observer.observe(stage)
     return () => observer.disconnect()
   }, [])
@@ -162,14 +164,16 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     const narrow = size.width < NARROW_STAGE
     const captionRoom = narrow ? NARROW_CAPTION_ROOM : CAPTION_ROOM
     const widthCap = (size.width * MAX_WIDTH_SHARE * 16) / 9
-    // On a phone the row sits just under the nav, and the spare room falls above the
-    // footer so the footer rests at the bottom of the screen.
-    const topGap = narrow ? 12 : 0
     const cardHeight = Math.max(
       120,
-      Math.min(narrow ? size.height - captionRoom - topGap : size.height - captionRoom * 2, widthCap),
+      Math.min(size.height - (narrow ? captionRoom : captionRoom * 2), widthCap),
     )
-    const cardTop = narrow ? topGap : (size.height - cardHeight) / 2
+    // On a phone, the gap from the nav to the card matches the gap from the card to the footer.
+    const centeredTop = (size.height - cardHeight - size.top + size.header) / 2
+    const maxTop = Math.max(0, size.height - cardHeight - (narrow ? captionRoom : 0))
+    const cardTop = narrow
+      ? Math.min(Math.max(0, centeredTop), maxTop)
+      : (size.height - cardHeight) / 2
     cardCenter = cardTop + cardHeight / 2
     const cardWidth = (cardHeight * 9) / 16
     const pitch = cardWidth + gap
