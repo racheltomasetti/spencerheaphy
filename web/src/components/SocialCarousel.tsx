@@ -12,8 +12,11 @@ import type {Project} from '@/sanity/lib/types'
 // centred card opens the project, and clicking a side card brings it to the centre.
 
 // Room kept under the card for the caption. The card is centred in the stage, so the
-// same amount stays clear above it.
+// same amount stays clear above it. Narrow screens stack the title and subheader, so
+// they need a taller gap than the single shared line.
 const CAPTION_ROOM = 68
+const NARROW_CAPTION_ROOM = 96
+const NARROW_STAGE = 768
 // On a narrow screen a full-height card would be nearly as wide as the screen; cap its
 // width so the neighbours still show at the edges.
 const MAX_WIDTH_SHARE = 0.74
@@ -56,21 +59,51 @@ function CardMedia({project, active}: {project: Project; active: boolean}) {
   )
 }
 
-// Drawn rather than typed: a text arrow sits wherever the font's metrics put it, which
-// is slightly low in the circle. This one is symmetric about the centre of its box.
-function Arrow({className = ''}: {className?: string}) {
+// The same typed arrow as the hero. A text character sits wherever its font's metrics
+// put it, and the arrow comes from a different font on each system, so it can't be
+// centred by a fixed nudge. This measures the ink of the arrow as this browser draws
+// it and places it so the ink's centre is the circle's centre.
+const CIRCLE = 40
+const ARROW_SIZE = 20
+
+function Arrow({glyph}: {glyph: '←' | '→'}) {
+  const ref = useRef<SVGTextElement>(null)
+  const [at, setAt] = useState<{x: number; y: number} | null>(null)
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    const measure = () => {
+      const context = document.createElement('canvas').getContext('2d')
+      if (!context) return
+      const style = getComputedStyle(node)
+      context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+      const ink = context.measureText(glyph)
+      // Text is drawn from its left origin on its baseline; the ink runs from
+      // -actualBoundingBoxLeft to +actualBoundingBoxRight, and from ascent above the
+      // baseline to descent below it.
+      setAt({
+        x: CIRCLE / 2 - (ink.actualBoundingBoxRight - ink.actualBoundingBoxLeft) / 2,
+        y: CIRCLE / 2 + (ink.actualBoundingBoxAscent - ink.actualBoundingBoxDescent) / 2,
+      })
+    }
+    measure()
+    // The arrow's font may still be loading on the first pass.
+    document.fonts?.ready.then(measure)
+  }, [glyph])
+
   return (
-    <svg
-      aria-hidden
-      viewBox="0 0 18 18"
-      className={`block h-[18px] w-[18px] ${className}`}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2.5 9h13M10.5 4l5 5-5 5" />
+    <svg aria-hidden viewBox={`0 0 ${CIRCLE} ${CIRCLE}`} className="absolute inset-0 h-full w-full">
+      <text
+        ref={ref}
+        x={at?.x ?? 0}
+        y={at?.y ?? 0}
+        fontSize={ARROW_SIZE}
+        fill="currentColor"
+        opacity={at ? 1 : 0}
+      >
+        {glyph}
+      </text>
     </svg>
   )
 }
@@ -134,9 +167,11 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
 
   if (size && count > 0) {
     const gap = size.width >= 1024 ? 24 : 16
+    const narrow = size.width < NARROW_STAGE
+    const captionRoom = narrow ? NARROW_CAPTION_ROOM : CAPTION_ROOM
     const cardHeight = Math.max(
       120,
-      Math.min(size.height - CAPTION_ROOM * 2, (size.width * MAX_WIDTH_SHARE * 16) / 9),
+      Math.min(size.height - captionRoom * 2, (size.width * MAX_WIDTH_SHARE * 16) / 9),
     )
     const cardWidth = (cardHeight * 9) / 16
     const pitch = cardWidth + gap
@@ -176,18 +211,27 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           )
         })}
 
-        {/* Title on the card's left edge, subheader on its right. */}
+        {/* Wide screens: title on the card's left edge, subheader on its right.
+            Narrow screens: stacked under the card, so a long title isn't cut off. */}
         <div
           key={position}
           aria-hidden
-          className="pointer-events-none absolute left-1/2 flex animate-[hero-caption-in_450ms_ease_both] items-baseline justify-between gap-4 text-foreground motion-reduce:animate-none [--project-subhead-size:10px] [--project-title-size:1.25rem]"
+          className={`pointer-events-none absolute left-1/2 flex animate-[hero-caption-in_450ms_ease_both] text-foreground motion-reduce:animate-none [--project-subhead-size:10px] [--project-title-size:1.25rem] ${
+            narrow
+              ? 'flex-col items-start gap-1'
+              : 'items-baseline justify-between gap-4'
+          }`}
           style={{width: cardWidth, marginLeft: -cardWidth / 2, top: `calc(50% + ${cardHeight / 2 + 14}px)`}}
         >
-          <span className="type-project-title min-w-0 truncate pb-1">
+          <span className={`type-project-title min-w-0 text-pretty pb-1 ${narrow ? '' : 'truncate'}`}>
             {isUndisclosed ? 'Undisclosed' : current.title}
           </span>
           {!isUndisclosed && current.subheader && (
-            <span className="type-project-subhead max-w-[60%] shrink-0 truncate text-right">
+            <span
+              className={`type-project-subhead text-pretty ${
+                narrow ? '' : 'max-w-[60%] shrink-0 truncate text-right'
+              }`}
+            >
               {current.subheader}
             </span>
           )}
@@ -222,7 +266,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             onClick={() => step(-1)}
             className={`left-(--edge) ${arrow}`}
           >
-            <Arrow className="rotate-180" />
+            <Arrow glyph="←" />
           </button>
           <button
             type="button"
@@ -230,7 +274,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             onClick={() => step(1)}
             className={`right-(--edge) ${arrow}`}
           >
-            <Arrow />
+            <Arrow glyph="→" />
           </button>
         </>
       )}

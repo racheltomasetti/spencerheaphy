@@ -1,14 +1,17 @@
 'use client'
 
 import {usePathname, useRouter, useSearchParams} from 'next/navigation'
-import {useEffect} from 'react'
+import {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {Nav} from '@/components/Nav'
 import {MediaItemView} from '@/components/MediaItemView'
 import {VimeoEmbed, vimeoIdFromUrl} from '@/components/VimeoEmbed'
 import type {Project} from '@/sanity/lib/types'
 
-// How tall the film is on the project page, as a share of the screen height.
-const FILM_HEIGHT = '48dvh'
+// The film takes whatever height the rest of the project doesn't need, between these
+// two shares of the screen height: bigger on a project with only a title, smaller on
+// one with a description, credits and stills.
+const FILM_MIN = 0.4
+const FILM_MAX = 0.66
 
 function formatProjectDate(date?: string, year?: number) {
   if (date) {
@@ -48,6 +51,41 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project])
 
+  // Sizes the film to the room left over once the details below it are laid out, so
+  // the whole project fits one screen. Widening the film re-wraps the details, so this
+  // re-runs whenever their height changes; each pass moves the same way, so it settles.
+  const frameRef = useRef<HTMLDivElement>(null)
+  const detailsRef = useRef<HTMLDivElement>(null)
+  const [filmWidth, setFilmWidth] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current
+    const details = detailsRef.current
+    if (!frame || !details) return
+
+    const fit = () => {
+      const style = getComputedStyle(frame)
+      const gutters = frame.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      const room =
+        window.innerHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom) -
+        details.offsetHeight
+      const height = Math.min(window.innerHeight * FILM_MAX, Math.max(window.innerHeight * FILM_MIN, room))
+      const width = Math.round(Math.min(gutters, (height * 16) / 9))
+      setFilmWidth((current) => (current != null && Math.abs(current - width) < 2 ? current : width))
+    }
+
+    fit()
+    const observer = new ResizeObserver(fit)
+    observer.observe(details)
+    window.addEventListener('resize', fit)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', fit)
+    }
+  }, [project?.slug])
+
   if (!project) return null
 
   const displayDate = formatProjectDate(project.date, project.year)
@@ -62,12 +100,11 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
       }}
     >
       <Nav embedded />
-      {/* One screen: the film takes about half the height and everything about it sits
-          underneath, so nothing needs scrolling on a laptop. When a project has little
-          to show, the block centres in the space below the nav. Small screens scroll. */}
-      <div className="flex min-h-dvh flex-col justify-center px-(--edge) pb-6 pt-[calc(var(--nav-h)+0.75rem)]">
-        {/* As wide as a 16:9 film that is FILM_HEIGHT tall, and never wider than the gutters. */}
-        <div className="mx-auto w-full" style={{maxWidth: `max(36rem, calc(${FILM_HEIGHT} * 16 / 9))`}}>
+      {/* One screen: the film starts right under the nav and everything about it sits
+          underneath, so nothing needs scrolling on a laptop. Small screens scroll. */}
+      <div ref={frameRef} className="px-(--edge) pb-6 pt-[calc(var(--nav-h)+0.75rem)]">
+        {/* As wide as the film; the details below line up with its edges. */}
+        <div className="mx-auto w-full" style={{maxWidth: filmWidth ?? 'calc(48dvh * 16 / 9)'}}>
           <div className="relative aspect-video w-full overflow-hidden bg-foreground/5">
             {hasVimeo && project.vimeoUrl ? (
               <VimeoEmbed url={project.vimeoUrl} title={project.title} autoplay />
@@ -85,55 +122,57 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
 
           {/* Title, subheader and description on the left; credits on the right, level
               with the title. Any part a project doesn't have simply isn't there. */}
-          <div className="mt-5 grid gap-x-8 gap-y-6 lg:grid-cols-12">
-            <div className="flex flex-col lg:col-span-7">
-              <h2 className="type-project-title [--project-title-size:clamp(1.375rem,2vw,1.75rem)]">
-                {project.title}
-              </h2>
-              {(project.subheader || displayDate) && (
-                <span className="type-project-subhead mt-2 [--project-subhead-size:11px]">
-                  {[project.subheader, displayDate].filter(Boolean).join(' · ')}
-                </span>
-              )}
-              {project.description && (
-                <p className="mt-3 max-w-[62ch] text-[clamp(13px,0.95vw,15px)] leading-[1.6] text-foreground/80">
-                  {project.description}
-                </p>
+          <div ref={detailsRef}>
+            <div className="grid gap-x-8 gap-y-6 pt-5 lg:grid-cols-12">
+              <div className="flex flex-col lg:col-span-7">
+                <h2 className="type-project-title [--project-title-size:clamp(1.375rem,2vw,1.75rem)]">
+                  {project.title}
+                </h2>
+                {(project.subheader || displayDate) && (
+                  <span className="type-project-subhead mt-2 [--project-subhead-size:11px]">
+                    {[project.subheader, displayDate].filter(Boolean).join(' · ')}
+                  </span>
+                )}
+                {project.description && (
+                  <p className="mt-3 max-w-[62ch] text-[clamp(13px,0.95vw,15px)] leading-[1.6] text-foreground/80">
+                    {project.description}
+                  </p>
+                )}
+              </div>
+
+              {crew.length > 0 && (
+                <dl className="grid grid-cols-[auto_1fr] content-start gap-x-5 gap-y-1.5 pt-1 text-[11px] uppercase tracking-[0.13em] lg:col-span-5">
+                  {crew.map((credit, index) => (
+                    <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
+                      <dt className="text-foreground/50">{credit.role}</dt>
+                      <dd className="min-w-0 break-words text-foreground/80">{credit.name}</dd>
+                    </div>
+                  ))}
+                </dl>
               )}
             </div>
 
-            {crew.length > 0 && (
-              <dl className="grid grid-cols-[auto_1fr] content-start gap-x-5 gap-y-1.5 pt-1 text-[11px] uppercase tracking-[0.13em] lg:col-span-5">
-                {crew.map((credit, index) => (
-                  <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
-                    <dt className="text-foreground/50">{credit.role}</dt>
-                    <dd className="min-w-0 break-words text-foreground/80">{credit.name}</dd>
+            {/* Stills as one strip of small frames; it scrolls sideways if there are many. */}
+            {project.gallery && project.gallery.length > 0 && (
+              <div className="mt-5 flex gap-2 overflow-x-auto">
+                {project.gallery.map((item, index) => (
+                  <div
+                    key={item._key ?? index}
+                    className="relative aspect-[4/3] h-[clamp(64px,11dvh,120px)] shrink-0 overflow-hidden bg-foreground/5"
+                  >
+                    <MediaItemView
+                      media={item}
+                      alt={`${project.title} — still ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      width={480}
+                      height={360}
+                      placeholderLabel={`Still ${index + 1}`}
+                    />
                   </div>
                 ))}
-              </dl>
+              </div>
             )}
           </div>
-
-          {/* Stills as one strip of small frames; it scrolls sideways if there are many. */}
-          {project.gallery && project.gallery.length > 0 && (
-            <div className="mt-5 flex gap-2 overflow-x-auto">
-              {project.gallery.map((item, index) => (
-                <div
-                  key={item._key ?? index}
-                  className="relative aspect-[4/3] h-[clamp(64px,11dvh,120px)] shrink-0 overflow-hidden bg-foreground/5"
-                >
-                  <MediaItemView
-                    media={item}
-                    alt={`${project.title} — still ${index + 1}`}
-                    className="h-full w-full object-cover"
-                    width={480}
-                    height={360}
-                    placeholderLabel={`Still ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
