@@ -13,17 +13,12 @@
 }
 
 /* One edge padding for the whole site: the nav, hero caption and counter, page content
-   and footer all pad by --edge, so their left and right edges line up. */
+   and footer all pad by --edge, so their left and right edges line up. It grows smoothly
+   from 20px at 640px wide to 32px at 1000px, instead of jumping at a breakpoint. */
 :root {
-  --edge: 1.25rem;
+  --edge: clamp(1.25rem, calc(3.333vw - 0.083rem), 2rem);
   --project-title-size: clamp(1.5rem, 3.4vw, 36px);
   --project-subhead-size: 12px;
-}
-
-@media (min-width: 768px) {
-  :root {
-    --edge: 2rem;
-  }
 }
 
 /* Shared project type. Family, weight, case and spacing live here so every place a

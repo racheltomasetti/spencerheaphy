@@ -9,19 +9,6 @@ export const metadata: Metadata = {
   title: 'Projects — Spencer Heaphy',
 }
 
-// Same type as the nav tabs. The side gutters are this wide so the grid's right edge
-// sits on the left of the S in Social, and the left side matches.
-const NAV_TAB = 'text-[clamp(13px,1.6vw,16px)] uppercase tracking-[0.18em]'
-
-function SideGutter() {
-  return (
-    <div aria-hidden className="invisible hidden shrink-0 items-center gap-7 pr-(--edge) md:flex">
-      <span className={NAV_TAB}>Social</span>
-      <span className={NAV_TAB}>Bio</span>
-    </div>
-  )
-}
-
 // Dev only: fills one sparse project with placeholder copy, credits and stills, so the
 // project page can be judged with every section present. The stills are borrowed from
 // the other projects' covers. Set DEV_FILLER_SLUG to null to turn it off. Never runs
@@ -63,9 +50,13 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <div className="flex w-full items-start pt-[calc(var(--nav-h)+1rem)] pb-[60px]">
-        <SideGutter />
-        <div className="min-w-0 flex-1 px-(--edge) md:px-0">
+      {/* Fills the room between the nav and the footer. A short grid is centred in it, with
+          the same gap above and below; a grid taller than the screen has no spare room, so
+          it sits at that minimum gap and scrolls. Phones are one column taller than the screen, so there it just scrolls. The top gap
+          and the side margins grow smoothly with the width (20px on a phone to 96px by about
+          1440px) rather than jumping at a breakpoint. */}
+      <div className="flex w-full flex-1 items-center pt-[calc(var(--nav-h)+clamp(1.5rem,4vw,3rem))] pb-12">
+        <div className="min-w-0 flex-1 px-[clamp(var(--edge),calc(9.5vw-2.6rem),6rem)]">
           <h1 className="sr-only">Work</h1>
           {directorProjects.length === 0 ? (
             <p className="text-sm text-foreground/50">Projects coming soon.</p>
@@ -73,7 +64,6 @@ export default async function ProjectsPage() {
             <VeilGrid projects={directorProjects} />
           )}
         </div>
-        <SideGutter />
       </div>
       <Suspense fallback={null}>
         <ProjectLightbox projects={directorProjects} />

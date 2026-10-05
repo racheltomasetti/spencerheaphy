@@ -109,6 +109,33 @@ function HeroCounter({slide, count}: {slide: number; count: number}) {
   )
 }
 
+// Always visible, on desktop and mobile alike.
+function HeroArrows({count, onPrev, onNext}: {count: number; onPrev: () => void; onNext: () => void}) {
+  if (count <= 1) return null
+  const arrow = 'absolute top-1/2 z-10 -translate-y-1/2 p-2 text-[22px] text-background'
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Previous slide"
+        onClick={onPrev}
+        className={`left-(--edge) ${arrow}`}
+      >
+        ←
+      </button>
+      <button
+        type="button"
+        aria-label="Next slide"
+        onClick={onNext}
+        className={`right-(--edge) ${arrow}`}
+      >
+        →
+      </button>
+    </>
+  )
+}
+
 export function VideoHero({projects}: {projects: Project[]}) {
   const [slide, setSlide] = useState(0)
   const isDesktop = useIsDesktop()
@@ -271,6 +298,8 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
         <HeroScrims />
 
+        <HeroArrows count={count} onPrev={goPrev} onNext={goNext} />
+
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
           <HeroCaption project={active} />
           <HeroCounter slide={slide} count={count} />
@@ -286,7 +315,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
     <div
       id="top"
       ref={heroRef}
-      className="group relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
+      className="relative h-dvh min-h-[540px] w-full overflow-hidden bg-foreground"
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') setHovered(true)
       }}
@@ -345,28 +374,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
 
       <HeroScrims />
 
-      {/* Desktop hover only: the arrows fade in while the pointer is over the hero (or when
-          one takes keyboard focus) and stay out of the way otherwise. */}
-      {count > 1 && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous slide"
-            onClick={goPrev}
-            className="left-(--edge) absolute top-1/2 z-10 -translate-y-1/2 p-2 text-[22px] text-background opacity-0 pointer-events-none transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 motion-reduce:transition-none"
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            aria-label="Next slide"
-            onClick={goNext}
-            className="right-(--edge) absolute top-1/2 z-10 -translate-y-1/2 p-2 text-[22px] text-background opacity-0 pointer-events-none transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 motion-reduce:transition-none"
-          >
-            →
-          </button>
-        </>
-      )}
+      <HeroArrows count={count} onPrev={goPrev} onNext={goNext} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
         <Link

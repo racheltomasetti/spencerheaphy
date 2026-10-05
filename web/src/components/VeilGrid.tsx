@@ -8,6 +8,8 @@ import type {Project} from '@/sanity/lib/types'
 // in the site's shared project type styles (serif title, small uppercase subheader),
 // with the title underlined.
 // Touch screens can't hover, so there a lighter veil and the title stay on.
+// One and two columns are capped so a tile there stays close to the size of a three-column
+// tile (about 400px and 320px, against 260px and up), instead of ballooning on a tablet.
 // Tiles below the fold fade in as they are scrolled to (see UnveilOnScroll).
 
 // Hidden only where the device can hover; the group-hover rule out-specifies it.
@@ -72,7 +74,7 @@ function VeilCard({project}: {project: Project}) {
 
 export function VeilGrid({projects}: {projects: Project[]}) {
   return (
-    <UnveilOnScroll className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-11">
+    <UnveilOnScroll className="mx-auto grid max-[640px]:max-w-[400px] grid-cols-1 gap-[clamp(2.5rem,3vw,2.75rem)] sm:max-[960px]:max-w-[680px] sm:max-[960px]:grid-cols-2 min-[960px]:grid-cols-3">
       {projects.map((project) => (
         <VeilCard key={project._id} project={project} />
       ))}
