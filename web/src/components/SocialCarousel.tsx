@@ -27,6 +27,10 @@ const NARROW_STAGE = 768
 // width so the neighbours still show at the edges.
 const MAX_WIDTH_SHARE = 0.74
 const SWIPE_THRESHOLD = 40
+// On a narrow screen the card sits this much lower than dead centre.
+const NARROW_SHIFT = 16
+// Half the width of an arrow button: the glyph plus its padding.
+const ARROW_HALF = 20
 // On wide screens the centred card is drawn this much larger than its neighbours.
 const FOCUS_SCALE = 1.2
 const FOCUS_MIN_WIDTH = 1024
@@ -131,8 +135,8 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   const current = projects[wrap(position, count)]
   let row = null
   let cardCenter: number | null = null
-  // On a narrow screen the arrows sit inside the centred card, since out at the screen edge
-  // they would straddle the pale gap between cards, where a light arrow can't be seen.
+  // On a narrow screen the arrows sit centred on the slivers of the cards either side of the
+  // centred one, clear of the centred card and not out over the pale gap between cards.
   let arrowInset: number | null = null
 
   if (size && count > 0) {
@@ -150,11 +154,12 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     const centeredTop = (size.height - cardHeight - size.top + size.header) / 2
     const maxTop = Math.max(0, size.height - cardHeight - (narrow ? captionRoom : 0))
     const cardTop = narrow
-      ? Math.min(Math.max(0, centeredTop), maxTop)
+      ? Math.min(Math.max(0, centeredTop + NARROW_SHIFT), maxTop)
       : (size.height - cardHeight) / 2
     cardCenter = cardTop + cardHeight / 2
     const cardWidth = (cardHeight * 9) / 16
-    if (narrow) arrowInset = (size.width - cardWidth) / 2 + 4
+    // The sliver of a neighbouring card runs from the screen edge to the gap before the centred card.
+    if (narrow) arrowInset = ((size.width - cardWidth) / 2 - gap) / 2 - ARROW_HALF
     const pitch = cardWidth + gap
     // The enlarged centre card grows evenly each side, so the neighbours step out of its way.
     const focusShift = ((focusScale - 1) * cardWidth) / 2
