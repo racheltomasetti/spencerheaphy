@@ -29,8 +29,11 @@ const MAX_WIDTH_SHARE = 0.74
 const SWIPE_THRESHOLD = 40
 // On a narrow screen the card sits this much lower than dead centre.
 const NARROW_SHIFT = 16
-// Half the width of an arrow button: the glyph plus its padding.
-const ARROW_HALF = 20
+// The caption starts this far under the card, and the arrows centre on this far into it.
+const CAPTION_GAP = 14
+const ARROW_LINE = 12
+// The width of an arrow button: the glyph plus its padding.
+const ARROW_BUTTON = 40
 // On wide screens the centred card is drawn this much larger than its neighbours.
 const FOCUS_SCALE = 1.2
 const FOCUS_MIN_WIDTH = 1024
@@ -134,10 +137,12 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
 
   const current = projects[wrap(position, count)]
   let row = null
-  let cardCenter: number | null = null
-  // On a narrow screen the arrows sit centred on the slivers of the cards either side of the
-  // centred one, clear of the centred card and not out over the pale gap between cards.
-  let arrowInset: number | null = null
+  // The arrows sit on the caption's line, on the plain page background where the dark arrow
+  // always shows whatever is in the row above. Narrow screens put them at the screen's edges;
+  // wider ones centre them under the cards either side of the centred one.
+  let arrowTop: number | null = null
+  let arrowLeft: number | null = null
+  let arrowRight: number | null = null
 
   if (size && count > 0) {
     const gap = size.width >= 1024 ? 24 : 16
@@ -156,13 +161,18 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     const cardTop = narrow
       ? Math.min(Math.max(0, centeredTop + NARROW_SHIFT), maxTop)
       : (size.height - cardHeight) / 2
-    cardCenter = cardTop + cardHeight / 2
     const cardWidth = (cardHeight * 9) / 16
-    // The sliver of a neighbouring card runs from the screen edge to the gap before the centred card.
-    if (narrow) arrowInset = ((size.width - cardWidth) / 2 - gap) / 2 - ARROW_HALF
     const pitch = cardWidth + gap
     // The enlarged centre card grows evenly each side, so the neighbours step out of its way.
     const focusShift = ((focusScale - 1) * cardWidth) / 2
+    arrowTop = cardTop + (cardHeight * (1 + focusScale)) / 2 + CAPTION_GAP + ARROW_LINE
+    if (!narrow) {
+      // Centred under the card either side of the focused one, which is where it will come
+      // from. The row there is empty, since those cards are shorter than the focused one.
+      const neighbour = pitch + focusShift
+      arrowLeft = size.width / 2 - neighbour - ARROW_BUTTON / 2
+      arrowRight = size.width / 2 + neighbour - ARROW_BUTTON / 2
+    }
     // Enough slots either side to fill the stage, plus one waiting off-screen so a card
     // is already in place before it slides into view.
     const reach = count > 1 ? Math.ceil((size.width / 2 + cardWidth / 2) / pitch) + 1 : 0
@@ -223,7 +233,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           style={{
             width: cardWidth * focusScale,
             marginLeft: (-cardWidth * focusScale) / 2,
-            top: cardTop + (cardHeight * (1 + focusScale)) / 2 + 14,
+            top: cardTop + (cardHeight * (1 + focusScale)) / 2 + CAPTION_GAP,
           }}
         >
           <span
@@ -249,10 +259,12 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     )
   }
 
-  const arrow = 'absolute z-10 -translate-y-1/2 p-2 text-[22px] text-background'
-  const arrowStyle = {top: cardCenter ?? '50%'}
-  const leftStyle = arrowInset == null ? arrowStyle : {...arrowStyle, left: arrowInset}
-  const rightStyle = arrowInset == null ? arrowStyle : {...arrowStyle, right: arrowInset}
+  const arrow = 'absolute z-10 -translate-y-1/2 p-2 text-[22px] text-foreground'
+  const leftStyle = {top: arrowTop ?? '50%', ...(arrowLeft == null ? {} : {left: arrowLeft})}
+  const rightStyle = {top: arrowTop ?? '50%', ...(arrowRight == null ? {} : {left: arrowRight})}
+  // Without a measured position (narrow screens) the arrows fall back to the screen's edges.
+  const leftClass = arrowLeft == null ? 'left-(--edge)' : ''
+  const rightClass = arrowRight == null ? 'right-(--edge)' : ''
 
   return (
     // Takes whatever height the page has between the nav and the site footer.
@@ -275,7 +287,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             type="button"
             aria-label="Previous project"
             onClick={() => step(-1)}
-            className={`left-(--edge) ${arrow}`}
+            className={`${leftClass} ${arrow}`}
             style={leftStyle}
           >
             ←
@@ -284,7 +296,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             type="button"
             aria-label="Next project"
             onClick={() => step(1)}
-            className={`right-(--edge) ${arrow}`}
+            className={`${rightClass} ${arrow}`}
             style={rightStyle}
           >
             →
