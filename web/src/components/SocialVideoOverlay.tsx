@@ -4,8 +4,8 @@ import {useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 
 // A social project's full video, taking over the screen. The video is 9:16 and as tall as
-// the viewport allows, so on a phone it fills the screen and on a wide screen it sits in
-// the middle with the dark sides left clickable to close. It opens from a click, so the
+// the viewport allows, so on a wide screen it fills the height. On a phone it keeps a margin
+// all round. Either way the dark area around the video is clickable to close. It opens from a click, so the
 // browser lets it play with sound.
 export function SocialVideoOverlay({
   src,
@@ -54,17 +54,8 @@ export function SocialVideoOverlay({
         preload="auto"
         controlsList="nodownload"
         onClick={(event) => event.stopPropagation()}
-        className="h-dvh max-h-dvh w-auto max-w-full bg-black object-contain"
-        style={{aspectRatio: '9 / 16'}}
+        className="aspect-[9/16] w-[min(calc(100vw-3rem),calc((100dvh-5rem)*9/16))] bg-black object-contain md:h-dvh md:w-auto md:max-w-full"
       />
-      <button
-        type="button"
-        aria-label="Close video"
-        onClick={onClose}
-        className="absolute right-4 top-4 z-10 p-2 text-[26px] leading-none text-white/90 mix-blend-difference hover:text-white"
-      >
-        ✕
-      </button>
     </div>,
     document.body,
   )
