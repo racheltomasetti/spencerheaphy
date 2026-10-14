@@ -35,6 +35,7 @@ export const PROJECTS_QUERY = defineQuery(`
     featuredOrder,
     orientation,
     coverMedia ${MEDIA_ITEM_PROJECTION},
+    fullVideo { asset -> { _id, url } },
     heroMedia ${MEDIA_ITEM_PROJECTION},
     heroMediaMobile ${MEDIA_ITEM_PROJECTION},
     gallery[] ${MEDIA_ITEM_PROJECTION}

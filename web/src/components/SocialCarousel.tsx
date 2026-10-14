@@ -9,13 +9,14 @@ import {
 } from 'react'
 import {LazyVideo} from '@/components/LazyVideo'
 import {MediaItemView} from '@/components/MediaItemView'
+import {SocialVideoOverlay} from '@/components/SocialVideoOverlay'
 import type {Project} from '@/sanity/lib/types'
 
 // The social work as one row of 9:16 cards with the current one centred on the screen.
 // The row steps a card at a time: arrow keys, the on-screen arrows, or a finger swipe.
 // It loops, so there is no first or last card. The centred video plays, and clicking a
-// side card brings it to the centre. The cards don't open anything for now: what a
-// social project should lead to (most likely the posted video) is still to be decided.
+// side card brings it to the centre. Clicking the centred card opens its full video
+// full screen, with sound.
 
 // Room kept under the card for the caption. The card is centred in the stage, so the
 // same amount stays clear above it. Narrow screens stack the title and subheader, so
@@ -88,6 +89,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   } | null>(null)
   // Counts steps without wrapping, so the row always slides the short way round.
   const [position, setPosition] = useState(0)
+  const [openId, setOpenId] = useState<string | null>(null)
   const count = projects.length
 
   useEffect(() => {
@@ -112,7 +114,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   const step = useCallback((delta: number) => setPosition((current) => current + delta), [])
 
   useEffect(() => {
-    if (count <= 1) return
+    if (count <= 1 || openId) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return
       if (event.key === 'ArrowLeft') step(-1)
@@ -120,7 +122,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [count, step])
+  }, [count, step, openId])
 
   // Finger swipe only. A mouse moves the row with the arrows, not by dragging.
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -136,6 +138,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
   }
 
   const current = projects[wrap(position, count)]
+  const openProject = openId ? projects.find((p) => p._id === openId) : undefined
   let row = null
   // The arrows sit on the caption's line, on the plain page background where the dark arrow
   // always shows whatever is in the row above. Narrow screens put them at the screen's edges;
@@ -186,17 +189,32 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           const project = projects[wrap(slot, count)]
           const offset = slot - position
           const centred = offset === 0
+          const fullSrc = centred ? project.fullVideo?.asset?.url : undefined
           return (
             <div
               key={slot}
               data-centred={centred || undefined}
+              data-playable={fullSrc ? true : undefined}
               role={centred ? 'group' : undefined}
               aria-hidden={centred ? undefined : true}
               aria-label={
                 centred ? [project.title, project.subheader].filter(Boolean).join(', ') : undefined
               }
-              onClick={centred ? undefined : () => step(offset)}
-              className="absolute left-1/2 block cursor-pointer overflow-hidden data-[centred]:cursor-default bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
+              tabIndex={fullSrc ? 0 : undefined}
+              onClick={
+                centred ? (fullSrc ? () => setOpenId(project._id) : undefined) : () => step(offset)
+              }
+              onKeyDown={
+                fullSrc
+                  ? (event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setOpenId(project._id)
+                      }
+                    }
+                  : undefined
+              }
+              className="absolute left-1/2 block cursor-pointer overflow-hidden data-[centred]:cursor-default data-[centred]:data-[playable]:cursor-pointer bg-[color-mix(in_srgb,var(--foreground)_8%,var(--background))] outline-none transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
               style={{
                 width: cardWidth,
                 height: cardHeight,
@@ -302,6 +320,13 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
             →
           </button>
         </>
+      )}
+      {openProject?.fullVideo?.asset?.url && (
+        <SocialVideoOverlay
+          src={openProject.fullVideo.asset.url}
+          title={openProject.title}
+          onClose={() => setOpenId(null)}
+        />
       )}
       <span className="sr-only" aria-live="polite">
         {current

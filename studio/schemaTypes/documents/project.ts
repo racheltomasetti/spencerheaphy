@@ -82,6 +82,15 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'fullVideo',
+      title: 'Full video (opens full screen)',
+      description:
+        'Social only. The finished 9:16 video that plays with sound when someone clicks the card. Export 1080×1920 H.264 MP4, under ~20 MB. The cover media above stays as the short preview loop.',
+      type: 'file',
+      options: {accept: 'video/mp4,video/*'},
+      hidden: ({document}) => document?.role !== 'social',
+    }),
+    defineField({
       name: 'orientation',
       title: 'Orientation',
       description: 'What was shot. Director tiles are shown at 16:9. Social is shown at 9:16.',
