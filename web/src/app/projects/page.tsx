@@ -46,7 +46,10 @@ function withDevFiller(projects: Project[]): Project[] {
 
 export default async function ProjectsPage() {
   const projects = await getProjects()
-  const directorProjects = withDevFiller(projects.filter(isDirectorProject))
+  // Undisclosed projects sit at the end; the sort is stable, so the rest keep their order.
+  const directorProjects = withDevFiller(projects.filter(isDirectorProject)).sort(
+    (a, b) => Number(a.status === 'undisclosed') - Number(b.status === 'undisclosed'),
+  )
 
   return (
     <>

@@ -46,15 +46,6 @@ function CardMedia({project, active}: {project: Project; active: boolean}) {
   const media = project.coverMedia
   const className = 'absolute inset-0 h-full w-full object-cover'
 
-  if (project.status === 'undisclosed') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(135deg,#eceae4_0_9px,#f4f2ec_9px_18px)]">
-        <span className="type-project-subhead text-foreground/45 [--project-subhead-size:10px]">
-          Undisclosed
-        </span>
-      </div>
-    )
-  }
   if (media?.mediaType === 'video' && media.video?.asset?.url) {
     return (
       <LazyVideo
@@ -178,8 +169,6 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
     const reach = count > 1 ? Math.ceil((size.width / 2 + cardWidth / 2) / pitch) + 1 : 0
     const slots = Array.from({length: reach * 2 + 1}, (_, i) => position - reach + i)
 
-    const isUndisclosed = current.status === 'undisclosed'
-
     row = (
       <>
         {slots.map((slot) => {
@@ -259,9 +248,9 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
                 : 'truncate'
             }`}
           >
-            {isUndisclosed ? 'Undisclosed' : current.title}
+            {current.title}
           </span>
-          {!isUndisclosed && current.subheader && (
+          {current.subheader && (
             <span
               className={`type-project-subhead text-pretty ${
                 narrow ? '' : 'max-w-[60%] shrink-0 truncate text-right'
@@ -321,7 +310,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
       )}
       <span className="sr-only" aria-live="polite">
         {current
-          ? `${current.status === 'undisclosed' ? 'Undisclosed' : current.title}, ${wrap(position, count) + 1} of ${count}`
+          ? `${current.title}, ${wrap(position, count) + 1} of ${count}`
           : ''}
       </span>
     </div>

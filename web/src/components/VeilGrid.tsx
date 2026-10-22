@@ -28,7 +28,6 @@ function VeilCard({project}: {project: Project}) {
             className={`absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center ${REVEAL}`}
           >
             <span className="type-project-title text-foreground/60">Undisclosed</span>
-            <span className="type-project-subhead text-foreground/45">Details coming soon</span>
           </div>
         </div>
       </article>

@@ -116,7 +116,7 @@ export const project = defineType({
       name: 'status',
       title: 'Status',
       description:
-        'Choose “Undisclosed” to show this project as a blank “Undisclosed” tile with no title or image. The other two options look the same on the site.',
+        'Choose “Undisclosed” to show this project as a blank “Undisclosed” tile at the end of the Work page, with no title or image. The other two options look the same on the site.',
       type: 'string',
       fieldset: 'placement',
       options: {
@@ -129,6 +129,7 @@ export const project = defineType({
       },
       initialValue: 'published',
       validation: (rule) => rule.required(),
+      hidden: ({document}) => document?.role === 'social',
     }),
     defineField({
       name: 'order',
