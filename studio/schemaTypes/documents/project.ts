@@ -82,12 +82,12 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'fullVideo',
-      title: 'Full video (opens full screen)',
+      name: 'postUrl',
+      title: 'Social post link',
       description:
-        'Social only. The finished 9:16 video that plays with sound when someone clicks the card. Export 1080×1920 H.264 MP4, under ~20 MB. The cover media above stays as the short preview loop.',
-      type: 'file',
-      options: {accept: 'video/mp4,video/*'},
+        'Social only. The link to the post on its platform (Instagram, TikTok, etc.). Clicking the card on the Social page opens it in a new tab.',
+      type: 'url',
+      validation: (rule) => rule.uri({scheme: ['http', 'https']}),
       hidden: ({document}) => document?.role !== 'social',
     }),
     defineField({

@@ -58,7 +58,7 @@ export interface Project {
   featuredOrder?: number
   orientation?: ProjectOrientation
   coverMedia?: MediaItem
-  fullVideo?: SanityFileValue
+  postUrl?: string
   heroMedia?: MediaItem
   heroMediaMobile?: MediaItem
   gallery?: MediaItem[]
