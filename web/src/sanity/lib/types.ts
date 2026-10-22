@@ -56,8 +56,6 @@ export interface Project {
   featuredOrder?: number
   coverMedia?: MediaItem
   postUrl?: string
-  heroMedia?: MediaItem
-  heroMediaMobile?: MediaItem
   gallery?: MediaItem[]
 }
 

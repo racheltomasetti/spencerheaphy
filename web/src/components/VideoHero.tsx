@@ -13,7 +13,7 @@ import {
 } from 'react'
 import {MediaItemView} from '@/components/MediaItemView'
 import {useNavVisibility} from '@/components/NavVisibilityProvider'
-import type {Project} from '@/sanity/lib/types'
+import {isSocialProject, type Project} from '@/sanity/lib/types'
 
 const DESKTOP_BREAKPOINT = '(min-width: 768px)'
 const LOOP_REPEATS = 20
@@ -51,13 +51,34 @@ function useReducedMotion() {
   )
 }
 
-function heroMediaFor(project: Project, isDesktop: boolean) {
-  if (!isDesktop) return project.heroMediaMobile ?? project.heroMedia ?? project.coverMedia
-  return project.heroMedia ?? project.coverMedia
+// A director project opens its detail view. A social project opens its post in a new tab,
+// and without a post link it is not clickable.
+function ProjectLink({
+  project,
+  className,
+  children,
+}: {
+  project: Project
+  className: string
+  children: React.ReactNode
+}) {
+  if (!isSocialProject(project)) {
+    return (
+      <Link href={`/?project=${project.slug}`} scroll={false} className={className}>
+        {children}
+      </Link>
+    )
+  }
+  if (!project.postUrl) return <div className={className}>{children}</div>
+  return (
+    <a href={project.postUrl} target="_blank" rel="noopener noreferrer" className={className}>
+      {children}
+    </a>
+  )
 }
 
-function isVideoSlide(project: Project, isDesktop: boolean) {
-  const media = heroMediaFor(project, isDesktop)
+function isVideoSlide(project: Project) {
+  const media = project.coverMedia
   return media?.mediaType === 'video' && Boolean(media.video?.asset?.url)
 }
 
@@ -227,7 +248,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
   }, [slide])
 
   const active = projects[slide]
-  const activeIsVideo = active ? isVideoSlide(active, isDesktop) : false
+  const activeIsVideo = active ? isVideoSlide(active) : false
 
   useEffect(() => {
     if (count <= 1 || paused || hold || activeIsVideo) return
@@ -275,14 +296,13 @@ export function VideoHero({projects}: {projects: Project[]}) {
           {loopedProjects.map((project, loopIndex) => {
             const isActiveCopy = !paused && loopIndex === visibleLoopIndex
             return (
-              <Link
+              <ProjectLink
                 key={`${project._id}-${loopIndex}`}
-                href={`/?project=${project.slug}`}
-                scroll={false}
+                project={project}
                 className="relative block h-full w-full flex-none snap-center snap-always"
               >
                 <MediaItemView
-                  media={heroMediaFor(project, false)}
+                  media={project.coverMedia}
                   alt={project.title}
                   className="h-full w-full object-cover"
                   placeholderLabel={`Reel — ${project.title}`}
@@ -291,7 +311,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
                   playsBeforeAdvance={hold ? undefined : 2}
                   onAdvance={goNext}
                 />
-              </Link>
+              </ProjectLink>
             )
           })}
         </div>
@@ -358,7 +378,7 @@ export function VideoHero({projects}: {projects: Project[]}) {
             }}
           >
             <MediaItemView
-              media={heroMediaFor(project, isDesktop)}
+              media={project.coverMedia}
               alt={project.title}
               className="h-full w-full object-cover"
               placeholderLabel={`Reel — ${project.title}`}
@@ -377,13 +397,9 @@ export function VideoHero({projects}: {projects: Project[]}) {
       <HeroArrows count={count} onPrev={goPrev} onNext={goNext} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 px-(--edge) pb-(--edge) text-background">
-        <Link
-          href={`/?project=${active.slug}`}
-          scroll={false}
-          className="pointer-events-auto min-w-0"
-        >
+        <ProjectLink project={active} className="pointer-events-auto min-w-0">
           <HeroCaption project={active} />
-        </Link>
+        </ProjectLink>
         <HeroCounter slide={slide} count={count} />
       </div>
     </div>

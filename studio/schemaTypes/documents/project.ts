@@ -30,7 +30,7 @@ export const project = defineType({
     defineField({
       name: 'slug',
       title: 'Link name',
-      description: 'The project’s web address, e.g. spencerheaphy.com/?project=kiehls. Click Generate and leave it.',
+      description: 'The project’s web address, e.g. spencerheaphy.com/?project=kiehls.',
       type: 'slug',
       options: {source: 'title', maxLength: 96},
       validation: (rule) => rule.required(),
@@ -61,12 +61,14 @@ export const project = defineType({
       title: 'Date',
       description: 'Shown on the site as month and year, e.g. June 2026.',
       type: 'date',
+      hidden: ({document}) => document?.role === 'social',
     }),
     defineField({
       name: 'description',
       title: 'Description',
       description: 'A few sentences about the project, shown when someone opens it.',
       type: 'text',
+      hidden: ({document}) => document?.role === 'social',
     }),
     defineField({
       name: 'coverMedia',
@@ -150,24 +152,6 @@ export const project = defineType({
       title: 'Position on the home page',
       description: 'Order in the home page slideshow. 1 comes first.',
       type: 'number',
-      fieldset: 'placement',
-      hidden: ({document}) => !document?.featured,
-    }),
-    defineField({
-      name: 'heroMedia',
-      title: 'Home page slideshow image or clip',
-      description:
-        'Optional. A horizontal (16:9) image or clip for the home page slideshow. If left empty, the cover is used, which for Social projects means a vertical clip cropped to fit.',
-      type: 'optionalMediaItem',
-      fieldset: 'placement',
-      hidden: ({document}) => !document?.featured,
-    }),
-    defineField({
-      name: 'heroMediaMobile',
-      title: 'Home page slideshow — phone version',
-      description:
-        'Optional. A vertical image or clip used on phones. If left empty, the slideshow image above is used.',
-      type: 'optionalMediaItem',
       fieldset: 'placement',
       hidden: ({document}) => !document?.featured,
     }),
