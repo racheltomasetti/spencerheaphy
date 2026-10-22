@@ -230,7 +230,9 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
         <div
           key={position}
           aria-hidden
-          className={`pointer-events-none absolute left-1/2 flex animate-[hero-caption-in_450ms_ease_both] px-3 text-foreground motion-reduce:animate-none [--project-subhead-size:10px] [--project-title-size:1.25rem] ${
+          className={`pointer-events-none absolute left-1/2 flex animate-[hero-caption-in_450ms_ease_both] px-3 text-foreground motion-reduce:animate-none [--project-subhead-size:10px] ${
+            narrow ? '[--project-title-size:1.25rem]' : '[--project-title-size:1.125rem]'
+          } ${
             narrow
               ? 'flex-col items-center gap-1 text-center'
               : 'items-baseline justify-between gap-4'
@@ -242,10 +244,8 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           }}
         >
           <span
-            className={`type-project-title min-w-0 text-pretty pb-1 ${
-              narrow
-                ? 'underline decoration-foreground/70 decoration-1 underline-offset-4'
-                : 'truncate'
+            className={`type-project-title shrink-0 whitespace-nowrap pb-1 ${
+              narrow ? 'underline decoration-foreground/70 decoration-1 underline-offset-4' : ''
             }`}
           >
             {current.title}
@@ -253,7 +253,7 @@ export function SocialCarousel({projects}: {projects: Project[]}) {
           {current.subheader && (
             <span
               className={`type-project-subhead text-pretty ${
-                narrow ? '' : 'max-w-[60%] shrink-0 truncate text-right'
+                narrow ? 'whitespace-nowrap' : 'min-w-0 truncate text-right'
               }`}
             >
               {current.subheader}

@@ -45,7 +45,7 @@ export const PLACEHOLDER_PROJECTS: Project[] = [
     slug: 'the-quiet-part',
     title: 'The Quiet Part',
     role: 'social',
-    status: 'in production',
+    status: 'published',
     description: 'In production — details to come.',
   },
   {

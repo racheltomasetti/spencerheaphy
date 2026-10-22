@@ -116,13 +116,12 @@ export const project = defineType({
       name: 'status',
       title: 'Status',
       description:
-        'Choose “Undisclosed” to show this project as a blank “Undisclosed” tile at the end of the Work page, with no title or image. The other two options look the same on the site.',
+        'Leave on Published to show the project normally. Choose Undisclosed to show a blank “Undisclosed / Coming soon” tile at the end of the Work page, with no title or image and no way to open it.',
       type: 'string',
       fieldset: 'placement',
       options: {
         list: [
           {title: 'Published', value: 'published'},
-          {title: 'In production', value: 'in production'},
           {title: 'Undisclosed', value: 'undisclosed'},
         ],
         layout: 'radio',

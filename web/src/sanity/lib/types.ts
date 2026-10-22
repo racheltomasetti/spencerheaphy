@@ -1,4 +1,4 @@
-export type ProjectStatus = 'published' | 'in production' | 'undisclosed'
+export type ProjectStatus = 'published' | 'undisclosed'
 export type ProjectRole = 'director-editor' | 'social'
 
 export function isSocialProject(project: {role?: ProjectRole}) {
