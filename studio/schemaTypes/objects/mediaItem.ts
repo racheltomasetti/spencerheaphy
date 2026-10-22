@@ -10,7 +10,7 @@ export const mediaItem = defineType({
   fields: [
     defineField({
       name: 'mediaType',
-      title: 'Media type',
+      title: 'Image or video?',
       type: 'string',
       options: {
         list: [
@@ -31,7 +31,8 @@ export const mediaItem = defineType({
       fields: [
         defineField({
           name: 'alt',
-          title: 'Alternative text',
+          title: 'Image description',
+          description: 'A short description of the image, for screen readers and search engines.',
           type: 'string',
           validation: (rule) => rule.required().warning('Alt text is important for SEO and accessibility'),
         }),
@@ -46,8 +47,8 @@ export const mediaItem = defineType({
     }),
     defineField({
       name: 'video',
-      title: 'Video file',
-      description: 'Short looping clip only — for anything longer, use a hosted embed instead of a Sanity file.',
+      title: 'Video',
+      description: 'Upload an MP4. Keep it short (a looping clip) and under about 20 MB so the site stays fast.',
       type: 'file',
       options: {accept: 'video/*'},
       hidden: ({parent}) => parent?.mediaType !== 'video',

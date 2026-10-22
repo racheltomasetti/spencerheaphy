@@ -1,5 +1,10 @@
 import Image from 'next/image'
+import {MediaItemView} from '@/components/MediaItemView'
 import type {SiteSettings} from '@/sanity/lib/types'
+
+const DEFAULT_HEADLINE = 'Spencer is a 27 year-old Director and Creator in NYC.'
+const DEFAULT_TEXT =
+  'Starting his career at CAA, he quickly developed an eye for storytelling across multiple mediums and continues to pursue narrative filmmaking. He now directs and shoots projects for some of the largest brands in the world including his own scripts and stories.'
 
 export function Bio({
   settings,
@@ -21,25 +26,32 @@ export function Bio({
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10 md:flex-row md:items-center md:gap-x-12 lg:gap-x-16">
         <div className="relative aspect-[4/5] w-[clamp(13.75rem,62vw,20rem)] shrink-0 overflow-hidden md:w-[clamp(14rem,22vw,20rem)]">
-          <Image
-            src="/bio-portrait.jpg"
-            alt={`${name} portrait`}
-            fill
-            sizes="320px"
-            className="object-cover"
-          />
+          {settings?.bioMedia?.mediaType ? (
+            <MediaItemView
+              media={settings.bioMedia}
+              alt={`${name} portrait`}
+              width={640}
+              height={800}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <Image
+              src="/bio-portrait.jpg"
+              alt={`${name} portrait`}
+              fill
+              sizes="320px"
+              className="object-cover"
+            />
+          )}
         </div>
 
         <div className="flex min-w-0 flex-col items-center gap-[34px] text-center md:items-start md:text-left">
           <h2 className="text-pretty text-[clamp(22px,2.7vw,34px)] leading-[1.24] font-normal tracking-[-0.022em]">
-            Spencer is a 27 year-old Director and Creator in NYC.
+            {settings?.bioHeadline || DEFAULT_HEADLINE}
           </h2>
 
           <p className="max-w-[56ch] text-pretty text-base leading-[1.65] text-foreground/70">
-            Starting his career at CAA, he quickly developed an eye for
-            storytelling across multiple mediums and continues to pursue
-            narrative filmmaking. He now directs and shoots projects for some of
-            the largest brands in the world including his own scripts and stories.
+            {settings?.bioText || DEFAULT_TEXT}
           </p>
         </div>
       </div>

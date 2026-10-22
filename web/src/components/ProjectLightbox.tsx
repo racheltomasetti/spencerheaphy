@@ -13,7 +13,7 @@ import type {Project} from '@/sanity/lib/types'
 const FILM_MIN = 0.4
 const FILM_MAX = 0.66
 
-function formatProjectDate(date?: string, year?: number) {
+function formatProjectDate(date?: string) {
   if (date) {
     const parsed = new Date(`${date}T00:00:00`)
     if (!Number.isNaN(parsed.getTime())) {
@@ -23,7 +23,7 @@ function formatProjectDate(date?: string, year?: number) {
       })
     }
   }
-  return year ? String(year) : null
+  return null
 }
 
 export function ProjectLightbox({projects}: {projects: Project[]}) {
@@ -88,7 +88,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
 
   if (!project) return null
 
-  const displayDate = formatProjectDate(project.date, project.year)
+  const displayDate = formatProjectDate(project.date)
   const hasVimeo = Boolean(project.vimeoUrl && vimeoIdFromUrl(project.vimeoUrl))
   const crew = project.crew?.filter((credit) => credit.role && credit.name) ?? []
 

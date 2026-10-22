@@ -1,9 +1,8 @@
 export type ProjectStatus = 'published' | 'in production' | 'undisclosed'
-export type ProjectOrientation = 'landscape' | 'portrait' | 'square'
-export type ProjectRole = 'director-editor' | 'social' | 'creator'
+export type ProjectRole = 'director-editor' | 'social'
 
 export function isSocialProject(project: {role?: ProjectRole}) {
-  return project.role === 'social' || project.role === 'creator'
+  return project.role === 'social'
 }
 
 export function isDirectorProject(project: {role?: ProjectRole}) {
@@ -46,7 +45,6 @@ export interface Project {
   _id: string
   slug: string
   title: string
-  year?: number
   date?: string
   subheader?: string
   vimeoUrl?: string
@@ -56,7 +54,6 @@ export interface Project {
   description?: string
   featured?: boolean
   featuredOrder?: number
-  orientation?: ProjectOrientation
   coverMedia?: MediaItem
   postUrl?: string
   heroMedia?: MediaItem
@@ -71,6 +68,9 @@ export interface SocialLink {
 
 export interface SiteSettings {
   name?: string
+  bioHeadline?: string
+  bioText?: string
+  bioMedia?: MediaItem
   contactEmail?: string
   socialLinks?: SocialLink[]
 }

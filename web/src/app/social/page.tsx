@@ -9,10 +9,7 @@ export const metadata: Metadata = {
 
 export default async function SocialPage() {
   const projects = await getProjects()
-  // The row is built for 9:16, so only projects marked portrait in Sanity are shown.
-  const socialProjects = projects.filter(
-    (project) => isSocialProject(project) && project.orientation === 'portrait',
-  )
+  const socialProjects = projects.filter(isSocialProject)
 
   return (
     <>

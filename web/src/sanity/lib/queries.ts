@@ -19,11 +19,10 @@ const MEDIA_ITEM_PROJECTION = `{
 }`
 
 export const PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && hidden != true] | order(order asc, year desc) {
+  *[_type == "project" && hidden != true] | order(order asc, date desc) {
     _id,
     "slug": slug.current,
     title,
-    year,
     date,
     subheader,
     vimeoUrl,
@@ -33,7 +32,6 @@ export const PROJECTS_QUERY = defineQuery(`
     description,
     featured,
     featuredOrder,
-    orientation,
     coverMedia ${MEDIA_ITEM_PROJECTION},
     postUrl,
     heroMedia ${MEDIA_ITEM_PROJECTION},
@@ -45,6 +43,9 @@ export const PROJECTS_QUERY = defineQuery(`
 export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_id == "siteSettings"][0] {
     name,
+    bioHeadline,
+    bioText,
+    bioMedia ${MEDIA_ITEM_PROJECTION},
     contactEmail,
     socialLinks[] { platform, url }
   }
