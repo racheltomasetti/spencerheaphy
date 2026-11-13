@@ -5,7 +5,7 @@ import {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {Nav} from '@/components/Nav'
 import {MediaItemView} from '@/components/MediaItemView'
 import {VimeoEmbed, vimeoIdFromUrl} from '@/components/VimeoEmbed'
-import type {Project} from '@/sanity/lib/types'
+import type {CrewCredit, Project} from '@/sanity/lib/types'
 
 // The film takes whatever height the rest of the project doesn't need, between these
 // two shares of the screen height: bigger on a project with only a title, smaller on
@@ -33,6 +33,27 @@ function formatProjectDate(date?: string) {
     }
   }
   return null
+}
+
+// Credits with the same role (ignoring capitalization) share one label, in the order each
+// role first appears, and a comma-separated name becomes one name per line. So "Talent:
+// Ana, Ben" and two separate Talent rows read the same.
+function groupCrew(crew: CrewCredit[]) {
+  const groups = new Map<string, {role: string; names: string[]}>()
+  for (const credit of crew) {
+    const role = credit.role?.trim()
+    const names = (credit.name ?? '')
+      .split(',')
+      .map((name) => name.trim())
+      .filter(Boolean)
+    if (!role || names.length === 0) continue
+
+    const key = role.toLowerCase()
+    const group = groups.get(key)
+    if (group) group.names.push(...names)
+    else groups.set(key, {role, names})
+  }
+  return [...groups.values()]
 }
 
 export function ProjectLightbox({projects}: {projects: Project[]}) {
@@ -103,7 +124,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
 
   const displayDate = formatProjectDate(project.date)
   const hasVimeo = Boolean(project.vimeoUrl && vimeoIdFromUrl(project.vimeoUrl))
-  const crew = project.crew?.filter((credit) => credit.role && credit.name) ?? []
+  const crew = groupCrew(project.crew ?? [])
 
   return (
     <div
@@ -160,12 +181,18 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
                 )}
               </div>
 
+              {/* Each credit's role sits above its name, so a name gets the whole column and
+                  never gets squeezed beside a long role like "Production Assistant". */}
               {crew.length > 0 && (
-                <dl className="grid grid-cols-[auto_1fr] content-start gap-x-5 gap-y-1.5 pt-1 text-[11px] uppercase tracking-[0.13em] lg:col-span-5">
-                  {crew.map((credit, index) => (
-                    <div key={`${credit.role}-${credit.name}-${index}`} className="contents">
-                      <dt className="text-foreground/50">{credit.role}</dt>
-                      <dd className="min-w-0 break-words text-foreground/80">{credit.name}</dd>
+                <dl className="grid content-start gap-y-2.5 pt-1 text-[11px] uppercase tracking-[0.13em] lg:col-span-5">
+                  {crew.map((group) => (
+                    <div key={group.role.toLowerCase()} className="min-w-0">
+                      <dt className="text-foreground/50">{group.role}</dt>
+                      {group.names.map((name, index) => (
+                        <dd key={`${name}-${index}`} className="break-words text-foreground/80">
+                          {name}
+                        </dd>
+                      ))}
                     </div>
                   ))}
                 </dl>
