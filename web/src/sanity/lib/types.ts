@@ -48,6 +48,8 @@ export interface Project {
   date?: string
   subheader?: string
   vimeoUrl?: string
+  // Width divided by height of the Vimeo film, looked up from Vimeo (not stored in Sanity).
+  vimeoAspect?: number
   role?: ProjectRole
   crew?: CrewCredit[]
   status: ProjectStatus

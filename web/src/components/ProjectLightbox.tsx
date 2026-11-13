@@ -13,6 +13,15 @@ import type {Project} from '@/sanity/lib/types'
 const FILM_MIN = 0.4
 const FILM_MAX = 0.66
 
+// The details below the film are as wide as the film, but never narrower than this, so
+// a squarer film doesn't squeeze the title and credits into a thin column. A film
+// narrower than this sits against the left edge of the details, so they share a margin.
+const DETAILS_MIN_WIDTH = 600
+
+// The frame matches the film's own shape, so the player has nothing to pad with bars.
+// Projects whose shape couldn't be looked up, and cover images, use 16:9.
+const DEFAULT_ASPECT = 16 / 9
+
 function formatProjectDate(date?: string) {
   if (date) {
     const parsed = new Date(`${date}T00:00:00`)
@@ -32,6 +41,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
   const router = useRouter()
   const slug = searchParams.get('project')
   const project = slug ? projects.find((p) => p.slug === slug) : undefined
+  const aspect = project?.vimeoAspect ?? DEFAULT_ASPECT
 
   const close = () => router.push(pathname, {scroll: false})
 
@@ -72,7 +82,7 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
         parseFloat(style.paddingBottom) -
         details.offsetHeight
       const height = Math.min(window.innerHeight * FILM_MAX, Math.max(window.innerHeight * FILM_MIN, room))
-      const width = Math.round(Math.min(gutters, (height * 16) / 9))
+      const width = Math.round(Math.min(gutters, height * aspect))
       setFilmWidth((current) => (current != null && Math.abs(current - width) < 2 ? current : width))
     }
 
@@ -84,9 +94,12 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
       observer.disconnect()
       window.removeEventListener('resize', fit)
     }
-  }, [project?.slug])
+  }, [project?.slug, aspect])
 
   if (!project) return null
+
+  // Until the film has been measured, a width that fits a laptop screen.
+  const filmCss = filmWidth != null ? `${filmWidth}px` : `calc(48dvh * ${aspect})`
 
   const displayDate = formatProjectDate(project.date)
   const hasVimeo = Boolean(project.vimeoUrl && vimeoIdFromUrl(project.vimeoUrl))
@@ -103,9 +116,16 @@ export function ProjectLightbox({projects}: {projects: Project[]}) {
       {/* One screen: the film starts right under the nav and everything about it sits
           underneath, so nothing needs scrolling on a laptop. Small screens scroll. */}
       <div ref={frameRef} className="px-(--edge) pb-6 pt-[calc(var(--nav-h)+0.75rem)]">
-        {/* As wide as the film; the details below line up with its edges. */}
-        <div className="mx-auto w-full" style={{maxWidth: filmWidth ?? 'calc(48dvh * 16 / 9)'}}>
-          <div className="relative aspect-video w-full overflow-hidden bg-foreground/5">
+        {/* As wide as the film, or DETAILS_MIN_WIDTH if the film is narrower than that; the
+            details below line up with the film's left edge, and its right edge when wide. */}
+        <div
+          className="mx-auto w-full"
+          style={{maxWidth: `max(${filmCss}, ${DETAILS_MIN_WIDTH}px)`}}
+        >
+          <div
+            className="relative max-w-full overflow-hidden bg-foreground/5"
+            style={{width: filmCss, aspectRatio: aspect}}
+          >
             {hasVimeo && project.vimeoUrl ? (
               <VimeoEmbed url={project.vimeoUrl} title={project.title} autoplay />
             ) : (
